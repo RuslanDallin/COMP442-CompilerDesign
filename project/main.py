@@ -12,7 +12,6 @@ class Token:
         self.lexeme = lexeme
         self.location = location
 
-
 # operators = ['!', '&', ',', '-', '.', '/', ':', ';', '<', '=', '>', '[', '|', ']', '_', '+', '.', '.', '.', '.', '.', '.',]
 
 def type(c):
@@ -69,17 +68,18 @@ def nextToken():
             char = file.read(1)
             if not char:
                 return None
-            if char == '' or char == '\t':
+            if char.isspace() and char != '\n':
                 continue
 
             if char == '\n' and tokenReady:
                 print("Token", token)
                 state = 'A'
                 token = ""
+                tokenReady = False
                 continue
 
             typeChar = type(char)
-            if (state == 'A' and char == '0') or (state == 'AR' and char == 'e'): # if there is a 0 with nothing around, it should be considered 0 not digit
+            if ((state == 'A' or state == 'AR' or state == 'AT') and char == '0') or (state == 'AR' and char == 'e'): # if there is a 0 with nothing around, it should be considered 0 not digit
                 typeChar = char
             nextState, label = getInfo(state,typeChar)
 
@@ -92,6 +92,7 @@ def nextToken():
                 print("Token", token)
                 state = 'A'
                 token = ""
+                tokenReady = False
 
             if nextState == "AA":
                 countOpen = 1
@@ -126,13 +127,20 @@ def nextToken():
                 print("Token", repr(token))
                 state = 'A'
                 token = ""
+                tokenReady = False
                 continue
 
 
             if nextState == "-1" and label == "-1":
+                if char == '\n':
+                    continue
+                print("@INVALID Token", repr(char))
                 continue
 
             if nextState == "0" and label == "0":
+                if char == '\n':
+                    continue
+                print("#INVALID Token", repr(char))
                 continue
 
             if (nextState == "0" and label != "0") or (label == "id" and token in reservedWords):
@@ -141,6 +149,7 @@ def nextToken():
                 state = 'A'
                 token = ""
                 file.seek(file.tell() - 1)  # go back
+                tokenReady = False
                 continue
 
             if state != "AA" and isComplete(nextState) != "0":
