@@ -2,8 +2,12 @@ import pandas as pd
 
 table = pd.read_csv("Table.csv")
 table.set_index("State", inplace=True)
-file = open('lexnegativegrading.src', 'r')
-# file = open('lexpositivegrading.src', 'r')
+
+SourceFileName = "lexpositivegrading"
+src = open(SourceFileName + ".src", 'r') # reading
+outlextokens = open(SourceFileName + ".outlextokens", 'w') # tokens
+outlexerrors = open(SourceFileName + ".outlexerrors", 'w') # errors
+
 
 LexemeDic = {"==": "eq", "+": "plus", "(": "openpar", ";": "semi", "<>": "noteq", "-": "minus",
              "&": "and", ")": "closepar", ",": "comma", "<": "lt", "*": "multi", "!": "not", "{": "opencubr",
@@ -15,16 +19,17 @@ reservedWords = ["if", "then", "else", "integer", "float", "void", "public", "pr
 
 
 class Token:
-    def __init__(self, label, token, location):
+    def __init__(self, label, token, location, index):
         tempType = LexemeDic.get(type)
         if tempType == None:
             tempType = type
         self.type = getTokenType(label, token)
         self.lexeme = token
         self.location = location
+        self.index = index
 
     def __str__(self):
-        return "[%s, %s, %s]" % (self.type, self.lexeme, self.location)
+        return "[%s, %s, %s, %s]" % (self.type, self.lexeme, self.location, self.index)
 
     def __eq__(self, other):
         return self.type == other.type and self.lexeme == other.lexeme
@@ -32,10 +37,10 @@ class Token:
 
 def typeOfChar(state, c):
     if c == '0':  # special case 1. 0 should be treated as 0 and not a digit
-        if state == 'A' or state == 'AR' or state == 'AT':
+        if state == 'A' or state == 'AR' or state == 'AT'or state == 'AB' or state == 'AU': # these states have '0' transitions
             return '0'
     if c == 'e':  # special case 2. e should be treated as e and not a letter
-        if state == 'AR':
+        if state == 'AR' or state == 'AP': # these states have '0' transitions
             return 'e'
     if c.isalpha(): return 'L'
     if c.isdigit() and c != '0': return 'N'
@@ -81,19 +86,24 @@ def nextToken():
         typeChar = ''
         lineCounter = 1
         while (True):
-            char = file.read(1)
+            char = src.read(1)
 
             if char == '\n':
                 lineCounter += 1
 
-            if not char:  # end of file
-                return None
+            if not char:  #reached end of file
+                if tokenReady:
+                    print(Token(nextLabel(nextState), token, lineCounter - 1, src.tell()))
+                    state = 'A'
+                    token = ""
+                    tokenReady = False
+                return
 
             if char.isspace() and char != '\n':  # we only care of newlines
                 continue
 
             if char == '\n' and tokenReady:  # if we reach the end of a line and we already have a valid token
-                print(Token(nextLabel(nextState), token, lineCounter-1))
+                print(Token(nextLabel(nextState), token, lineCounter-1, src.tell()))
                 state = 'A'
                 token = ""
                 tokenReady = False
@@ -104,9 +114,9 @@ def nextToken():
             if state == 'Z':  # inline comments end at \n
                 while (char != '\n'):
                     token += char
-                    char = file.read(1)
+                    char = src.read(1)
                 # print(char, typeChar, nextState, label)
-                print(Token("inlinecmt", repr(token), lineCounter))
+                print(Token("inlinecmt", repr(token), lineCounter, src.tell()))
                 state = 'A'
                 token = ""
                 tokenReady = False
@@ -119,12 +129,12 @@ def nextToken():
                 token += char
                 CommentStartLocation = lineCounter
                 while (True):
-                    char = file.read(1)
+                    char = src.read(1)
                     if char == '\n':
                         lineCounter += 1
 
                     if char == '/':
-                        nextChar = file.read(1)
+                        nextChar = src.read(1)
                         if nextChar == '*':
                             countOpen += 1
                         if nextChar != '\n':
@@ -132,7 +142,7 @@ def nextToken():
                         continue
 
                     if char == '*':
-                        nextChar = file.read(1)
+                        nextChar = src.read(1)
                         if nextChar == '/':
                             countClosed += 1
                         if nextChar != '\n':
@@ -142,9 +152,13 @@ def nextToken():
                     if countOpen == countClosed:
                         break
 
+                    if not char: #reached end of file
+                        print(Token("blockCommentMissing" + str(countOpen - countClosed) + "'*/'", repr(token), lineCounter, src.tell()))
+                        return
+
                     token += char
                 # print(char, typeChar, nextState, label)
-                print(Token("blockcmt", repr(token), CommentStartLocation))
+                print(Token("blockcmt", repr(token), CommentStartLocation, src.tell()))
                 state = 'A'
                 token = ""
                 tokenReady = False
@@ -154,23 +168,22 @@ def nextToken():
                 if char == '\n':
                     continue
                 # print("@INVALID Token", repr(char))
-                print(Token("invalid Token", char, lineCounter))
+                print(Token("invalidToken", char, lineCounter, src.tell()))
                 continue
 
             if nextState == "0" and label == "0":  # misplaced char
                 if char == '\n':
                     continue
                 # print("#INVALID Token", repr(char))
-                print(Token("misplaced Token", char, lineCounter))
+                print(Token("misplacedToken", char, lineCounter, src.tell()))
                 continue
 
             if (nextState == "0" and label != "0") or (label == "id" and token in reservedWords):  # complete token and final state
                 # print(char, typeChar, nextState, label)
-                # print("Token", token)
-                print(Token(label, token, lineCounter))
+                print(Token(label, token, lineCounter, src.tell()))
                 state = 'A'
                 token = ""
-                file.seek(file.tell() - 1)  # backtrack
+                src.seek(src.tell() - 1)  # backtrack
                 tokenReady = False
                 continue
 
