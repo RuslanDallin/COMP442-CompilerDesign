@@ -1,0 +1,5 @@
+[blockcmt, '/* valid\nlumped\nid:\n*/', 1]
+[id, b_a555___g4ahjk, 6]
+[blockcmt, '/* misplaced\ntoken\nfollowed by valid id:\n*/', 8]
+[misplacedToken, _, 13]
+[id, d43, 12]

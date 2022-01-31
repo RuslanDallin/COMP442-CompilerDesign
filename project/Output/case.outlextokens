@@ -1,0 +1,3 @@
+[blockcmt, '/* uppercase reserved words should be tokenized the same */', 1]
+[then, then, 2][then, then, 2]
+[void, void, 3][void, void, 3]

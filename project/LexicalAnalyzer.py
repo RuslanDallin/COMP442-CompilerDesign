@@ -13,6 +13,7 @@ reservedWords = ["if", "then", "else", "integer", "float", "void", "public", "pr
 
 class Token:
     def __init__(self, label, token, location):
+        token = token.lower()
         self.type = getTokenType(label, token)
         self.lexeme = token
         self.location = location
@@ -82,28 +83,42 @@ class Lex:
         label =''
         tokenReady = False
         token = None
+        tokenLimit = 10
         while (token == None):
             char = self.src.read(1)
 
             if char == '\n':
                 self.lineCounter += 1
 
+
+            if tokenReady:
+                tokenLimit -= 1
+
             if not char:  #reached end of file
                 if tokenReady:
                     token = Token(nextLabel(nextState), lexeme, self.lineCounter - 1)
-                    state = 'A'
-                    lexeme = ""
-                    tokenReady = False
-                return
+                    # state = 'A'
+                    # lexeme = ""
+                    # tokenReady = False
+                    continue
+                break
 
-            if char.isspace() and char != '\n':  # we only care of newlines
-                continue
+            # if char.isspace() and char != '\n':  # we only care of newlines
+            #     continue
 
             if char == '\n' and tokenReady:  # if we reach the end of a line and we already have a valid token
                 token = Token(nextLabel(nextState), lexeme, self.lineCounter-1)
-                state = 'A'
-                lexeme = ""
-                tokenReady = False
+                # state = 'A'
+                # lexeme = ""
+                # tokenReady = False
+                continue
+
+            if char.isspace():
+                if tokenReady and state != 'Z' and state != 'AA':  # if we reach the end of a line and we already have a valid token
+                    token = Token(nextLabel(nextState), lexeme, self.lineCounter)
+                # state = 'A'
+                # lexeme = ""
+                # tokenReady = False
                 continue
 
             nextState, label = getInfo(state, typeOfChar(state, char))
@@ -112,11 +127,13 @@ class Lex:
                 while (char != '\n'):
                     lexeme += char
                     char = self.src.read(1)
+                    if not char:
+                        break
                 # print(char, typeChar, nextState, label)
                 token = Token("inlinecmt", repr(lexeme), self.lineCounter)
-                state = 'A'
-                lexeme = ""
-                tokenReady = False
+                # state = 'A'
+                # lexeme = ""
+                # tokenReady = False
                 self.lineCounter += 1
                 continue
 
@@ -150,15 +167,14 @@ class Lex:
                         break
 
                     if not char: #reached end of file
-                        token = Token("blockCommentMissing" + str(countOpen - countClosed) + "'*/'", repr(lexeme), self.lineCounter)
-                        return
+                        return Token("blockCommentMissing" + str(countOpen - countClosed) + "'*/'", repr(lexeme), self.lineCounter)
 
                     lexeme += char
                 # print(char, typeChar, nextState, label)
                 token = Token("blockcmt", repr(lexeme), CommentStartLocation)
-                state = 'A'
-                lexeme = ""
-                tokenReady = False
+                # state = 'A'
+                # lexeme = ""
+                # tokenReady = False
                 continue
 
             if nextState == "-1" and label == "-1":  # invalid char
@@ -179,9 +195,9 @@ class Lex:
                 # print(char, typeChar, nextState, label)
                 self.src.seek(self.src.tell() - 1)  # backtrack
                 token = Token(label, lexeme, self.lineCounter)
-                state = 'A'
-                lexeme = ""
-                tokenReady = False
+                # state = 'A'
+                # lexeme = ""
+                # tokenReady = False
                 continue
 
             if state != "AA" and nextLabel(nextState) != "0":  # token is read in case next char is \n Token needs to be in final state

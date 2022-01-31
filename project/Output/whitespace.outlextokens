@@ -1,0 +1,3 @@
+[id, apple, 1][else, else, 1][inlinecmt, '//this is an example where whitespace is important. if', 1]
+[inlinecmt, '//whitespace was disregarded, this would be tokenized as the', 2]
+[inlinecmt, '//id "foonot" rather the id "foo" and the keyword "not"', 3]

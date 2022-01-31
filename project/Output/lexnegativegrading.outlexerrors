@@ -4,5 +4,5 @@ Lexical error: Invalid character: "$": line 1.
 Lexical error: Invalid character: "'": line 1.
 Lexical error: Invalid character: "\": line 1.
 Lexical error: Invalid character: "~": line 1.
-Lexical error: misplaced character: "_": line 18.
-Lexical error: misplaced character: "_": line 20.
+Lexical error: Misplaced character: "_": line 18.
+Lexical error: Misplaced character: "_": line 20.

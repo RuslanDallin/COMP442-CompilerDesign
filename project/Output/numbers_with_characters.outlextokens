@@ -1,0 +1,4 @@
+[inlinecmt, '//per requirement from the faq here: http://users.encs.concordia.ca/~s_rabah/site/courses/comp6421/faq.php', 1]
+[inlinecmt, '//these two lines should be tokenized identically', 2]
+[id, i, 3][assign, =, 3][integer, 12, 3][if, if, 3]
+[id, i, 4][assign, =, 4][integer, 12, 4][if, if, 4]

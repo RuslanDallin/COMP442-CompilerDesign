@@ -1,0 +1,11 @@
+        /* imbricated comment block */
+
+234 + 12 != 73 // Inline comment
+
+if (var == 45) {
+    return True
+}
+
+/* imbricated comment block * */
+
+/* This should be an error as the closing symbol is detached *  /
