@@ -1,7 +1,0 @@
-[blockcmt, '/* imbricated comment block */', 1]
-[integer, 234, 3][plus, +, 3][integer, 12, 3][not, !, 3][assign, =, 3][integer, 73, 3][inlinecmt, '//inline comment', 3]
-[if, if, 5][openpar, (, 5][var, var, 5][eq, ==, 5][integer, 45, 5][closepar, ), 5][opencubr, {, 5]
-[return, return, 6][id, true, 6]
-[closecubr, }, 7]
-[blockcmt, '/* imbricated comment block * */', 9]
-[blockCommentMissing1'*/', '/* this should be an error as the closing symbol is detached *  /', 11]

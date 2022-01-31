@@ -1,3 +1,0 @@
-[id, testing, 1][id, inline, 1]
-[inlinecmt, '//inline 1', 2]
-[inlinecmt, '//inline 2 // inline 3 //', 3]

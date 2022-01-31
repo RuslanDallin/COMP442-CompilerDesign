@@ -80,7 +80,6 @@ class Lex:
         state = 'A'
         lexeme = ""
         nextState = ''
-        label =''
         tokenReady = False
         token = None
         tokenLimit = 10
@@ -97,28 +96,16 @@ class Lex:
             if not char:  #reached end of file
                 if tokenReady:
                     token = Token(nextLabel(nextState), lexeme, self.lineCounter - 1)
-                    # state = 'A'
-                    # lexeme = ""
-                    # tokenReady = False
                     continue
                 break
 
-            # if char.isspace() and char != '\n':  # we only care of newlines
-            #     continue
-
             if char == '\n' and tokenReady:  # if we reach the end of a line and we already have a valid token
                 token = Token(nextLabel(nextState), lexeme, self.lineCounter-1)
-                # state = 'A'
-                # lexeme = ""
-                # tokenReady = False
                 continue
 
             if char.isspace():
                 if tokenReady and state != 'Z' and state != 'AA':  # if we reach the end of a line and we already have a valid token
                     token = Token(nextLabel(nextState), lexeme, self.lineCounter)
-                # state = 'A'
-                # lexeme = ""
-                # tokenReady = False
                 continue
 
             nextState, label = getInfo(state, typeOfChar(state, char))
@@ -129,11 +116,7 @@ class Lex:
                     char = self.src.read(1)
                     if not char:
                         break
-                # print(char, typeChar, nextState, label)
                 token = Token("inlinecmt", repr(lexeme), self.lineCounter)
-                # state = 'A'
-                # lexeme = ""
-                # tokenReady = False
                 self.lineCounter += 1
                 continue
 
@@ -170,34 +153,24 @@ class Lex:
                         return Token("blockCommentMissing" + str(countOpen - countClosed) + "'*/'", repr(lexeme), self.lineCounter)
 
                     lexeme += char
-                # print(char, typeChar, nextState, label)
                 token = Token("blockcmt", repr(lexeme), CommentStartLocation)
-                # state = 'A'
-                # lexeme = ""
-                # tokenReady = False
                 continue
 
             if nextState == "-1" and label == "-1":  # invalid char
                 if char == '\n':
                     continue
-                # print("@INVALID Token", repr(char))
                 token = Token("invalidToken", char, self.lineCounter)
                 continue
 
             if nextState == "0" and label == "0":  # misplaced char
                 if char == '\n':
                     continue
-                # print("#INVALID Token", repr(char))
                 token = Token("misplacedToken", char, self.lineCounter)
                 continue
 
             if (nextState == "0" and label != "0") or (label == "id" and lexeme in reservedWords):  # complete token and final state
-                # print(char, typeChar, nextState, label)
                 self.src.seek(self.src.tell() - 1)  # backtrack
                 token = Token(label, lexeme, self.lineCounter)
-                # state = 'A'
-                # lexeme = ""
-                # tokenReady = False
                 continue
 
             if state != "AA" and nextLabel(nextState) != "0":  # token is read in case next char is \n Token needs to be in final state
@@ -205,7 +178,6 @@ class Lex:
 
             lexeme = lexeme + char
             state = nextState
-            # print(char, typeChar, nextState, label)
 
         return token
 

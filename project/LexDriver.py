@@ -1,11 +1,11 @@
 import os
 from LexicalAnalyzer import Lex
 
-directoryName = "Source"
+directoryName = "Source" # set the source folder
 directory = os.listdir(directoryName)
 for file in directory:
     filename = os.fsdecode(file)
-    if file.endswith(".src"):
+    if file.endswith(".src"): # go through all .src files
         SourceFileName = filename[0:-4]
         src = open(directoryName + "/" + SourceFileName + ".src", 'r')  # reading
         outlextokens = open("Output/" + SourceFileName + ".outlextokens", 'w')  # tokens

@@ -1,1 +1,0 @@
-Lexical error: Missing closing 1 */: "'/* this should be an error as the closing symbol is detached *  /'": line 11.

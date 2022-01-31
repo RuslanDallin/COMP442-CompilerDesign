@@ -1,2 +1,0 @@
-[id, apple, 1][read, read, 1][if, if, 1][else, else, 1][minus, -, 1][integer, 1000, 1][semi, ;, 1]
-[blockcmt, '/* concatenated reserved words */', 2]

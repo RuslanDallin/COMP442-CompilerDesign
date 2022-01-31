@@ -1,7 +1,0 @@
-[inlinecmt, '//original sample posted by the ta', 1]
-[id, classmyclass, 3][opencubr, {, 3]
-[integer, integer, 4][id, i, 4][assign, =, 4][integer, 2, 4][semi, ;, 4]
-[id, real, 5][assign, =, 5][float, 6.99, 5][semi, ;, 5]
-[if, if, 6][openpar, (, 6][id, i, 6][leq, <=, 6][integer, 4, 6][closepar, ), 6][opencubr, {, 6]
-[closecubr, }, 7]
-[closecubr, }, 8]

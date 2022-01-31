@@ -1,5 +1,0 @@
-[blockcmt, '/* valid\nlumped\nid:\n*/', 1]
-[integer, b_, 6][integer, a555___, 6][id, g4, 6][id, ahj, 6][id, k, 6]
-[blockcmt, '/* misplaced\ntoken\nfollowed by valid id:\n*/', 8]
-[misplacedToken, _, 13][id, d, 13][integer, 43, 13]
-[id, thisisaverylongvariablenamethatismeanttoconveymeaning, 15][assign, =, 15][integer, 1, 15][inlinecmt, '//id', 15]

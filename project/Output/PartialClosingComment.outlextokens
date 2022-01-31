@@ -1,2 +1,0 @@
-[id, test, 1][assign, =, 1][float, 1234.0, 1][integer, 1, 1][semi, ;, 1]
-[blockCommentMissing1'*/', '/* partial closing symbol symbol ', 3]
