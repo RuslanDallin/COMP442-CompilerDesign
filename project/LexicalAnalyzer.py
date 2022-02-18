@@ -1,12 +1,12 @@
 import pandas as pd
 
-table = pd.read_csv("Table.csv")
+table = pd.read_csv("TransitionTable.csv")
 table.set_index("State", inplace=True)
 
-LexemeDic = {"==": "eq", "+": "plus", "(": "openpar", ";": "semi", "<>": "noteq", "-": "minus",
+LexemeDic = {"==": "equal", "+": "plus", "(": "openpar", ";": "semi", "<>": "noteq", "-": "minus",
              "&": "and", ")": "closepar", ",": "comma", "<": "lt", "*": "multi", "!": "not", "{": "opencubr",
              ".": "dot", ">": "gt", "/": "div", "}": "closecubr", ":": "colon", "<=": "leq", "=": "assign",
-             "[": "opensqbr", "::": "coloncplon", ">=": "geg", "]": "closesqbr", "->": "arrow"}
+             "[": "lsqbr", "::": "coloncplon", ">=": "geg", "]": "closesqbr", "->": "arrow", "|":"or"}
 
 reservedWords = ["if", "then", "else", "integer", "float", "void", "public", "private", "func", "var",
                  "struct", "while", "func", "read", "write", "return", "self", "inherits", "let", "impl"]

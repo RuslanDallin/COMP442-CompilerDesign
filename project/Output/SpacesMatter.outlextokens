@@ -1,0 +1,3 @@
+[id, apple, 1][else, else, 1]
+[id, appleelse, 2]
+[inlinecmt, '//without space makes a difference', 3]

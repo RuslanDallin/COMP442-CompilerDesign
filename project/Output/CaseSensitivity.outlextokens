@@ -1,0 +1,3 @@
+[inlinecmt, '//duplicate pair', 1]
+[if, if, 2][if, if, 2]
+[else, else, 3][else, else, 3]

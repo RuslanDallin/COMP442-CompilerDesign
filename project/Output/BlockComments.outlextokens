@@ -1,0 +1,2 @@
+[id, apple, 1][openpar, (, 1][id, name, 1][closepar, ), 1][assign, =, 1][float, 45.124e-21, 1][semi, ;, 1]
+[blockCommentMissing1'*/', '/* missing one closing comment operator\n\n\n', 6]
