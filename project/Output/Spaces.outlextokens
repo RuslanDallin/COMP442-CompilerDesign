@@ -1,3 +1,0 @@
-[inlinecmt, '//these two are duplicates', 1]
-[id, a, 2][assign, =, 2][integer, 321, 2][else, else, 2]
-[id, a, 3][assign, =, 3][integer, 321, 3][else, else, 3]

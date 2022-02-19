@@ -1,4 +1,4 @@
-TT,$,private,public,id,dot,semi,colon,let,float,integer,rcurbr,lcurbr,struct,rpar,lpar,return,write,read,while,else,then,if,minus,plus,void,comma,geq,leq,gt,lt,neq,eq,inherits,and,div,mult,rsqbr,lsqbr,impl,arrow,func,not,floatlit,intnum,equal,or,eof,eof
+TT,$,private,public,id,dot,semi,colon,let,float,integer,rcurbr,lcurbr,struct,rpar,lpar,return,write,read,while,else,then,if,minus,plus,void,comma,geq,leq,gt,lt,neq,eq,inherits,and,div,mult,rsqbr,lsqbr,impl,arrow,func,not,floatnum,intnum,assign,or,eof,eof
 START,START → PROG,,,,,,,,,,,,START → PROG,,,,,,,,,,,,,,,,,,,,,,,,,,START → PROG,,START → PROG,,,,,,START → eof,START → eof
 ADDOP,,,,,,,,,,,,,,,,,,,,,,,ADDOP → minus,ADDOP → plus,,,,,,,,,,,,,,,,,,,,,,ADDOP → or,,
 APARAMS,,,,APARAMS → EXPR REPTAPARAMS1,,,,,,,,,,APARAMS → &epsilon,APARAMS → EXPR REPTAPARAMS1,,,,,,,,APARAMS → EXPR REPTAPARAMS1,APARAMS → EXPR REPTAPARAMS1,,,,,,,,,,,,,,,,,,APARAMS → EXPR REPTAPARAMS1,APARAMS → EXPR REPTAPARAMS1,APARAMS → EXPR REPTAPARAMS1,,,,
@@ -6,12 +6,12 @@ APARAMSTAIL,,,,,,,,,,,,,,,,,,,,,,,,,,APARAMSTAIL → comma EXPR,,,,,,,,,,,,,,,,,
 ARITHEXPR,,,,ARITHEXPR → TERM LEFTARITHEXPR,,,,,,,,,,,ARITHEXPR → TERM LEFTARITHEXPR,,,,,,,,ARITHEXPR → TERM LEFTARITHEXPR,ARITHEXPR → TERM LEFTARITHEXPR,,,,,,,,,,,,,,,,,,ARITHEXPR → TERM LEFTARITHEXPR,ARITHEXPR → TERM LEFTARITHEXPR,ARITHEXPR → TERM LEFTARITHEXPR,,,,
 ARITHEXPRLEFT,,,,,,,,,,,,,,,,,,,,,,,ARITHEXPRLEFT → ADDOP TERM LEFTARITHEXPR,ARITHEXPRLEFT → ADDOP TERM LEFTARITHEXPR,,,,,,,,,,,,,,,,,,,,,,ARITHEXPRLEFT → ADDOP TERM LEFTARITHEXPR,,
 ARRAYSIZE,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,ARRAYSIZE → lsqbr FACTARRAYSIZE,,,,,,,,,,
-ASSIGNOP,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,ASSIGNOP → equal,,,
+ASSIGNOP,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,ASSIGNOP → assign,,,
 ASSIGNSTAT,,,,ASSIGNSTAT → VARIABLE ASSIGNOP EXPR,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 EXPR,,,,EXPR → ARITHEXPR EXPRLEFT,,,,,,,,,,,EXPR → ARITHEXPR EXPRLEFT,,,,,,,,EXPR → ARITHEXPR EXPRLEFT,EXPR → ARITHEXPR EXPRLEFT,,,,,,,,,,,,,,,,,,EXPR → ARITHEXPR EXPRLEFT,EXPR → ARITHEXPR EXPRLEFT,EXPR → ARITHEXPR EXPRLEFT,,,,
 EXPRLEFT,,,,,,EXPRLEFT → &epsilon,,,,,,,,EXPRLEFT → &epsilon,,,,,,,,,,,,EXPRLEFT → &epsilon,EXPRLEFT → RELOP ARITHEXPR,EXPRLEFT → RELOP ARITHEXPR,EXPRLEFT → RELOP ARITHEXPR,EXPRLEFT → RELOP ARITHEXPR,EXPRLEFT → RELOP ARITHEXPR,EXPRLEFT → RELOP ARITHEXPR,,,,,,,,,,,,,,,,
 FACTARRAYSIZE,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,FACTARRAYSIZE → rsqbr,,,,,,,FACTARRAYSIZE → intnum rsqbr,,,,
-FACTOR,,,,FACTOR → id FACTORFAC,,,,,,,,,,,FACTOR → lpar ARITHEXPR rpar,,,,,,,,FACTOR → SIGN FACTOR,FACTOR → SIGN FACTOR,,,,,,,,,,,,,,,,,,FACTOR → not FACTOR,FACTOR → floatlit,FACTOR → intnum,,,,
+FACTOR,,,,FACTOR → id FACTORFAC,,,,,,,,,,,FACTOR → lpar ARITHEXPR rpar,,,,,,,,FACTOR → SIGN FACTOR,FACTOR → SIGN FACTOR,,,,,,,,,,,,,,,,,,FACTOR → not FACTOR,FACTOR → floatnum,FACTOR → intnum,,,,
 FACTORFAC,,,,,FACTORFAC → VARIABLEIDNEST,,,,,,,,,,FACTORFAC → lpar APARAMS rpar,,,,,,,,,,,,,,,,,,,FACTORFAC → VARIABLEIDNEST,FACTORFAC → VARIABLEIDNEST,FACTORFAC → VARIABLEIDNEST,,FACTORFAC → VARIABLEIDNEST,,,,,,,,,,
 FPARAMS,,,,FPARAMS → id colon TYPE REPTFPARAMS3 REPTFPARAMS4,,,,,,,,,,FPARAMS → &epsilon,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 FPARAMSTAIL,,,,,,,,,,,,,,,,,,,,,,,,,,FPARAMSTAIL → comma id colon TYPE REPTFPARAMSTAIL4,,,,,,,,,,,,,,,,,,,,,,

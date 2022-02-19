@@ -1,7 +1,7 @@
 import os
 from LexicalAnalyzer import Lex
 
-directoryName = "Source" # set the source folder
+directoryName = "Test" # set the source folder
 directory = os.listdir(directoryName)
 for file in directory:
     filename = os.fsdecode(file)
@@ -14,7 +14,7 @@ for file in directory:
         temp = lex.nextToken()
         lineNumber = 1
         print("\n\n********* %s *********" % (SourceFileName))
-        while (temp != None):
+        while (temp.type != "eof"):
             if temp.location != lineNumber:
                 print("")
                 outlextokens.write("\n")
