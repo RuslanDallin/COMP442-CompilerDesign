@@ -44,7 +44,8 @@ def derivationBuilder(s, PrevDeriv):
     PrevDeriv = PrevDeriv.replace(lhs.strip(),rhs.strip(),1)
     newStr = PrevDeriv.replace(" ", "")
     print("START =>", newStr)
-    return newStr
+    return newStrAtwater01
+
 
 # def derivationBuilder(deletedStack, reversedStack):
 #     derivation = "START => "
