@@ -3,24 +3,25 @@ import pandas as pd
 from LexicalAnalyzer import *
 
 
-ParseTable = pd.read_csv("testTable.csv")
-# ParseTable = pd.read_csv("ParsingTable.csv")
+# ParseTable = pd.read_csv("testTable.csv")
+ParseTable = pd.read_csv("ParsingTable.csv")
 ParseTable.set_index("TT", inplace=True)
 prodStack = []
 deletedStack = []
 
 
-# def isTerminal(s):
-#     return (s in LexemeDic.values()) or (s in reservedWords)
+def isTerminal(s):
+    return (s in LexemeDic.values()) or (s in reservedWords) or (s == "id")
 
         #TO BE DELELED
-def isTerminalTemp(s):
-    return s in ['0', '1', '(', ")", "+", "*", "eof"]
+# def isTerminalTemp(s):
+#     return s in ['0', '1', '(', ")", "+", "*", "eof"]
         #TO BE DELELED
 
 def getTableReversedRHS(row,col,PrevDeriv):
-    # print("row: ", row,", col: ", col)
+    print("row: ", row,", col: ", col)
     rhs= -1  # -1 not found - invalid transition
+    newDeriv = PrevDeriv
     if col in ParseTable.columns:
         rhs = str(ParseTable[col][row])
         if rhs == "nan":
@@ -42,45 +43,34 @@ def derivationBuilder(s, PrevDeriv):
     if rhs.strip() == "&epsilon":
         rhs = ''
     PrevDeriv = PrevDeriv.replace(lhs.strip(),rhs.strip(),1)
-    newStr = PrevDeriv.replace(" ", "")
-    print("START =>", newStr)
-    return newStrAtwater01
+    # newStr = PrevDeriv.replace(" ", "")
+    newStr = PrevDeriv
+    # print("START =>", newStr)
+    return newStr
 
 
-# def derivationBuilder(deletedStack, reversedStack):
-#     derivation = "START => "
-#     while len(reversedStack) > 1:
-#         derivation += reversedStack.pop() + " "
-#     print(derivation)
-
-# To do the derivation:
-# 1. start with Prog
-# 2. replace the poped part with the tableOutput
-
-
-#TO DELETE : Change token.lexeme for token.type !!!
 def parse(lexA):
     prodStack.append("START")
-    prodStack.append("E")
+    prodStack.append("PROG")
     token = lexA.nextToken()
     error = False
-    deriviation = "E"
+    deriviation = "PROG"
 
     while prodStack[-1] != "START": # CHANGE TO START
-        # print(prodStack)
+        print(prodStack)
         top = prodStack[-1]
-        if isTerminalTemp(top):
-            if top == token.lexeme:
+        if isTerminal(top):
+            if top == token.type:
                 prodStack.pop()
                 token = lexA.nextToken()
-                # print("\nnewToken",token)
+                print("\nnewToken",token)
             else:
                 #skipErrors()
                 token = lex.nextToken()
                 error = True
                 break
         else:
-            tableEntry, deriviation = getTableReversedRHS(top,token.lexeme,deriviation)
+            tableEntry, deriviation = getTableReversedRHS(top,token.type,deriviation)
             if tableEntry != "-1":
                 prodStack.pop()
                 if tableEntry != "&epsilon ":
