@@ -26,7 +26,7 @@ def getTableReversedRHS(row,col,PrevDeriv):
         if rhs == "nan":
             rhs = 0  # 0: cell is empty
         else:
-            newDeriv = derivationBuilder(rhs,PrevDeriv)
+            newDeriv = derivationBuilder(clearDerivation(rhs),PrevDeriv)
             arrowIndex = rhs.index("→ ") + 2
             trucatedRhs = rhs[arrowIndex:]
             rhs = reverseSentence(trucatedRhs) + " "
@@ -39,22 +39,35 @@ def reverseSentence(s):
     reversedList = reversed(tempList)
     return " ".join(reversedList)
 
+def clearDerivation(unlearDerivation):
+    clearDeri = ""
+    list = unlearDerivation.split(" ")
+    for e in list:
+        if e in LexemeDic.values():
+            for key, value in LexemeDic.items():
+                if e == value:
+                    e = key
+        clearDeri += e + " "
+    return clearDeri
+
 def derivationBuilder(s, PrevDeriv):
     lhs, rhs = s.split("→")
     if rhs.strip() == "&epsilon":
         rhs = ''
-    PrevDeriv = PrevDeriv.replace(lhs.strip(),rhs.strip(),1)
-    # newStr = PrevDeriv.replace(" ", "")
-    newStr = PrevDeriv
+    newStr = PrevDeriv.replace(lhs.strip(),rhs.strip(),1)
     return newStr
-
 
 def parse(lexA):
     prodStack.append("START")
     prodStack.append("PROG")
     token = lexA.nextToken()
+    while token.type == "inlinecmt" or token.type == "blockcmt":
+        token = lexA.nextToken()
     error = False
     deriviation = "PROG"
+    deriviationList = []
+    errorList = []
+    deriviationList.append(deriviation)
     print("START =>", deriviation)
 
     while prodStack[-1] != "START": # CHANGE TO START
@@ -63,18 +76,33 @@ def parse(lexA):
         if isTerminal(top):
             print(top," == ", token.type,"?", top == token.type)
             if top == token.type:
+                print("\n")
+                print(prodStack)
                 deleted = prodStack.pop()
                 print(deleted, " deleted ------")
+                print(prodStack)
                 token = lexA.nextToken()
+                while token.type == "inlinecmt" or token.type == "blockcmt":
+                    token = lexA.nextToken()
                 # print("\nnewToken",token)
             else:
                 #skipErrors()
-                token = lex.nextToken()
+                while token.type == "inlinecmt" or token.type == "blockcmt":
+                    token = lexA.nextToken()
                 error = True
                 break
         else:
             tableEntry, deriviation = getTableReversedRHS(top,token.type,deriviation)
             print("\nSTART =>", deriviation)
+            deriviationList.append(deriviation)
+            if (tableEntry == "0"):
+                print("\n--------------------------------")
+                print("Error encoundered in the grammar")
+                print("token: ", token)
+                print("current stack: ", prodStack)
+                errorList.append("syntax error at: " + str(token.location))
+                print("--------------------------------")
+                break
             if tableEntry != "-1":
                 prodStack.pop()
                 if tableEntry != "&epsilon ":
@@ -87,25 +115,8 @@ def parse(lexA):
                 break
 
     if (prodStack[-1] != "START") or (error):
-        return False
+        return False, deriviationList, errorList
     else:
-        return True
-
-# print(parse())
-# print(reverseSentence("EXPR REPTAPARAMS1"))
-
-# TO BE DELETED -----------------------------------------------------
-directoryName = "Test" # set the source folder
-directory = os.listdir(directoryName)
-for file in directory:
-    filename = os.fsdecode(file)
-    if file.endswith(".src"): # go through all .src files
-        SourceFileName = filename[0:-4]
-        src = open(directoryName + "/" + SourceFileName + ".src", 'r')  # reading
-        outlextokens = open("Output/" + SourceFileName + ".outlextokens", 'w')  # tokens
-        outlexerrors = open("Output/" + SourceFileName + ".outlexerrors", 'w')  # errors
-        lex = Lex(src)
-        print(parse(lex))
-# ---------------------------------------------------------------------
+        return True, deriviationList, errorList
 
 

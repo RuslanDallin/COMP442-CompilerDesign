@@ -31,6 +31,7 @@ def getTableReversedRHS(row,col,PrevDeriv):
             arrowIndex = rhs.index("→ ") + 2
             trucatedRhs = rhs[arrowIndex:]
             rhs = reverseSentence(trucatedRhs) + " "
+    print("[row: ", row, "] - [col (token): ", col, "] - [result: ", rhs, "] - [Terminal:", isTerminalTemp(col), "]")
     return str(rhs), newDeriv
 
 def reverseSentence(s):
@@ -44,7 +45,6 @@ def derivationBuilder(s, PrevDeriv):
         rhs = ''
     PrevDeriv = PrevDeriv.replace(lhs.strip(),rhs.strip(),1)
     newStr = PrevDeriv.replace(" ", "")
-    print("START =>", newStr)
     return newStr
 
 # def derivationBuilder(deletedStack, reversedStack):
@@ -65,6 +65,7 @@ def parse(lexA):
     token = lexA.nextToken()
     error = False
     deriviation = "E"
+    print("\nSTART =>", deriviation)
 
     while prodStack[-1] != "START": # CHANGE TO START
         # print(prodStack)
@@ -81,6 +82,7 @@ def parse(lexA):
                 break
         else:
             tableEntry, deriviation = getTableReversedRHS(top,token.lexeme,deriviation)
+            print("\nSTART =>", deriviation)
             if tableEntry != "-1":
                 prodStack.pop()
                 if tableEntry != "&epsilon ":
