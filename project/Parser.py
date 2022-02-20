@@ -19,18 +19,19 @@ def isTerminal(s):
         #TO BE DELELED
 
 def getTableReversedRHS(row,col,PrevDeriv):
-    print("row: ", row,", col: ", col)
-    rhs= -1  # -1 not found - invalid transition
+    rhs= -1  # -1: no column match
     newDeriv = PrevDeriv
     if col in ParseTable.columns:
         rhs = str(ParseTable[col][row])
         if rhs == "nan":
-            rhs = 0  # 0 not in rows 0 shouldn't happen
+            rhs = 0  # 0: cell is empty
         else:
             newDeriv = derivationBuilder(rhs,PrevDeriv)
             arrowIndex = rhs.index("→ ") + 2
             trucatedRhs = rhs[arrowIndex:]
             rhs = reverseSentence(trucatedRhs) + " "
+
+    print("[row: ", row,"] - [col (token): ", col,"] - [result: ", rhs, "] - [Terminal:", isTerminal(col),"]")
     return str(rhs), newDeriv
 
 def reverseSentence(s):
@@ -45,7 +46,6 @@ def derivationBuilder(s, PrevDeriv):
     PrevDeriv = PrevDeriv.replace(lhs.strip(),rhs.strip(),1)
     # newStr = PrevDeriv.replace(" ", "")
     newStr = PrevDeriv
-    # print("START =>", newStr)
     return newStr
 
 
@@ -55,15 +55,18 @@ def parse(lexA):
     token = lexA.nextToken()
     error = False
     deriviation = "PROG"
+    print("START =>", deriviation)
 
     while prodStack[-1] != "START": # CHANGE TO START
-        print(prodStack)
+        # print(prodStack)
         top = prodStack[-1]
         if isTerminal(top):
+            print(top," == ", token.type,"?", top == token.type)
             if top == token.type:
-                prodStack.pop()
+                deleted = prodStack.pop()
+                print(deleted, " deleted ------")
                 token = lexA.nextToken()
-                print("\nnewToken",token)
+                # print("\nnewToken",token)
             else:
                 #skipErrors()
                 token = lex.nextToken()
@@ -71,6 +74,7 @@ def parse(lexA):
                 break
         else:
             tableEntry, deriviation = getTableReversedRHS(top,token.type,deriviation)
+            print("\nSTART =>", deriviation)
             if tableEntry != "-1":
                 prodStack.pop()
                 if tableEntry != "&epsilon ":
