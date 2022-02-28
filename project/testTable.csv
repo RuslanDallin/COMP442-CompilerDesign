@@ -1,6 +1,0 @@
-TT,0,1,(,),+,*,eof
-E,E → T E',E → T E',E → T E',,,,
-E',,,,E' →  &epsilon,E' →  + T E',,E' →  &epsilon
-T,T→  F T',T→  F T',T→  F T',,,,
-T',,,,T' →  &epsilon,T' →  &epsilon,T' →  * F T',T' →  &epsilon
-F,F→  0,F→  1,F→  ( E ),,,,

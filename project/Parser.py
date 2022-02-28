@@ -3,20 +3,13 @@ import pandas as pd
 from LexicalAnalyzer import *
 
 
-# ParseTable = pd.read_csv("testTable.csv")
 ParseTable = pd.read_csv("ParsingTable.csv")
 ParseTable.set_index("TT", inplace=True)
 prodStack = []
-deletedStack = []
 
 
 def isTerminal(s):
     return (s in LexemeDic.values()) or (s in reservedWords) or (s == "id")
-
-        #TO BE DELELED
-# def isTerminalTemp(s):
-#     return s in ['0', '1', '(', ")", "+", "*", "eof"]
-        #TO BE DELELED
 
 def getTableReversedRHS(row,col,PrevDeriv):
     rhs= -1  # -1: no column match
@@ -30,8 +23,12 @@ def getTableReversedRHS(row,col,PrevDeriv):
             arrowIndex = rhs.index("→ ") + 2
             trucatedRhs = rhs[arrowIndex:]
             rhs = reverseSentence(trucatedRhs) + " "
-
-    print("[row: ", row,"] - [col (token): ", col,"] - [result: ", rhs, "] - [Terminal:", isTerminal(col),"]")
+    if rhs == -1:
+        cols = ParseTable.columns
+        for c in cols:
+            value = ParseTable[c][row]
+            if str(value) != "nan":
+                print(row,",", c, " => ", value)
     return str(rhs), newDeriv
 
 def reverseSentence(s):
@@ -68,19 +65,12 @@ def parse(lexA):
     deriviationList = []
     errorList = []
     deriviationList.append(deriviation)
-    print("START =>", deriviation)
 
-    while prodStack[-1] != "START": # CHANGE TO START
-        # print(prodStack)
+    while prodStack[-1] != "START":
         top = prodStack[-1]
         if isTerminal(top):
-            print(top," == ", token.type,"?", top == token.type)
             if top == token.type:
-                print("\n")
-                print(prodStack)
                 deleted = prodStack.pop()
-                print(deleted, " deleted ------")
-                print(prodStack)
                 token = lexA.nextToken()
                 while token.type == "inlinecmt" or token.type == "blockcmt":
                     token = lexA.nextToken()
@@ -93,7 +83,6 @@ def parse(lexA):
                 break
         else:
             tableEntry, deriviation = getTableReversedRHS(top,token.type,deriviation)
-            print("\nSTART =>", deriviation)
             deriviationList.append(deriviation)
             if (tableEntry == "0"):
                 print("\n--------------------------------")
@@ -115,6 +104,13 @@ def parse(lexA):
                 break
 
     if (prodStack[-1] != "START") or (error):
+        print("\n--------------------------------")
+        print("Ended on ")
+        print("token: ", token)
+        print("current stack: ", prodStack)
+        print("Col: ", top, "row: ", token.type, " tableEntry: ", tableEntry)
+        errorList.append("syntax error at: " + str(token.location))
+        print("--------------------------------")
         return False, deriviationList, errorList
     else:
         return True, deriviationList, errorList

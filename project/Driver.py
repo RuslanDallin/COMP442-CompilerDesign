@@ -46,6 +46,7 @@ def parserDriver():
             src = open(directoryName + "/" + SourceFileName + ".src", 'r')  # reading
             outderivation = open("Output/" + SourceFileName + ".outderivation", 'w')  # tokens
             outsyntaxerrors = open("Output/" + SourceFileName + ".outsyntaxerrors", 'w')  # errors
+            print("\n\n********* %s *********" % (SourceFileName))
             lex = Lex(src)
             parseCheck, deriviations, errors = parse(lex)
             for deriv in deriviations:
