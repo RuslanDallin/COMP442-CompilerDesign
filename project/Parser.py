@@ -5,6 +5,9 @@ from LexicalAnalyzer import *
 
 ParseTable = pd.read_csv("ParsingTable.csv")
 ParseTable.set_index("TT", inplace=True)
+FFTable = pd.read_csv("FirstFollowSets.csv")
+FFTable.set_index("nonterminal", inplace=True)
+
 prodStack = []
 
 
@@ -58,13 +61,28 @@ def derivationBuilder(newTransition, PrevDeriv):
     newStr = PrevDeriv.replace(lhs.strip(),rhs.strip(),1)
     return newStr
 
+def getFirstFollowInfo(token):
+    isNullable = False
+    isEndable = False
+    firstSet = []
+    followSet = []
+
+    if token in FFTable.index.values: # valid nonterminal
+        if FFTable["nullable"][token] == "yes":
+            isNullable = True
+        if FFTable["endable"][token] == "yes":
+            isEndable = True
+        firstSet = FFTable["first set"][token].split(" ")
+        followSet = FFTable["follow set"][token].split(" ")
+    return firstSet, followSet, isNullable, isEndable
+
 def parse(lexA):
     prodStack.append("START")
     prodStack.append("PROG")
     token = lexA.nextToken()
     while token.type == "inlinecmt" or token.type == "blockcmt":
         token = lexA.nextToken()
-    error = False
+    success = True
     deriviation = "PROG"
     progDerivation = []
     errorList = []
@@ -82,22 +100,35 @@ def parse(lexA):
                     token = lexA.nextToken()
                 # print("\nnewToken",token)
             else:
-                #skipErrors()
                 while token.type == "inlinecmt" or token.type == "blockcmt":
                     token = lexA.nextToken()
-                error = True
+                # ------ SKIP ERROR --------
+                print("1syntax error at ", token.location)
+                firstSet, followSet, isNullable, isEndable = getFirstFollowInfo(top)
+                if token.type == "eof" or token.type in followSet:
+                    prodStack.pop()
+                else:
+                    while (token.type not in firstSet) or (isNullable and token.type not in followSet):
+                        firstSet, followSet, isNullable, isEndable = getFirstFollowInfo(top)
+                        token = lexA.nextToken()
+                # --------------------------
+                success = False
                 break
         else:
             tableEntry, deriviation = getTableReversedRHS(top,token,deriviation)
             progDerivation.append(deriviation)
             if (tableEntry == "0"):
-                print("\n--------------------------------")
-                print("Error encoundered in the grammar")
-                print("token: ", token)
-                print("current stack: ", prodStack)
-                errorList.append("syntax error at: " + str(token.location))
-                print("--------------------------------")
-                break
+                # ------ SKIP ERROR --------
+                print("2syntax error at ", token.location)
+                firstSet, followSet, isNullable, isEndable = getFirstFollowInfo(top)
+                if token.type == "eof" or token.type in followSet:
+                    prodStack.pop()
+                else:
+                    while (token.type not in firstSet) or (isNullable and token.type not in followSet):
+                        firstSet, followSet, isNullable, isEndable = getFirstFollowInfo(top)
+                        token = lexA.nextToken()
+                # --------------------------
+                success = False
             if tableEntry != "-1":
                 prodStack.pop()
                 if tableEntry != "&epsilon ":
@@ -106,10 +137,9 @@ def parse(lexA):
                         if word != '':
                             prodStack.append(word)
             else:
-                error = True
-                break
+                print(""""""" HEre """"""")
 
-    if (prodStack[-1] != "START") or (error):
+    if (prodStack[-1] != "START") or (success == False):
         print("\n--------------------------------")
         print("Ended on ")
         print("token: ", token)

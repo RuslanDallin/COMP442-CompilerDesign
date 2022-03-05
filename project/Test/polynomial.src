@@ -1,5 +1,5 @@
 // ====== struct declarations ====== //
-struct POLYNOMIAL {
+struct  {
 	public func evaluate(x: float) -> float;
 };
 
