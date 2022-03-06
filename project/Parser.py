@@ -67,6 +67,9 @@ def getFirstFollowInfo(token):
     firstSet = []
     followSet = []
 
+    if isTerminal(token):
+        firstSet.append(token)
+
     if token in FFTable.index.values: # valid nonterminal
         if FFTable["nullable"][token] == "yes":
             isNullable = True
@@ -108,8 +111,7 @@ def parse(lexA):
                 if token.type == "eof" or token.type in followSet:
                     prodStack.pop()
                 else:
-                    while (token.type not in firstSet) or (isNullable and token.type not in followSet):
-                        firstSet, followSet, isNullable, isEndable = getFirstFollowInfo(top)
+                    while (token.type not in firstSet) and (isNullable and token.type not in followSet):
                         token = lexA.nextToken()
                 # --------------------------
                 success = False
@@ -117,19 +119,7 @@ def parse(lexA):
         else:
             tableEntry, deriviation = getTableReversedRHS(top,token,deriviation)
             progDerivation.append(deriviation)
-            if (tableEntry == "0"):
-                # ------ SKIP ERROR --------
-                print("2syntax error at ", token.location)
-                firstSet, followSet, isNullable, isEndable = getFirstFollowInfo(top)
-                if token.type == "eof" or token.type in followSet:
-                    prodStack.pop()
-                else:
-                    while (token.type not in firstSet) or (isNullable and token.type not in followSet):
-                        firstSet, followSet, isNullable, isEndable = getFirstFollowInfo(top)
-                        token = lexA.nextToken()
-                # --------------------------
-                success = False
-            if tableEntry != "-1":
+            if tableEntry != "0":
                 prodStack.pop()
                 if tableEntry != "&epsilon ":
                     seperatedList = tableEntry.split(' ')
@@ -137,7 +127,16 @@ def parse(lexA):
                         if word != '':
                             prodStack.append(word)
             else:
-                print(""""""" HEre """"""")
+                # ------ SKIP ERROR --------
+                print("2syntax error at ", token.location)
+                firstSet, followSet, isNullable, isEndable = getFirstFollowInfo(top)
+                if token.type == "eof" or token.type in followSet:
+                    prodStack.pop()
+                else:
+                    while (token.type not in firstSet) and (isNullable and token.type not in followSet):
+                        token = lexA.nextToken()
+                # --------------------------
+                success = False
 
     if (prodStack[-1] != "START") or (success == False):
         print("\n--------------------------------")
