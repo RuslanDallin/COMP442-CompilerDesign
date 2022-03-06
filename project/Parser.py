@@ -108,9 +108,10 @@ def parse(lexA):
                 if token.lexeme == "eof" or token.lexeme in followSet:
                     prodStack.pop()
                 else:
-                    while (token.lexeme not in firstSet) or (isNullable and token.lexeme not in followSet):
-                        firstSet, followSet, isNullable, isEndable = getFirstFollowInfo(top)
+                    while True:
                         token = lexA.nextToken()
+                        if (token.lexeme in firstSet) or (isNullable and token.lexeme in followSet):
+                            break
                 # --------------------------
                 success = False
                 break
@@ -132,8 +133,10 @@ def parse(lexA):
                 if token.lexeme == "eof" or token.lexeme in followSet:
                     prodStack.pop()
                 else:
-                    while (token.lexeme not in firstSet) and (isNullable and token.lexeme not in followSet):
+                    while True:
                         token = lexA.nextToken()
+                        if (token.lexeme in firstSet) or (isNullable and token.lexeme in followSet):
+                            break
                 # --------------------------
                 success = False
 
