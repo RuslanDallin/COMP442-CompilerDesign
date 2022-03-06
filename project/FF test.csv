@@ -1,0 +1,6 @@
+nonterminal,first set,follow set,nullable,endable
+E,zero one opar,cpar,no,yes
+EE,+,cpar,yes,yes
+T,zero one opar,cpar +,no,yes
+TT,*,cpar +,yes,yes
+F,zero one opar,cpar * +,no,yes
