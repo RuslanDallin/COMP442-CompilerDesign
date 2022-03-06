@@ -1,15 +1,15 @@
 import pandas as pd
 
-table = pd.read_csv("Table.csv")
-table.set_index("State", inplace=True)
+transTable = pd.read_csv("TransitionTable.csv")
+transTable.set_index("State", inplace=True)
 
-LexemeDic = {"==": "eq", "+": "plus", "(": "openpar", ";": "semi", "<>": "noteq", "-": "minus",
-             "&": "and", ")": "closepar", ",": "comma", "<": "lt", "*": "multi", "!": "not", "{": "opencubr",
-             ".": "dot", ">": "gt", "/": "div", "}": "closecubr", ":": "colon", "<=": "leq", "=": "assign",
-             "[": "opensqbr", "::": "coloncplon", ">=": "geg", "]": "closesqbr", "->": "arrow"}
+LexemeDic = {"==": "eq", "+": "plus", "(": "lpar", ";": "semi", "<>": "neq", "-": "minus",
+             "&": "and", ")": "rpar", ",": "comma", "<": "lt", "*": "mult", "!": "not", "{": "lcurbr",
+             ".": "dot", ">": "gt", "/": "div", "}": "rcurbr", ":": "colon", "<=": "leq", "=": "assign",
+             "[": "lsqbr", "::": "coloncplon", ">=": "geq", "]": "rsqbr", "->": "arrow", "|":"or"}
 
-reservedWords = ["if", "then", "else", "integer", "float", "void", "public", "private", "func", "var",
-                 "struct", "while", "func", "read", "write", "return", "self", "inherits", "let", "impl"]
+reservedWords = ["if", "then", "else", "intnum", "floatnum", "void", "public", "private", "func", "var","struct",
+                 "while", "func", "read", "write", "return", "self", "inherits", "let", "impl", "integer", "float"]
 
 class Token:
     def __init__(self, label, token, location):
@@ -46,11 +46,11 @@ def typeOfChar(state, c):
 def getInfo(state, c):
     tempState = -1  # char not supported
     tempLabel = -1
-    if c in table.columns:
-        tempState = str(table[c][state])
+    if c in transTable.columns:
+        tempState = str(transTable[c][state])
         if tempState == "nan":
             tempState = 0  # no transations
-        tempLabel = str(table["final"][state])
+        tempLabel = str(transTable["final"][state])
         if tempLabel == "nan":
             tempLabel = 0  # not a final state
     return str(tempState), str(tempLabel)
@@ -65,7 +65,7 @@ def getTokenType(label, token):
 
 
 def nextLabel(state):
-    tempLabel = str(table["final"][state])
+    tempLabel = str(transTable["final"][state])
     if tempLabel == "nan":
         tempLabel = 0  # not a final state
     return str(tempLabel)
@@ -97,6 +97,7 @@ class Lex:
                 if tokenReady:
                     token = Token(nextLabel(nextState), lexeme, self.lineCounter - 1)
                     continue
+                token = Token("eof", "eof", self.lineCounter)
                 break
 
             if char == '\n' and tokenReady:  # if we reach the end of a line and we already have a valid token

@@ -1,16 +1,16 @@
-0.456 // float
+0.456 // floatnum
 
-1.567e032 // float + integer
+1.567e032 // floatnum + intnum
 
-1.567e-345 // float
+1.567e-345 // floatnum
 
-.567 // dot + integer
+.567 // dot + intnum
 
-567 // integer
+567 // intnum
 
-0.0 // float
+0.0 // floatnum
 
-456.0 // float
+456.0 // floatnum
 
 
 0.456 1.567e032 1.567e-345 .567 567 0.0 456.0 //
