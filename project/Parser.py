@@ -106,16 +106,17 @@ def parse(lexA):
                 while token.type == "inlinecmt" or token.type == "blockcmt":
                     token = lexA.nextToken()
                 # ------ SKIP ERROR --------
-                print("1syntax error at ", token.location)
+                errorList.append("syntax error at: " + str(token.location))
                 firstSet, followSet, isNullable, isEndable = getFirstFollowInfo(top)
                 if token.type == "eof" or token.type in followSet:
                     prodStack.pop()
                 else:
-                    while (token.type not in firstSet) and (isNullable and token.type not in followSet):
+                    while True:
                         token = lexA.nextToken()
+                        if (token.type in firstSet) or (isNullable and token.type in followSet):
+                            break
                 # --------------------------
                 success = False
-                break
         else:
             tableEntry, deriviation = getTableReversedRHS(top,token,deriviation)
             progDerivation.append(deriviation)
@@ -128,24 +129,19 @@ def parse(lexA):
                             prodStack.append(word)
             else:
                 # ------ SKIP ERROR --------
-                print("2syntax error at ", token.location)
+                errorList.append("syntax error at: " + str(token.location))
                 firstSet, followSet, isNullable, isEndable = getFirstFollowInfo(top)
                 if token.type == "eof" or token.type in followSet:
                     prodStack.pop()
                 else:
-                    while (token.type not in firstSet) and (isNullable and token.type not in followSet):
+                    while True:
                         token = lexA.nextToken()
+                        if (token.type in firstSet) or (isNullable and token.type in followSet):
+                            break
                 # --------------------------
                 success = False
 
     if (prodStack[-1] != "START") or (success == False):
-        print("\n--------------------------------")
-        print("Ended on ")
-        print("token: ", token)
-        print("current stack: ", prodStack)
-        print("Col: ", top, "row: ", token.type, " tableEntry: ", tableEntry)
-        errorList.append("syntax error at: " + str(token.location))
-        print("--------------------------------")
         return False, progDerivation, errorList
     else:
         return True, progDerivation, errorList
