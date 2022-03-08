@@ -125,7 +125,7 @@ def parse(lexA):
                 while token.type == "inlinecmt" or token.type == "blockcmt":
                     token = lexA.nextToken()
                 # ------ SKIP ERROR --------
-                print("1syntax error at: " + str(token.location))
+                print("syntax error at: " + str(token.location))
                 errorList.append("syntax error at: " + str(token.location))
                 firstSet, followSet, isNullable, isEndable = getFirstFollowInfo(top)
                 if token.type == "eof" or token.type in followSet:
@@ -139,18 +139,6 @@ def parse(lexA):
                 success = False
         else:
             if top[0] == '/':
-                # semanticStack.append(prodStack.pop())
-                # print(semanticStack)
-
-                # if semanticStack[-1] == "/progSubtree/":
-                #     poped = semanticStack.pop
-                #     while poped != '/eNode/':
-                #         poped = semanticStack.pop
-                #
-                #
-                #     test = progNode()
-                #     for pre, fill, node in RenderTree(test):
-                #         print("%s%s" % (pre, node.name))
                 continue
 
 
@@ -162,7 +150,7 @@ def parse(lexA):
 
             else:
                 # ------ SKIP ERROR --------
-                print("2syntax error at: " + str(token.location))
+                print("syntax error at: " + str(token.location))
                 errorList.append("syntax error at: " + str(token.location))
                 firstSet, followSet, isNullable, isEndable = getFirstFollowInfo(top)
                 if token.type == "eof" or token.type in followSet:
