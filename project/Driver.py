@@ -57,4 +57,5 @@ def parserDriver():
             print(parseCheck)
     # ---------------------------------------------------------------------
 
+lexDriver()
 parserDriver()

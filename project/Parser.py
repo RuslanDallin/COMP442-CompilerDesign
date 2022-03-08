@@ -1,15 +1,16 @@
 import os
 import pandas as pd
 from LexicalAnalyzer import *
+from Nodes import *
 
 
-ParseTable = pd.read_csv("ParsingTable.csv")
+ParseTable = pd.read_csv("AttributeParsingTable.csv")
 ParseTable.set_index("TT", inplace=True)
 FFTable = pd.read_csv("FirstFollowSets.csv")
 FFTable.set_index("nonterminal", inplace=True)
 
 prodStack = []
-
+semanticStack = []
 
 def isTerminal(s):
     return (s in LexemeDic.values()) or (s in reservedWords) or (s == "id")
@@ -79,6 +80,25 @@ def getFirstFollowInfo(token):
         followSet = FFTable["follow set"][token].split(" ")
     return firstSet, followSet, isNullable, isEndable
 
+def updateProdStack (prodStack, tableEntry):
+    prodStack.pop()
+    if tableEntry != "&epsilon ":
+        seperatedList = tableEntry.split(' ')
+        for word in seperatedList:
+            if word != '':
+                prodStack.append(word)
+
+def buildAST():
+    popped = semanticStack.pop()
+    if popped != "/progSubtree/":
+        return "Error"
+    while popped != "/eNode/":
+        popped = semanticStack.pop()
+        if popped == "/implSubtree/":
+            while popped != "/eNode/":
+                popped = semanticStack.pop()
+            implDefNode()
+
 def parse(lexA):
     prodStack.append("START")
     prodStack.append("PROG")
@@ -96,8 +116,6 @@ def parse(lexA):
         if isTerminal(top):
             if top == token.type:
                 deleted = prodStack.pop()
-                if deleted == "id": # replaced ID with the actual lexme in the derivation
-                    deriviation = deriviation.replace("id", token.lexeme, 1)
                 token = lexA.nextToken()
                 while token.type == "inlinecmt" or token.type == "blockcmt":
                     token = lexA.nextToken()
@@ -106,6 +124,7 @@ def parse(lexA):
                 while token.type == "inlinecmt" or token.type == "blockcmt":
                     token = lexA.nextToken()
                 # ------ SKIP ERROR --------
+                print("1syntax error at: " + str(token.location))
                 errorList.append("syntax error at: " + str(token.location))
                 firstSet, followSet, isNullable, isEndable = getFirstFollowInfo(top)
                 if token.type == "eof" or token.type in followSet:
@@ -118,17 +137,31 @@ def parse(lexA):
                 # --------------------------
                 success = False
         else:
+            if top[0] == '/':
+                semanticStack.append(prodStack.pop())
+                print(semanticStack)
+
+                # if semanticStack[-1] == "/progSubtree/":
+                #     poped = semanticStack.pop
+                #     while poped != '/eNode/':
+                #         poped = semanticStack.pop
+                #
+                #
+                #     test = progNode()
+                #     for pre, fill, node in RenderTree(test):
+                #         print("%s%s" % (pre, node.name))
+                continue
+
+
             tableEntry, deriviation = getTableReversedRHS(top,token,deriviation)
             progDerivation.append(deriviation)
+
             if tableEntry != "0":
-                prodStack.pop()
-                if tableEntry != "&epsilon ":
-                    seperatedList = tableEntry.split(' ')
-                    for word in seperatedList:
-                        if word != '':
-                            prodStack.append(word)
+                updateProdStack(prodStack, tableEntry) # adds new RHS to the stack
+
             else:
                 # ------ SKIP ERROR --------
+                print("2syntax error at: " + str(token.location))
                 errorList.append("syntax error at: " + str(token.location))
                 firstSet, followSet, isNullable, isEndable = getFirstFollowInfo(top)
                 if token.type == "eof" or token.type in followSet:
