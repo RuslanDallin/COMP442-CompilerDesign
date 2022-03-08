@@ -4,7 +4,7 @@ from LexicalAnalyzer import *
 from Nodes import *
 
 
-ParseTable = pd.read_csv("AttributeParsingTable.csv")
+ParseTable = pd.read_csv("ParsingTable.csv")
 ParseTable.set_index("TT", inplace=True)
 FFTable = pd.read_csv("FirstFollowSets.csv")
 FFTable.set_index("nonterminal", inplace=True)
@@ -88,16 +88,16 @@ def updateProdStack (prodStack, tableEntry):
             if word != '':
                 prodStack.append(word)
 
-def buildAST():
-    popped = semanticStack.pop()
-    if popped != "/progSubtree/":
-        return "Error"
-    while popped != "/eNode/":
-        popped = semanticStack.pop()
-        if popped == "/implSubtree/":
-            while popped != "/eNode/":
-                popped = semanticStack.pop()
-            implDefNode()
+# def buildAST():
+#     popped = semanticStack.pop()
+#     if popped != "/progSubtree/":
+#         return "Error"
+#     while popped != "/eNode/":
+#         popped = semanticStack.pop()
+#         if popped == "/implSubtree/":
+#             while popped != "/eNode/":
+#                 popped = semanticStack.pop()
+#             implDefNode()
 
 def parse(lexA):
     prodStack.append("START")
@@ -112,6 +112,7 @@ def parse(lexA):
     progDerivation.append(deriviation)
 
     while prodStack[-1] != "START":
+        print(deriviation)
         top = prodStack[-1]
         if isTerminal(top):
             if top == token.type:
@@ -138,8 +139,8 @@ def parse(lexA):
                 success = False
         else:
             if top[0] == '/':
-                semanticStack.append(prodStack.pop())
-                print(semanticStack)
+                # semanticStack.append(prodStack.pop())
+                # print(semanticStack)
 
                 # if semanticStack[-1] == "/progSubtree/":
                 #     poped = semanticStack.pop
