@@ -1,7 +1,9 @@
 import os
 import pandas as pd
+from anytree import RenderTree
+
 from LexicalAnalyzer import *
-from Nodes import *
+import Nodes
 
 
 ParseTable = pd.read_csv("AttributeParsingTable.csv")
@@ -89,15 +91,34 @@ def updateProdStack (prodStack, tableEntry):
                 prodStack.append(word)
 
 def buildAST():
-    popped = semanticStack.pop()
-    if popped != "/progSubtree/":
-        return "Error"
-    while popped != "/eNode/":
+    # popped = semanticStack.pop()
+    # if popped != "/progSubtree/":
+    #     return "Error"
+    # while popped != "/eNode/":
+    #     popped = semanticStack.pop()
+    #     if popped == "/implSubtree/":
+    #         while popped != "/eNode/":
+    #             popped = semanticStack.pop()
+    #         implDefNode()
+    pass
+
+def buildASTBuilder():
+
+    if semanticStack[-1].endswith("Node/"):
         popped = semanticStack.pop()
-        if popped == "/implSubtree/":
-            while popped != "/eNode/":
-                popped = semanticStack.pop()
-            implDefNode()
+        index = popped.index("Node")
+        prefix = popped[1:index]
+        test = getattr(Nodes, prefix)('my0', 0, 0)
+
+
+    if semanticStack[-1].endswith("Subtree/"):
+        popped = semanticStack.pop()
+        while popped != "/eNode/":
+            popped = semanticStack.pop()
+
+        print(semanticStack[-1])
+
+
 
 def parse(lexA):
     prodStack.append("START")
@@ -116,6 +137,7 @@ def parse(lexA):
         if isTerminal(top):
             if top == token.type:
                 deleted = prodStack.pop()
+                previous = token
                 token = lexA.nextToken()
                 while token.type == "inlinecmt" or token.type == "blockcmt":
                     token = lexA.nextToken()
@@ -137,9 +159,27 @@ def parse(lexA):
                 # --------------------------
                 success = False
         else:
-            if top[0] == '/':
-                semanticStack.append(prodStack.pop())
+            if top[-1] == '/':
+                popped = prodStack.pop()
+
+                if popped == "/e/":
+                    semanticStack.append(popped)
+
+                if popped.endswith("Node/"):
+                    semanticStack.append(getattr(Nodes, popped[1:-1])(previous))
+
+                if popped.endswith("Subtree/"):
+                    poppedNode = semanticStack.pop()
+                    children = ()
+                    while poppedNode != '/e/':
+                        children += (poppedNode,)
+                        poppedNode = semanticStack.pop()
+                    semanticStack.append(getattr(Nodes, popped[1:-1])(tuple(reversed(children))))
+
+
                 print(semanticStack)
+
+
 
                 # if semanticStack[-1] == "/progSubtree/":
                 #     poped = semanticStack.pop
@@ -177,6 +217,8 @@ def parse(lexA):
     if (prodStack[-1] != "START") or (success == False):
         return False, progDerivation, errorList
     else:
+        for pre, fill, node in RenderTree(semanticStack.pop()):
+            print("%s%s" % (pre, node.name))
         return True, progDerivation, errorList
 
 

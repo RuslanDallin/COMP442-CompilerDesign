@@ -1,5 +1,5 @@
 from anytree import Node, RenderTree
-import test
+from LexicalAnalyzer import Token
 
 # class progNode(Node):
 #     def __init__(self, structDecl=None, implDef=None, funcDef=None):
@@ -17,83 +17,82 @@ import test
 #         if funcDef:
 #             self.funcDef = funcDef
 #             self.children += (funcDef,)
+#
 
-method_to_call = getattr(test, 'myNode')
-my0 = method_to_call('my0', 0, 0)
-print(my0)
+# my0 = getattr(test, 'myNode')('my0', 0, 0)
+# print(my0)
 
-class progNode(Node):
-    def __init__(self, *args):
+class progSubtree(Node):
+    def __init__(self, children=None):
         self.name = "prog"
+        if children:
+            self.children = children
 
-        if args:
-            self.children = args
-
-class implDefNode(Node):
-    def __init__(self, id, funcDef=None):
+class implDefSubtree(Node):
+    def __init__(self, children=None):
         self.name = "implDef"
-        self.id = id
-        self.children = (id,)
+        if children:
+            self.children = children
+        self.id = children[0]
+        self.funcDefList = []
+        for child in children[1:]:
+            self.funcDefList.append(child)
 
-        if funcDef:
-            self.funcDef = funcDef
-            self.children += (funcDef,)
+
+class funcDefSubtree(Node):
+    def __init__(self, children=None):
+        self.name = "funcDef"
+        if children:
+            self.children = children
 
 
-class varDeclNode(Node):
-    def __init__(self, type, id, dimList=None):
+class varDeclSubtree(Node):
+    def __init__(self, children=None):
          self.name = "varDecl"
-
-         self.type = type
-         self.id = id
-         self.children = type, id
-
-         if dimList:
-             self.dimList = dimList
-             self.children += (dimList,)
-
-    def __str__(self):
-        return "[%s, %s, %s]" % (self.name, self.type, self.id)
+         if children:
+             self.children = children
+         self.id = children[0]
+         self.type = children[1]
+         self.arraySizeList = []
+         for child in children[2:]:
+             self.arraySizeList.append(child)
 
 class typeNode(Node):
-    def __init__(self, type):
+    def __init__(self, token, type=None):
          self.name = "type"
+         self.token = token
          self.type = type
 
-    def __str__(self):
-        return "%s" % (self.type)
 
 class idNode(Node):
-    def __init__(self, id):
+    def __init__(self, token, id=None):
         self.name = "id"
+        self.token = token
         self.id = id
 
-    def __str__(self):
-        return "%s" % (self.id)
-
-class arraySizeNode(Node):
-    def __init__(self, *nums):
-        self.name = "arraySize"
-        if nums:
-            self.children = nums
-
-    def __str__(self):
-        return "[%s]" % (self.name)
 
 class numNode(Node):
     def __init__(self, int):
         self.name = "num"
         self.int = int
 
-    def __str__(self):
-        return "%s" % (self.int)
-#
+
+class arraySizeSubtree(Node):
+    def __init__(self, *nums):
+        self.name = "arraySize"
+        if nums:
+            self.children = nums
+
+
+
 #
 # idTest = idNode("POLYNOMIAL")
 # test = implDefNode(idTest)
 # idTest1 = idNode("testing")
 #
-# tempy = (test,idTest1)
+# tempy = ()
+# tempy += (test,)
+# tempy += (idTest1,)
 # prog1 = progNode(*tempy)
 #
 # print("")
