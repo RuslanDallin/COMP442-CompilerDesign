@@ -38,6 +38,11 @@ class implDefSubtree(Node):
         for child in children[1:]:
             self.funcDefList.append(child)
 
+class funcDefListSubtree(Node):
+    def __init__(self, children=None):
+        self.name = "funcDefList"
+        if children:
+            self.children = children
 
 class funcDefSubtree(Node):
     def __init__(self, children=None):

@@ -176,7 +176,7 @@ def parse(lexA):
                         poppedNode = semanticStack.pop()
                     semanticStack.append(getattr(Nodes, popped[1:-1])(tuple(reversed(children))))
 
-
+                # semanticStack.append(popped)
                 print(semanticStack)
 
 
