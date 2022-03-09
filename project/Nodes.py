@@ -138,9 +138,67 @@ class fparmListSubtree(Node):
 
 class funcBodySubtree(Node):
     def __init__(self, children=None):
-        self.name = "fparmList"
+        self.name = "funcBody"
         if children:
             self.children = children
+
+class assignSubtree(Node):
+    def __init__(self, children=None):
+        self.name = "assign"
+        if children:
+            self.children = children
+
+class dotSubtree(Node):
+    def __init__(self, children=None):
+        self.name = "dot"
+        if children:
+            self.children = children
+
+class indiceListSubtree(Node):
+    def __init__(self, children=None):
+        self.name = "indiceList"
+        if children:
+            self.children = children
+
+class varSubtree(Node):
+    def __init__(self, children=None):
+        self.name = "var"
+        if children:
+            self.children = children
+
+class aParamsSubtree(Node):
+    def __init__(self, children=None):
+        self.name = "aParams"
+        if children:
+            self.children = children
+
+class readSubtree(Node):
+    def __init__(self, children=None):
+        self.name = "read"
+        if children:
+            self.children = children
+
+class funCallSubtree(Node):
+    def __init__(self, children=None):
+        self.name = "funCall"
+        if children:
+            self.children = children
+
+class relOpSubtree(Node):
+    def __init__(self, children=None):
+        self.name = "relOp"
+        if children:
+            self.children = children
+
+class mulOpSubtree(Node):
+    def __init__(self, children=None):
+        self.name = "mulOp"
+        if children:
+            self.children = children
+
+
+
+
 
 class typeNode(Node):
     def __init__(self, token, type=None):
@@ -149,7 +207,13 @@ class typeNode(Node):
         self.type = token.lexeme
 
 
-class idNode(Node):
+class IdNode(Node):
+    def __init__(self, token, id=None):
+        self.name = "id"
+        self.token = token
+        self.id = token.lexeme
+
+class IdNode(Node):
     def __init__(self, token, id=None):
         self.name = "id"
         self.token = token
@@ -169,10 +233,16 @@ class visibilityNode(Node):
         self.token = token
         self.visibility = token.lexeme
 
+class floatNode(Node):
+    def __init__(self, token, visibility=None):
+        self.name = "float"
+        self.token = token
+        self.visibility = token.lexeme
+
 #
-# idTest = idNode("POLYNOMIAL")
+# idTest = IdNode("POLYNOMIAL")
 # test = implDefNode(idTest)
-# idTest1 = idNode("testing")
+# idTest1 = IdNode("testing")
 #
 # tempy = ()
 # tempy += (test,)
@@ -188,7 +258,7 @@ class visibilityNode(Node):
 #
 # stack = []
 # type = typeNode("V")
-# id = idNode("int")
+# id = IdNode("int")
 #
 # stack.append(type)
 # stack.append(id)
@@ -210,7 +280,7 @@ class visibilityNode(Node):
 # print("")
 #
 # type = typeNode("V")
-# id = idNode("int")
+# id = IdNode("int")
 #
 # int = numNode(2)
 # int2 = numNode(3)
