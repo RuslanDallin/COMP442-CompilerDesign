@@ -28,6 +28,39 @@ class progSubtree(Node):
         if children:
             self.children = children
 
+        self.structDecList = children[0]
+        self.implDefList = children[1]
+        self.funcDefList = children[2]
+
+
+
+class structDecListSubtree(Node):
+    def __init__(self, children=None):
+        self.name = "structDecList"
+        if children:
+            self.children = children
+
+        print(children)
+
+class implDefListSubtree(Node):
+    def __init__(self, children=None):
+        self.name = "implDefList"
+        if children:
+            self.children = children
+
+class funcDefListSubtree(Node):
+    def __init__(self, children=None):
+        self.name = "funcDefList"
+        if children:
+            self.children = children
+
+
+class structDecSubtree(Node):
+    def __init__(self, children=None):
+        self.name = "structDec"
+        if children:
+            self.children = children
+
 class implDefSubtree(Node):
     def __init__(self, children=None):
         self.name = "implDef"
@@ -50,37 +83,34 @@ class funcDefSubtree(Node):
         if children:
             self.children = children
 
+class funcDeclSubtree(Node):
+    def __init__(self, children=None):
+        self.name = "funcDecl"
+        if children:
+            self.children = children
+
+# class varDeclSubtree(Node):
+#     def __init__(self, children=None):
+#          self.name = "varDecl"
+#          if children:
+#              self.children = children
+#          self.id = children[0]
+#          self.type = children[1]
+#          self.arraySizeList = []
+#          for child in children[2:]:
+#              self.arraySizeList.append(child)
 
 class varDeclSubtree(Node):
     def __init__(self, children=None):
-         self.name = "varDecl"
-         if children:
-             self.children = children
-         self.id = children[0]
-         self.type = children[1]
-         self.arraySizeList = []
-         for child in children[2:]:
-             self.arraySizeList.append(child)
+        self.name = "varDecl"
+        if children:
+            self.children = children
 
-class typeNode(Node):
-    def __init__(self, token, type=None):
-         self.name = "type"
-         self.token = token
-         self.type = type
-
-
-class idNode(Node):
-    def __init__(self, token, id=None):
-        self.name = "id"
-        self.token = token
-        self.id = id
-
-
-class numNode(Node):
-    def __init__(self, int):
-        self.name = "num"
-        self.int = int
-
+class memberDeclSubtree(Node):
+    def __init__(self, children=None):
+        self.name = "memberDecl"
+        if children:
+            self.children = children
 
 class arraySizeSubtree(Node):
     def __init__(self, *nums):
@@ -88,7 +118,56 @@ class arraySizeSubtree(Node):
         if nums:
             self.children = nums
 
+class dimListSubtree(Node):
+    def __init__(self, children=None):
+        self.name = "dimList"
+        if children:
+            self.children = children
 
+class inherListSubtree(Node):
+    def __init__(self, children=None):
+        self.name = "inherList"
+        if children:
+            self.children = children
+
+class fparmListSubtree(Node):
+    def __init__(self, children=None):
+        self.name = "fparmList"
+        if children:
+            self.children = children
+
+class funcBodySubtree(Node):
+    def __init__(self, children=None):
+        self.name = "fparmList"
+        if children:
+            self.children = children
+
+class typeNode(Node):
+    def __init__(self, token, type=None):
+        self.name = "type"
+        self.token = token
+        self.type = token.lexeme
+
+
+class idNode(Node):
+    def __init__(self, token, id=None):
+        self.name = "id"
+        self.token = token
+        self.id = token.lexeme
+
+
+class numNode(Node):
+    def __init__(self, token, num=None):
+        self.name = "num"
+        self.token = token
+        self.num = token.lexeme
+
+
+class visibilityNode(Node):
+    def __init__(self, token, visibility=None):
+        self.name = "visibility"
+        self.token = token
+        self.visibility = token.lexeme
 
 #
 # idTest = idNode("POLYNOMIAL")

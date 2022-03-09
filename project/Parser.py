@@ -137,7 +137,7 @@ def parse(lexA):
         if isTerminal(top):
             if top == token.type:
                 deleted = prodStack.pop()
-                previous = token
+                previousToken = token
                 token = lexA.nextToken()
                 while token.type == "inlinecmt" or token.type == "blockcmt":
                     token = lexA.nextToken()
@@ -166,15 +166,45 @@ def parse(lexA):
                     semanticStack.append(popped)
 
                 if popped.endswith("Node/"):
-                    semanticStack.append(getattr(Nodes, popped[1:-1])(previous))
+                    newNode = getattr(Nodes, popped[1:-1])(previousToken)
+                    semanticStack.append(newNode)
+                    print(newNode.token)
 
                 if popped.endswith("Subtree/"):
                     poppedNode = semanticStack.pop()
-                    children = ()
-                    while poppedNode != '/e/':
-                        children += (poppedNode,)
-                        poppedNode = semanticStack.pop()
-                    semanticStack.append(getattr(Nodes, popped[1:-1])(tuple(reversed(children))))
+
+                    if popped == ("/progSubtree/"):
+                        structDecList = ()
+                        implDefList = ()
+                        funcDefList = ()
+                        while poppedNode != '/e/':
+                            if poppedNode.name == "structDec":
+                                structDecList += (poppedNode,)
+                            if poppedNode.name == "implDef":
+                                implDefList += (poppedNode,)
+                            if poppedNode.name == "funcDef":
+                                funcDefList += (poppedNode,)
+                            poppedNode = semanticStack.pop()
+
+                        structDecListNode = (getattr(Nodes, "structDecListSubtree")(tuple(reversed(structDecList))))
+                        implDefListNode = (getattr(Nodes, "implDefListSubtree")(tuple(reversed(implDefList))))
+                        funcDefListNode = (getattr(Nodes, "funcDefListSubtree")(tuple(reversed(funcDefList))))
+
+                        children = (structDecListNode,implDefListNode,funcDefListNode,)
+                        newNode = getattr(Nodes, popped[1:-1])(tuple(children))
+
+                        semanticStack.append(newNode)
+                        for pre, fill, node in RenderTree(newNode):
+                            print("%s%s" % (pre, node.name))
+                    else:
+                        children = ()
+                        while poppedNode != '/e/':
+                            children += (poppedNode,)
+                            poppedNode = semanticStack.pop()
+                        newNode = getattr(Nodes, popped[1:-1])(tuple(reversed(children)))
+                        semanticStack.append(newNode)
+                        for pre, fill, node in RenderTree(newNode):
+                            print("%s%s" % (pre, node.name))
 
                 # semanticStack.append(popped)
                 print(semanticStack)
@@ -217,8 +247,8 @@ def parse(lexA):
     if (prodStack[-1] != "START") or (success == False):
         return False, progDerivation, errorList
     else:
-        for pre, fill, node in RenderTree(semanticStack.pop()):
-            print("%s%s" % (pre, node.name))
+        # for pre, fill, node in RenderTree(semanticStack.pop()):
+        #     print("%s%s" % (pre, node.name))
         return True, progDerivation, errorList
 
 

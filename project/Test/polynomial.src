@@ -1,13 +1,22 @@
-impl POLYNOMIAL {
-  func first(x: float) -> float
-  {
-    return (0);
-  }
-  func second(x: float) -> float
-  {
-    return (0);
-  }
+/* sort the array */
+func bubbleSort(arr: integer[2][2], size: integer, size: integer[2]) -> void
+{
+  let f1: LINEAR;
+  let f2: QUADRATIC;
+  let counter: integer;
+  f1 = f1.build(2, 3.5);
+  f2 = f2.build(-2.0, 1.0, 0.0);
+  counter = 1;
 }
-impl normal {
+   
+/* print the array */
+func printArray(arr: integer[], size: integer) -> void 
+{
+
+} 
+
+// main funtion to test above
+func main() -> void
+{
 
 }
