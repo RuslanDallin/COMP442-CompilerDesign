@@ -6,7 +6,7 @@ from LexicalAnalyzer import *
 import Nodes
 
 
-ParseTable = pd.read_csv("AttributeParsingTable.csv")
+ParseTable = pd.read_csv("ParsingTable.csv")
 ParseTable.set_index("TT", inplace=True)
 FFTable = pd.read_csv("FirstFollowSets.csv")
 FFTable.set_index("nonterminal", inplace=True)
@@ -18,7 +18,6 @@ def isTerminal(s):
     return (s in LexemeDic.values()) or (s in reservedWords) or (s == "id")
 
 def getTableReversedRHS(row,token,PrevDeriv):
-    print(row)
     rhs= -1  # -1: no column match
     newDeriv = PrevDeriv
     col = token.type
@@ -27,7 +26,6 @@ def getTableReversedRHS(row,token,PrevDeriv):
         if rhs == "nan":
             rhs = 0  # 0: cell is empty
         else:
-            print(rhs)
             newDeriv = derivationBuilder(derivationKeywordReplace(rhs),PrevDeriv) # updates derivation
             arrowIndex = rhs.index("→ ") + 2
             trucatedRhs = rhs[arrowIndex:]
@@ -92,34 +90,8 @@ def updateProdStack (prodStack, tableEntry):
             if word != '':
                 prodStack.append(word)
 
-def buildAST():
-    # popped = semanticStack.pop()
-    # if popped != "/progSubtree/":
-    #     return "Error"
-    # while popped != "/eNode/":
-    #     popped = semanticStack.pop()
-    #     if popped == "/implSubtree/":
-    #         while popped != "/eNode/":
-    #             popped = semanticStack.pop()
-    #         implDefNode()
+def ASTBuilder():
     pass
-
-def buildASTBuilder():
-
-    if semanticStack[-1].endswith("Node/"):
-        popped = semanticStack.pop()
-        index = popped.index("Node")
-        prefix = popped[1:index]
-        test = getattr(Nodes, prefix)('my0', 0, 0)
-
-
-    if semanticStack[-1].endswith("Subtree/"):
-        popped = semanticStack.pop()
-        while popped != "/eNode/":
-            popped = semanticStack.pop()
-
-        print(semanticStack[-1])
-
 
 
 def parse(lexA):
@@ -172,7 +144,7 @@ def parse(lexA):
                 if popped.endswith("Node/"):
                     newNode = getattr(Nodes, popped[1:-1])(previousToken)
                     semanticStack.append(newNode)
-                    print(newNode.token)
+                    # print(newNode.token)
 
                 if popped.endswith("Subtree/"):
                     poppedNode = semanticStack.pop()
@@ -250,7 +222,7 @@ def parse(lexA):
                                 print("%s%s" % (pre, node.name))
 
                 # semanticStack.append(popped)
-                print(semanticStack)
+                # print(semanticStack)
 
                 continue
 
