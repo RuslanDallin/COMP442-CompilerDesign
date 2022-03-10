@@ -113,8 +113,6 @@ def ASTBuilder(previousToken):
 
             semanticStack.append(newNode)
 
-            printAST(newNode)
-
         elif popped == ("/varSubtree/") or popped == ("/dotSubtree/") or popped == ("/funCallSubtree/") or popped == (
         "/assignSubtree/"):
             poppedNode2 = semanticStack.pop()
@@ -123,8 +121,6 @@ def ASTBuilder(previousToken):
             newNode = getattr(Nodes, popped[1:-1])(tuple(reversed(children)))
 
             semanticStack.append(newNode)
-
-            printAST(newNode)
 
         elif popped == ("/progSubtree/"):
             structDecList = ()
@@ -147,7 +143,6 @@ def ASTBuilder(previousToken):
             newNode = getattr(Nodes, popped[1:-1])(tuple(children))
 
             semanticStack.append(newNode)
-            printAST(newNode)
 
         else:
             children = ()
@@ -156,7 +151,6 @@ def ASTBuilder(previousToken):
                 poppedNode = semanticStack.pop()
             newNode = getattr(Nodes, popped[1:-1])(tuple(reversed(children)))
             semanticStack.append(newNode)
-            printAST(newNode)
 
     # semanticStack.append(popped)
     # print(semanticStack)

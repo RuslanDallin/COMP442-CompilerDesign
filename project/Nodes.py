@@ -1,6 +1,6 @@
 from anytree import Node, RenderTree
 
-# Subtrees #
+# Special Subtrees #
 
 class progSubtree(Node):
     def __init__(self, children=None):
@@ -12,6 +12,44 @@ class progSubtree(Node):
         self.implDefList = children[1]
         self.funcDefList = children[2]
 
+
+class implDefSubtree(Node):
+    def __init__(self, children=None):
+        self.name = "implDef"
+        if children:
+            self.children = children
+        self.id = children[0]
+        self.funcDefList = []
+        for child in children[1:]:
+            self.funcDefList.append(child)
+
+
+class assignSubtree(Node):
+    def __init__(self, children=None):
+        self.name = "assign"
+        if children:
+            self.children = children
+        newChildren = ()
+        for child in children:
+            if child.name == "id":
+                child = varSubtree((child, indiceListSubtree()))
+            newChildren += (child,)
+        self.children = newChildren
+
+
+class dotSubtree(Node):
+    def __init__(self, children=None):
+        self.name = "dot"
+        if children:
+            self.children = children
+        newChildren = ()
+        for child in children:
+            if child.name == "id":
+                child = varSubtree((child, indiceListSubtree()))
+            newChildren += (child,)
+        self.children = newChildren
+
+# Subtrees #
 
 class structDecListSubtree(Node):
     def __init__(self, children=None):
@@ -36,16 +74,6 @@ class structDecSubtree(Node):
         self.name = "structDec"
         if children:
             self.children = children
-
-class implDefSubtree(Node):
-    def __init__(self, children=None):
-        self.name = "implDef"
-        if children:
-            self.children = children
-        self.id = children[0]
-        self.funcDefList = []
-        for child in children[1:]:
-            self.funcDefList.append(child)
 
 class funcDefListSubtree(Node):
     def __init__(self, children=None):
@@ -107,30 +135,6 @@ class funcBodySubtree(Node):
         self.name = "funcBody"
         if children:
             self.children = children
-
-class assignSubtree(Node):
-    def __init__(self, children=None):
-        self.name = "assign"
-        if children:
-            self.children = children
-        newChildren = ()
-        for child in children:
-            if child.name == "id":
-                child = varSubtree((child, indiceListSubtree()))
-            newChildren += (child,)
-        self.children = newChildren
-
-class dotSubtree(Node):
-    def __init__(self, children=None):
-        self.name = "dot"
-        if children:
-            self.children = children
-        newChildren = ()
-        for child in children:
-            if child.name == "id":
-                child = varSubtree((child, indiceListSubtree()))
-            newChildren += (child,)
-        self.children = newChildren
 
 
 class indiceListSubtree(Node):
