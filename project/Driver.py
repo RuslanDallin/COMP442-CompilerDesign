@@ -50,7 +50,7 @@ def parserDriver():
             lex = Lex(src)
             parseCheck, deriviations, errors = parse(lex)
             for deriv in deriviations:
-                print("START =>", deriv)
+                # print("START =>", deriv)
                 outderivation.write("START =>" + deriv + "\n")
             for error in errors:
                 outsyntaxerrors.write(error + "\n")

@@ -174,7 +174,7 @@ def parse(lexA):
 
                 if popped.endswith("Subtree/"):
                     poppedNode = semanticStack.pop()
-
+                    
 
                     if popped == ("/relOpSubtree/") or popped == ("/mulOpSubtree/") or popped == ("/addOpSubtree/"):
                         poppedNode2 = semanticStack.pop()
