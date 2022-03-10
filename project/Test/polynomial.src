@@ -1,5 +1,5 @@
 /* sort the array */
 func bubbleSort() -> void
 {
-  write (a == 5.01 );
+  a = 4;
 }

@@ -147,12 +147,25 @@ class assignSubtree(Node):
         self.name = "assign"
         if children:
             self.children = children
+        newChildren = ()
+        for child in children:
+            if child.name == "id":
+                child = varSubtree((child, indiceListSubtree()))
+            newChildren += (child,)
+        self.children = newChildren
 
 class dotSubtree(Node):
     def __init__(self, children=None):
         self.name = "dot"
         if children:
             self.children = children
+        newChildren = ()
+        for child in children:
+            if child.name == "id":
+                child = varSubtree((child, indiceListSubtree()))
+            newChildren += (child,)
+        self.children = newChildren
+
 
 class indiceListSubtree(Node):
     def __init__(self, children=None):
@@ -186,16 +199,39 @@ class funCallSubtree(Node):
 
 class relOpSubtree(Node):
     def __init__(self, children=None):
-        self.name = "relOp"
+        self.name = "rel"
         if children:
             self.children = children
 
 class mulOpSubtree(Node):
     def __init__(self, children=None):
-        self.name = "mulOp"
+        self.name = "mul"
         if children:
             self.children = children
 
+class factorSubtree(Node):
+    def __init__(self, children=None):
+        self.name = "factor"
+        if children:
+            self.children = children
+
+class addOpSubtree(Node):
+    def __init__(self, children=None):
+        self.name = "add"
+        if children:
+            self.children = children
+
+class writeSubtree(Node):
+    def __init__(self, children=None):
+        self.name = "write"
+        if children:
+            self.children = children
+
+class returnSubtree(Node):
+    def __init__(self, children=None):
+        self.name = "return"
+        if children:
+            self.children = children
 
 
 
@@ -213,9 +249,9 @@ class IdNode(Node):
         self.token = token
         self.id = token.lexeme
 
-class IdNode(Node):
+class relOpNode(Node):
     def __init__(self, token, id=None):
-        self.name = "id"
+        self.name = "relOp"
         self.token = token
         self.id = token.lexeme
 
@@ -236,6 +272,24 @@ class visibilityNode(Node):
 class floatNode(Node):
     def __init__(self, token, visibility=None):
         self.name = "float"
+        self.token = token
+        self.visibility = token.lexeme
+
+class signNode(Node):
+    def __init__(self, token, visibility=None):
+        self.name = "sign"
+        self.token = token
+        self.visibility = token.lexeme
+
+class MulOpNode(Node):
+    def __init__(self, token, visibility=None):
+        self.name = "MulOp"
+        self.token = token
+        self.visibility = token.lexeme
+
+class addOpNode(Node):
+    def __init__(self, token, visibility=None):
+        self.name = "addOpNode"
         self.token = token
         self.visibility = token.lexeme
 

@@ -175,8 +175,22 @@ def parse(lexA):
                 if popped.endswith("Subtree/"):
                     poppedNode = semanticStack.pop()
 
-                    if popped == ("/varSubtree/") or popped == ("/dotSubtree/") \
-                            or popped == ("/funCallSubtree/") or popped == ("/relOpSubtree/")  or popped == ("/mulOpSubtree/"):
+                    if popped == ("/relOpSubtree/") or popped == ("/mulOpSubtree/") or popped == ("/addOpSubtree/"):
+                        poppedNode2 = semanticStack.pop()
+                        poppedNode3 = semanticStack.pop()
+
+                        children = (poppedNode, poppedNode2, poppedNode3, )
+                        newNode = getattr(Nodes, popped[1:-1])(tuple(reversed(children)))
+
+                        semanticStack.append(newNode)
+
+                        for pre, fill, node in RenderTree(newNode):
+                            if node.name == "id" or node.name == "num" or node.name == "sign" or node.name.endswith("Op"):
+                                print("%s%s: %s" % (pre, node.name, node.token.lexeme))
+                            else:
+                                print("%s%s" % (pre, node.name))
+
+                    elif popped == ("/varSubtree/") or popped == ("/dotSubtree/") or popped == ("/funCallSubtree/") or popped == ("/assignSubtree/"):
                         poppedNode2 = semanticStack.pop()
 
                         children = (poppedNode, poppedNode2,)
@@ -185,7 +199,8 @@ def parse(lexA):
                         semanticStack.append(newNode)
 
                         for pre, fill, node in RenderTree(newNode):
-                            if node.name == "id" or node.name == "num":
+                            if node.name == "id" or node.name == "num" or node.name == "sign" or node.name.endswith(
+                                    "Op"):
                                 print("%s%s: %s" % (pre, node.name, node.token.lexeme))
                             else:
                                 print("%s%s" % (pre, node.name))
@@ -212,8 +227,9 @@ def parse(lexA):
 
                         semanticStack.append(newNode)
                         for pre, fill, node in RenderTree(newNode):
-                            if node.name == "id" or node.name == "num":
-                                print("%s%s: %s" % (pre, node.name,node.token.lexeme))
+                            if node.name == "id" or node.name == "num" or node.name == "sign" or node.name.endswith(
+                                    "Op"):
+                                print("%s%s: %s" % (pre, node.name, node.token.lexeme))
                             else:
                                 print("%s%s" % (pre, node.name))
                     else:
@@ -224,25 +240,15 @@ def parse(lexA):
                         newNode = getattr(Nodes, popped[1:-1])(tuple(reversed(children)))
                         semanticStack.append(newNode)
                         for pre, fill, node in RenderTree(newNode):
-                            if node.name == "id" or node.name == "num":
-                                print("%s%s: %s" % (pre, node.name,node.token.lexeme))
+                            if node.name == "id" or node.name == "num" or node.name == "sign" or node.name.endswith(
+                                    "Op"):
+                                print("%s%s: %s" % (pre, node.name, node.token.lexeme))
                             else:
                                 print("%s%s" % (pre, node.name))
 
                 # semanticStack.append(popped)
                 print(semanticStack)
 
-
-
-                # if semanticStack[-1] == "/progSubtree/":
-                #     poped = semanticStack.pop
-                #     while poped != '/eNode/':
-                #         poped = semanticStack.pop
-                #
-                #
-                #     test = progNode()
-                #     for pre, fill, node in RenderTree(test):
-                #         print("%s%s" % (pre, node.name))
                 continue
 
 
