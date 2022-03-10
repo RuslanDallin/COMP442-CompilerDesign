@@ -18,7 +18,6 @@ def isTerminal(s):
     return (s in LexemeDic.values()) or (s in reservedWords) or (s == "id")
 
 def getTableReversedRHS(row,token,PrevDeriv):
-    print(row)
     rhs= -1  # -1: no column match
     newDeriv = PrevDeriv
     col = token.type
@@ -91,8 +90,85 @@ def updateProdStack (prodStack, tableEntry):
             if word != '':
                 prodStack.append(word)
 
-def ASTBuilder():
-    pass
+def ASTBuilder(previousToken):
+    popped = prodStack.pop()
+
+    if popped == "/e/":
+        semanticStack.append(popped)
+
+    if popped.endswith("Node/"):
+        newNode = getattr(Nodes, popped[1:-1])(previousToken)
+        semanticStack.append(newNode)
+        # print(newNode.token)
+
+    if popped.endswith("Subtree/"):
+        poppedNode = semanticStack.pop()
+
+        if popped == ("/relOpSubtree/") or popped == ("/mulOpSubtree/") or popped == ("/addOpSubtree/"):
+            poppedNode2 = semanticStack.pop()
+            poppedNode3 = semanticStack.pop()
+
+            children = (poppedNode, poppedNode2, poppedNode3,)
+            newNode = getattr(Nodes, popped[1:-1])(tuple(reversed(children)))
+
+            semanticStack.append(newNode)
+
+            printAST(newNode)
+
+        elif popped == ("/varSubtree/") or popped == ("/dotSubtree/") or popped == ("/funCallSubtree/") or popped == (
+        "/assignSubtree/"):
+            poppedNode2 = semanticStack.pop()
+
+            children = (poppedNode, poppedNode2,)
+            newNode = getattr(Nodes, popped[1:-1])(tuple(reversed(children)))
+
+            semanticStack.append(newNode)
+
+            printAST(newNode)
+
+        elif popped == ("/progSubtree/"):
+            structDecList = ()
+            implDefList = ()
+            funcDefList = ()
+            while poppedNode != '/e/':
+                if poppedNode.name == "structDec":
+                    structDecList += (poppedNode,)
+                if poppedNode.name == "implDef":
+                    implDefList += (poppedNode,)
+                if poppedNode.name == "funcDef":
+                    funcDefList += (poppedNode,)
+                poppedNode = semanticStack.pop()
+
+            structDecListNode = (getattr(Nodes, "structDecListSubtree")(tuple(reversed(structDecList))))
+            implDefListNode = (getattr(Nodes, "implDefListSubtree")(tuple(reversed(implDefList))))
+            funcDefListNode = (getattr(Nodes, "funcDefListSubtree")(tuple(reversed(funcDefList))))
+
+            children = (structDecListNode, implDefListNode, funcDefListNode,)
+            newNode = getattr(Nodes, popped[1:-1])(tuple(children))
+
+            semanticStack.append(newNode)
+            printAST(newNode)
+
+        else:
+            children = ()
+            while poppedNode != '/e/':
+                children += (poppedNode,)
+                poppedNode = semanticStack.pop()
+            newNode = getattr(Nodes, popped[1:-1])(tuple(reversed(children)))
+            semanticStack.append(newNode)
+            printAST(newNode)
+
+    # semanticStack.append(popped)
+    # print(semanticStack)
+
+def printAST(node):
+    for pre, fill, node in RenderTree(node):
+        if node.name == "id" or node.name == "num" or node.name == "float" \
+                or node.name == "sign" or node.name == "type" \
+                or node.name == "visibility" or node.name.endswith("Op"):
+            print("%s%s: %s" % (pre, node.name, node.token.lexeme))
+        else:
+            print("%s%s" % (pre, node.name))
 
 
 def parse(lexA):
@@ -106,6 +182,7 @@ def parse(lexA):
     progDerivation = []
     errorList = []
     progDerivation.append(deriviation)
+    previousToken = token
 
     while prodStack[-1] != "START":
         top = prodStack[-1]
@@ -137,96 +214,8 @@ def parse(lexA):
                 success = False
         else:
             if top[-1] == '/':
-                popped = prodStack.pop()
-
-                if popped == "/e/":
-                    semanticStack.append(popped)
-
-                if popped.endswith("Node/"):
-                    newNode = getattr(Nodes, popped[1:-1])(previousToken)
-                    semanticStack.append(newNode)
-                    # print(newNode.token)
-
-                if popped.endswith("Subtree/"):
-                    poppedNode = semanticStack.pop()
-
-
-                    if popped == ("/relOpSubtree/") or popped == ("/mulOpSubtree/") or popped == ("/addOpSubtree/"):
-                        poppedNode2 = semanticStack.pop()
-                        poppedNode3 = semanticStack.pop()
-
-                        children = (poppedNode, poppedNode2, poppedNode3, )
-                        newNode = getattr(Nodes, popped[1:-1])(tuple(reversed(children)))
-
-                        semanticStack.append(newNode)
-
-                        for pre, fill, node in RenderTree(newNode):
-                            if node.name == "id" or node.name == "num" or node.name == "sign" or node.name.endswith("Op"):
-                                print("%s%s: %s" % (pre, node.name, node.token.lexeme))
-                            else:
-                                print("%s%s" % (pre, node.name))
-
-                    elif popped == ("/varSubtree/") or popped == ("/dotSubtree/") or popped == ("/funCallSubtree/") or popped == ("/assignSubtree/"):
-                        poppedNode2 = semanticStack.pop()
-
-                        children = (poppedNode, poppedNode2,)
-                        newNode = getattr(Nodes, popped[1:-1])(tuple(reversed(children)))
-
-                        semanticStack.append(newNode)
-
-                        for pre, fill, node in RenderTree(newNode):
-                            if node.name == "id" or node.name == "num" or node.name == "sign" or node.name.endswith(
-                                    "Op"):
-                                print("%s%s: %s" % (pre, node.name, node.token.lexeme))
-                            else:
-                                print("%s%s" % (pre, node.name))
-
-                    elif popped == ("/progSubtree/"):
-                        structDecList = ()
-                        implDefList = ()
-                        funcDefList = ()
-                        while poppedNode != '/e/':
-                            if poppedNode.name == "structDec":
-                                structDecList += (poppedNode,)
-                            if poppedNode.name == "implDef":
-                                implDefList += (poppedNode,)
-                            if poppedNode.name == "funcDef":
-                                funcDefList += (poppedNode,)
-                            poppedNode = semanticStack.pop()
-
-                        structDecListNode = (getattr(Nodes, "structDecListSubtree")(tuple(reversed(structDecList))))
-                        implDefListNode = (getattr(Nodes, "implDefListSubtree")(tuple(reversed(implDefList))))
-                        funcDefListNode = (getattr(Nodes, "funcDefListSubtree")(tuple(reversed(funcDefList))))
-
-                        children = (structDecListNode,implDefListNode,funcDefListNode,)
-                        newNode = getattr(Nodes, popped[1:-1])(tuple(children))
-
-                        semanticStack.append(newNode)
-                        for pre, fill, node in RenderTree(newNode):
-                            if node.name == "id" or node.name == "num" or node.name == "float" or node.name == "sign" or node.name == "type"  or node.name == "visibility"or node.name.endswith(
-                                    "Op"):
-                                print("%s%s: %s" % (pre, node.name, node.token.lexeme))
-                            else:
-                                print("%s%s" % (pre, node.name))
-                    else:
-                        children = ()
-                        while poppedNode != '/e/':
-                            children += (poppedNode,)
-                            poppedNode = semanticStack.pop()
-                        newNode = getattr(Nodes, popped[1:-1])(tuple(reversed(children)))
-                        semanticStack.append(newNode)
-                        for pre, fill, node in RenderTree(newNode):
-                            if node.name == "id" or node.name == "num" or node.name == "sign" or node.name.endswith(
-                                    "Op"):
-                                print("%s%s: %s" % (pre, node.name, node.token.lexeme))
-                            else:
-                                print("%s%s" % (pre, node.name))
-
-                # semanticStack.append(popped)
-                # print(semanticStack)
-
+                ASTBuilder(previousToken)
                 continue
-
 
             tableEntry, deriviation = getTableReversedRHS(top,token,deriviation)
             progDerivation.append(deriviation)
