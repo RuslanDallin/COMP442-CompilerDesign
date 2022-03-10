@@ -1,26 +1,6 @@
 from anytree import Node, RenderTree
-from LexicalAnalyzer import Token
 
-# class progNode(Node):
-#     def __init__(self, structDecl=None, implDef=None, funcDef=None):
-#         self.name = "prog"
-#
-#         self.children = []
-#         if structDecl:
-#             self.structDecl = structDecl
-#             self.children += (structDecl,)
-#
-#         if implDef:
-#             self.implDef = implDef
-#             self.children += (implDef,)
-#
-#         if funcDef:
-#             self.funcDef = funcDef
-#             self.children += (funcDef,)
-#
-
-# my0 = getattr(test, 'myNode')('my0', 0, 0)
-# print(my0)
+# Subtrees #
 
 class progSubtree(Node):
     def __init__(self, children=None):
@@ -33,14 +13,11 @@ class progSubtree(Node):
         self.funcDefList = children[2]
 
 
-
 class structDecListSubtree(Node):
     def __init__(self, children=None):
         self.name = "structDecList"
         if children:
             self.children = children
-
-        print(children)
 
 class implDefListSubtree(Node):
     def __init__(self, children=None):
@@ -53,7 +30,6 @@ class funcDefListSubtree(Node):
         self.name = "funcDefList"
         if children:
             self.children = children
-
 
 class structDecSubtree(Node):
     def __init__(self, children=None):
@@ -89,16 +65,6 @@ class funcDeclSubtree(Node):
         if children:
             self.children = children
 
-# class varDeclSubtree(Node):
-#     def __init__(self, children=None):
-#          self.name = "varDecl"
-#          if children:
-#              self.children = children
-#          self.id = children[0]
-#          self.type = children[1]
-#          self.arraySizeList = []
-#          for child in children[2:]:
-#              self.arraySizeList.append(child)
 
 class varDeclSubtree(Node):
     def __init__(self, children=None):
@@ -263,7 +229,7 @@ class memberDeclListSubtree(Node):
         if children:
             self.children = children
 
-
+# Nodes #
 
 
 class typeNode(Node):
@@ -271,6 +237,8 @@ class typeNode(Node):
         self.name = "type"
         self.token = token
         self.type = token.lexeme
+        if type:
+            self.type = type
 
 
 class IdNode(Node):
@@ -278,134 +246,62 @@ class IdNode(Node):
         self.name = "id"
         self.token = token
         self.id = token.lexeme
+        if id:
+            self.type = id
 
 class relOpNode(Node):
-    def __init__(self, token, id=None):
+    def __init__(self, token, relOp=None):
         self.name = "relOp"
         self.token = token
-        self.id = token.lexeme
-
+        self.relOp = token.lexeme
+        if relOp:
+            self.relOp = relOp
 
 class numNode(Node):
     def __init__(self, token, num=None):
         self.name = "num"
         self.token = token
         self.num = token.lexeme
+        if num:
+            self.num = num
 
+class floatNode(Node):
+    def __init__(self, token, float=None):
+        self.name = "float"
+        self.token = token
+        self.float = token.lexeme
+        if float:
+            self.float = float
 
 class visibilityNode(Node):
     def __init__(self, token, visibility=None):
         self.name = "visibility"
         self.token = token
         self.visibility = token.lexeme
-
-class floatNode(Node):
-    def __init__(self, token, visibility=None):
-        self.name = "float"
-        self.token = token
-        self.visibility = token.lexeme
+        if visibility:
+            self.visibility = visibility
 
 class signNode(Node):
-    def __init__(self, token, visibility=None):
+    def __init__(self, token, sign=None):
         self.name = "sign"
         self.token = token
-        self.visibility = token.lexeme
+        self.sign = token.lexeme
+        if sign:
+            self.sign = sign
 
 class MulOpNode(Node):
-    def __init__(self, token, visibility=None):
+    def __init__(self, token, MulOp=None):
         self.name = "MulOp"
         self.token = token
-        self.visibility = token.lexeme
+        self.MulOp = token.lexeme
+        if MulOp:
+            self.sign = MulOp
 
 class addOpNode(Node):
-    def __init__(self, token, visibility=None):
+    def __init__(self, token, addOp=None):
         self.name = "addOp"
         self.token = token
         self.visibility = token.lexeme
+        if addOp:
+            self.addOp = addOp
 
-#
-# idTest = IdNode("POLYNOMIAL")
-# test = implDefNode(idTest)
-# idTest1 = IdNode("testing")
-#
-# tempy = ()
-# tempy += (test,)
-# tempy += (idTest1,)
-# prog1 = progNode(*tempy)
-#
-# print("")
-#
-# for pre, fill, node in RenderTree(prog1):
-#     print("%s%s" % (pre, node.name))
-#
-# print("")
-#
-# stack = []
-# type = typeNode("V")
-# id = IdNode("int")
-#
-# stack.append(type)
-# stack.append(id)
-# varDecl = varDeclNode(stack.pop(), stack.pop())
-#
-# for pre, fill, node in RenderTree(varDecl):
-#     print("%s%s" % (pre, node))
-#
-# print("")
-#
-#
-# int = numNode(2)
-# int2 = numNode(3)
-# arraySize = arraySizeNode(int, int2)
-#
-# for pre, fill, node in RenderTree(arraySize):
-#     print("%s%s" % (pre, node))
-#
-# print("")
-#
-# type = typeNode("V")
-# id = IdNode("int")
-#
-# int = numNode(2)
-# int2 = numNode(3)
-# arraySize = arraySizeNode(int,int2)
-#
-# varDeclNode2 = varDeclNode(type, id, arraySize)
-#
-# for pre, fill, node in RenderTree(varDeclNode2):
-#     print("%s%s" % (pre, node.name))
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# class progNode(Node):  # Add Node feature
-#     def __init__(self, dimList=None, parent=None, children=None):
-#         self.name = "varDecl"
-#         if children:
-#             self.children = children
-#         self.type = children[1]
-#         self.id = children[0]
-#         self.dimList = dimList
-#         self.parent = parent
-#
-#     def __str__(self):
-#         return "[%s, %s]" % (self.name, self.parent)
-#
-# c = Node("ClassList")
-#
-# PROG = Node("PROG")
-# Assign = Node("Assign", parent=PROG)
-# var = Node("var", parent=Assign)
-# exp = Node("exp", parent=Assign)
-#
-#
-# for pre, fill, node in RenderTree(PROG):
-#     print("%s%s" % (pre, node.name))
-#
-# print("")
-#
