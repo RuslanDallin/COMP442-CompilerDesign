@@ -178,6 +178,13 @@ class varSubtree(Node):
         self.name = "var"
         if children:
             self.children = children
+        newChildren = ()
+        for child in children:
+            if child.name == "dot":
+                child = varSubtree((child, indiceListSubtree()))
+            newChildren += (child,)
+        self.children = newChildren
+
 
 class aParamsSubtree(Node):
     def __init__(self, children=None):
