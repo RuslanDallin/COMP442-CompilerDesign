@@ -6,7 +6,7 @@ from LexicalAnalyzer import *
 import Nodes
 
 
-ParseTable = pd.read_csv("ParsingTable.csv")
+ParseTable = pd.read_csv("AttributeParsingTable.csv")
 ParseTable.set_index("TT", inplace=True)
 FFTable = pd.read_csv("FirstFollowSets.csv")
 FFTable.set_index("nonterminal", inplace=True)
@@ -18,6 +18,7 @@ def isTerminal(s):
     return (s in LexemeDic.values()) or (s in reservedWords) or (s == "id")
 
 def getTableReversedRHS(row,token,PrevDeriv):
+    print(row)
     rhs= -1  # -1: no column match
     newDeriv = PrevDeriv
     col = token.type
