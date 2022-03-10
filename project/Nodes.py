@@ -257,6 +257,11 @@ class whileSubtree(Node):
         self.name = "while"
         if children:
             self.children = children
+class memberDeclListSubtree(Node):
+    def __init__(self, children=None):
+        self.name = "memberDeclList"
+        if children:
+            self.children = children
 
 
 
