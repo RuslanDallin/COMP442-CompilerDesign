@@ -230,7 +230,7 @@ def parse(lexA):
 
                         semanticStack.append(newNode)
                         for pre, fill, node in RenderTree(newNode):
-                            if node.name == "id" or node.name == "num" or node.name == "sign" or node.name == "type"  or node.name == "visibility"or node.name.endswith(
+                            if node.name == "id" or node.name == "num" or node.name == "float" or node.name == "sign" or node.name == "type"  or node.name == "visibility"or node.name.endswith(
                                     "Op"):
                                 print("%s%s: %s" % (pre, node.name, node.token.lexeme))
                             else:
