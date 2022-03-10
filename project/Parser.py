@@ -18,6 +18,7 @@ def isTerminal(s):
     return (s in LexemeDic.values()) or (s in reservedWords) or (s == "id")
 
 def getTableReversedRHS(row,token,PrevDeriv):
+    print(row)
     rhs= -1  # -1: no column match
     newDeriv = PrevDeriv
     col = token.type
@@ -26,6 +27,7 @@ def getTableReversedRHS(row,token,PrevDeriv):
         if rhs == "nan":
             rhs = 0  # 0: cell is empty
         else:
+            print(rhs)
             newDeriv = derivationBuilder(derivationKeywordReplace(rhs),PrevDeriv) # updates derivation
             arrowIndex = rhs.index("→ ") + 2
             trucatedRhs = rhs[arrowIndex:]
@@ -174,7 +176,7 @@ def parse(lexA):
 
                 if popped.endswith("Subtree/"):
                     poppedNode = semanticStack.pop()
-                    
+
 
                     if popped == ("/relOpSubtree/") or popped == ("/mulOpSubtree/") or popped == ("/addOpSubtree/"):
                         poppedNode2 = semanticStack.pop()
@@ -228,7 +230,7 @@ def parse(lexA):
 
                         semanticStack.append(newNode)
                         for pre, fill, node in RenderTree(newNode):
-                            if node.name == "id" or node.name == "num" or node.name == "sign" or node.name.endswith(
+                            if node.name == "id" or node.name == "num" or node.name == "sign" or node.name == "type"  or node.name == "visibility"or node.name.endswith(
                                     "Op"):
                                 print("%s%s: %s" % (pre, node.name, node.token.lexeme))
                             else:

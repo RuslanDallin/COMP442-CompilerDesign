@@ -234,6 +234,30 @@ class returnSubtree(Node):
         if children:
             self.children = children
 
+class relExprSubtree(Node):
+    def __init__(self, children=None):
+        self.name = "relExpr"
+        if children:
+            self.children = children
+
+class statSubtree(Node):
+    def __init__(self, children=None):
+        self.name = "stat"
+        if children:
+            self.children = children
+
+class ifThenElseSubtree(Node):
+    def __init__(self, children=None):
+        self.name = "ifThenElse"
+        if children:
+            self.children = children
+
+class whileSubtree(Node):
+    def __init__(self, children=None):
+        self.name = "while"
+        if children:
+            self.children = children
+
 
 
 
@@ -290,7 +314,7 @@ class MulOpNode(Node):
 
 class addOpNode(Node):
     def __init__(self, token, visibility=None):
-        self.name = "addOpNode"
+        self.name = "addOp"
         self.token = token
         self.visibility = token.lexeme
 
