@@ -1,0 +1,21 @@
+prog
+├── structDecList
+│   └── structDec
+│       ├── id: a
+│       ├── inherList
+│       │   └── id: b
+│       └── memberDeclList
+│           ├── memberDecl
+│           │   ├── visibility: private
+│           │   └── varDecl
+│           │       ├── id: a
+│           │       ├── type: float
+│           │       └── dimList
+│           └── memberDecl
+│               ├── visibility: public
+│               └── varDecl
+│                   ├── id: b
+│                   ├── type: int
+│                   └── dimList
+├── implDefList
+└── funcDefList

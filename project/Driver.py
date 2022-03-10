@@ -1,8 +1,11 @@
 import os
+
+from anytree import RenderTree
+
 from LexicalAnalyzer import Lex
 from Parser import parse
 
-directoryName = "Test" # set the source folder
+directoryName = "Input" # set the source folder
 directory = os.listdir(directoryName)
 
 def lexDriver():
@@ -37,7 +40,7 @@ def lexDriver():
 
 def parserDriver():
     # TO BE DELETED -----------------------------------------------------
-    directoryName = "Test"  # set the source folder
+    directoryName = "Input"  # set the source folder
     directory = os.listdir(directoryName)
     for file in directory:
         filename = os.fsdecode(file)
@@ -46,14 +49,23 @@ def parserDriver():
             src = open(directoryName + "/" + SourceFileName + ".src", 'r')  # reading
             outderivation = open("Output/" + SourceFileName + ".outderivation", 'w')  # tokens
             outsyntaxerrors = open("Output/" + SourceFileName + ".outsyntaxerrors", 'w')  # errors
+            astOutput = open("Output/" + SourceFileName + ".outast", 'w')  # ast tree
             print("\n\n********* %s *********" % (SourceFileName))
             lex = Lex(src)
-            parseCheck, deriviations, errors = parse(lex)
+            parseCheck, deriviations, errors, ast = parse(lex)
             for deriv in deriviations:
                 # print("START =>", deriv)
                 outderivation.write("START =>" + deriv + "\n")
             for error in errors:
                 outsyntaxerrors.write(error + "\n")
+
+            for pre, fill, node in RenderTree(ast):
+                if node.name == "id" or node.name == "num" or node.name == "float" \
+                        or node.name == "sign" or node.name == "type" \
+                        or node.name == "visibility" or node.name.endswith("Op"):
+                    astOutput.write(str("%s%s: %s\n" % (pre, node.name, node.token.lexeme)))
+                else:
+                    astOutput.write(str("%s%s\n" % (pre, node.name)))
             print(parseCheck)
     # ---------------------------------------------------------------------
 

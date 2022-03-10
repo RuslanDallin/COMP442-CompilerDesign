@@ -1,0 +1,29 @@
+prog
+├── structDecList
+├── implDefList
+└── funcDefList
+    ├── funcDef
+    │   ├── id: b
+    │   ├── fparmList
+    │   ├── type: void
+    │   └── funcBody
+    │       └── write
+    │           └── factor
+    │               └── dot
+    │                   ├── var
+    │                   │   ├── id: f
+    │                   │   └── indiceList
+    │                   └── var
+    │                       ├── id: c
+    │                       └── indiceList
+    │                           └── factor
+    │                               └── num: 1
+    └── funcDef
+        ├── id: c
+        ├── fparmList
+        ├── type: void
+        └── funcBody
+            └── read
+                └── var
+                    ├── id: c
+                    └── indiceList

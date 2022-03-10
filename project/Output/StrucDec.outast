@@ -1,0 +1,7 @@
+prog
+├── structDecList
+│   └── structDec
+│       ├── id: test
+│       └── memberDeclList
+├── implDefList
+└── funcDefList

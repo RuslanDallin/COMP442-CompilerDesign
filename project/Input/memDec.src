@@ -1,0 +1,4 @@
+func test(arr: int[], b: float[1][3]) -> float
+{
+    let result: float;
+}

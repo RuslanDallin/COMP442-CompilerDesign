@@ -1,0 +1,4 @@
+func b() -> void
+{
+  while (b < 5) { b = 5;};
+}

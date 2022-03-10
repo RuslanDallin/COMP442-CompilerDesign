@@ -1,0 +1,4 @@
+func b() -> void
+{
+  return(f.c[1]);
+}

@@ -1,0 +1,14 @@
+impl test {
+  func test() -> float
+  {
+
+  }
+  func test2() -> float
+  {
+
+  }
+}
+
+impl test {
+
+}

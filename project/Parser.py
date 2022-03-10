@@ -90,7 +90,7 @@ def updateProdStack (prodStack, tableEntry):
             if word != '':
                 prodStack.append(word)
 
-def ASTBuilder(previousToken):
+def ASTBuilder(previousToken, newNode):
     popped = prodStack.pop()
 
     if popped == "/e/":
@@ -143,6 +143,7 @@ def ASTBuilder(previousToken):
             newNode = getattr(Nodes, popped[1:-1])(tuple(children))
 
             semanticStack.append(newNode)
+            printAST(newNode)
 
         else:
             children = ()
@@ -151,6 +152,8 @@ def ASTBuilder(previousToken):
                 poppedNode = semanticStack.pop()
             newNode = getattr(Nodes, popped[1:-1])(tuple(reversed(children)))
             semanticStack.append(newNode)
+
+    return newNode
 
     # semanticStack.append(popped)
     # print(semanticStack)
@@ -177,6 +180,7 @@ def parse(lexA):
     errorList = []
     progDerivation.append(deriviation)
     previousToken = token
+    newNode = None
 
     while prodStack[-1] != "START":
         top = prodStack[-1]
@@ -208,7 +212,7 @@ def parse(lexA):
                 success = False
         else:
             if top[-1] == '/':
-                ASTBuilder(previousToken)
+                node = ASTBuilder(previousToken, newNode)
                 continue
 
             tableEntry, deriviation = getTableReversedRHS(top,token,deriviation)
@@ -233,10 +237,10 @@ def parse(lexA):
                 success = False
 
     if (prodStack[-1] != "START") or (success == False):
-        return False, progDerivation, errorList
+        return False, progDerivation, errorList, node
     else:
         # for pre, fill, node in RenderTree(semanticStack.pop()):
         #     print("%s%s" % (pre, node.name))
-        return True, progDerivation, errorList
+        return True, progDerivation, errorList, node
 
 

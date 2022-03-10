@@ -1,0 +1,4 @@
+struct a inherits b {
+	private let a: float;
+	public let b: int;
+};

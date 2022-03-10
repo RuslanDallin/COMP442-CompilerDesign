@@ -1,0 +1,26 @@
+prog
+├── structDecList
+├── implDefList
+└── funcDefList
+    └── funcDef
+        ├── id: b
+        ├── fparmList
+        ├── type: void
+        └── funcBody
+            └── while
+                ├── relExpr
+                │   └── rel
+                │       ├── factor
+                │       │   └── var
+                │       │       ├── id: b
+                │       │       └── indiceList
+                │       ├── relOp: <
+                │       └── factor
+                │           └── num: 5
+                └── stat
+                    └── assign
+                        ├── var
+                        │   ├── id: b
+                        │   └── indiceList
+                        └── factor
+                            └── num: 5

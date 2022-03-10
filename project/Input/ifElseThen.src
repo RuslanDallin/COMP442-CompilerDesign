@@ -1,0 +1,7 @@
+func test() -> void
+{
+  if (a > b)
+    then {
+      b = c;
+    } else {c = j;};
+}

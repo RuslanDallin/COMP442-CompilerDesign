@@ -1,0 +1,21 @@
+prog
+├── structDecList
+├── implDefList
+└── funcDefList
+    └── funcDef
+        ├── id: main
+        ├── fparmList
+        ├── type: void
+        └── funcBody
+            ├── varDecl
+            │   ├── id: a
+            │   ├── type: b
+            │   └── dimList
+            ├── varDecl
+            │   ├── id: b
+            │   ├── type: a
+            │   └── dimList
+            └── varDecl
+                ├── id: c
+                ├── type: integer
+                └── dimList

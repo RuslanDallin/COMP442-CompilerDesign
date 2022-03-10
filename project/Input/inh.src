@@ -1,0 +1,2 @@
+struct a inherits b,c,d {
+};

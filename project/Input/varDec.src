@@ -1,0 +1,6 @@
+func main() -> void
+{
+  let a: b;
+  let b: a;
+  let c: integer;
+}

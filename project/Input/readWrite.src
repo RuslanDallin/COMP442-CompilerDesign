@@ -1,0 +1,10 @@
+func b() -> void
+{
+  write(f.c[1]);
+}
+
+
+func c() -> void
+{
+  read(c);
+}

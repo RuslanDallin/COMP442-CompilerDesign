@@ -1,0 +1,19 @@
+func b() -> void
+{
+  a.b(3).b = 5;
+}
+
+func c() -> void
+{
+  a.b[c].b = 5;
+}
+
+func d() -> void
+{
+  b[c] = 5;
+}
+
+func d() -> void
+{
+  b = 5;
+}
