@@ -6,9 +6,9 @@ from LexicalAnalyzer import *
 import Nodes
 
 
-ParseTable = pd.read_csv("AttributeParsingTable.csv")
+ParseTable = pd.read_csv("Tables/AttributeParsingTable.csv")
 ParseTable.set_index("TT", inplace=True)
-FFTable = pd.read_csv("FirstFollowSets.csv")
+FFTable = pd.read_csv("Tables/FirstFollowSets.csv")
 FFTable.set_index("nonterminal", inplace=True)
 
 prodStack = []
@@ -143,7 +143,6 @@ def ASTBuilder(previousToken, newNode):
             newNode = getattr(Nodes, popped[1:-1])(tuple(children))
 
             semanticStack.append(newNode)
-            printAST(newNode)
 
         else:
             children = ()
@@ -239,8 +238,6 @@ def parse(lexA):
     if (prodStack[-1] != "START") or (success == False):
         return False, progDerivation, errorList, node
     else:
-        # for pre, fill, node in RenderTree(semanticStack.pop()):
-        #     print("%s%s" % (pre, node.name))
         return True, progDerivation, errorList, node
 
 

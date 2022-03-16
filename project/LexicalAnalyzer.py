@@ -1,6 +1,6 @@
 import pandas as pd
 
-transTable = pd.read_csv("TransitionTable.csv")
+transTable = pd.read_csv("Tables/TransitionTable.csv")
 transTable.set_index("State", inplace=True)
 
 LexemeDic = {"==": "eq", "+": "plus", "(": "lpar", ";": "semi", "<>": "neq", "-": "minus",
@@ -13,7 +13,6 @@ reservedWords = ["if", "then", "else", "intnum", "floatnum", "void", "public", "
 
 class Token:
     def __init__(self, label, token, location):
-        token = token.lower()
         self.type = getTokenType(label, token)
         self.lexeme = token
         self.location = location

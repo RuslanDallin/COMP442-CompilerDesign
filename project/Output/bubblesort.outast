@@ -3,7 +3,7 @@ prog
 ├── implDefList
 └── funcDefList
     ├── funcDef
-    │   ├── id: bubblesort
+    │   ├── id: bubbleSort
     │   ├── fparmList
     │   │   ├── varDecl
     │   │   │   ├── id: arr
@@ -196,7 +196,7 @@ prog
     │                       └── factor
     │                           └── num: 1
     ├── funcDef
-    │   ├── id: printarray
+    │   ├── id: printArray
     │   ├── fparmList
     │   │   ├── varDecl
     │   │   │   ├── id: arr
@@ -340,7 +340,7 @@ prog
             │       └── factor
             │           └── num: 7
             ├── funCall
-            │   ├── id: bubblesort
+            │   ├── id: bubbleSort
             │   └── aParams
             │       ├── factor
             │       │   └── var

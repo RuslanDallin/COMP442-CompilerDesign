@@ -1,7 +1,7 @@
 prog
 ├── structDecList
 │   ├── structDec
-│   │   ├── id: polynomial
+│   │   ├── id: POLYNOMIAL
 │   │   └── memberDeclList
 │   │       └── memberDecl
 │   │           ├── visibility: public
@@ -14,9 +14,9 @@ prog
 │   │               │       └── dimList
 │   │               └── type: float
 │   ├── structDec
-│   │   ├── id: linear
+│   │   ├── id: LINEAR
 │   │   ├── inherList
-│   │   │   └── id: polynomial
+│   │   │   └── id: POLYNOMIAL
 │   │   └── memberDeclList
 │   │       ├── memberDecl
 │   │       │   ├── visibility: private
@@ -36,14 +36,14 @@ prog
 │   │       │       ├── id: build
 │   │       │       ├── fparmList
 │   │       │       │   ├── varDecl
-│   │       │       │   │   ├── id: a
+│   │       │       │   │   ├── id: A
 │   │       │       │   │   ├── type: float
 │   │       │       │   │   └── dimList
 │   │       │       │   └── varDecl
-│   │       │       │       ├── id: b
+│   │       │       │       ├── id: B
 │   │       │       │       ├── type: float
 │   │       │       │       └── dimList
-│   │       │       └── type: linear
+│   │       │       └── type: LINEAR
 │   │       └── memberDecl
 │   │           ├── visibility: public
 │   │           └── funcDecl
@@ -55,9 +55,9 @@ prog
 │   │               │       └── dimList
 │   │               └── type: float
 │   └── structDec
-│       ├── id: quadratic
+│       ├── id: QUADRATIC
 │       ├── inherList
-│       │   └── id: polynomial
+│       │   └── id: POLYNOMIAL
 │       └── memberDeclList
 │           ├── memberDecl
 │           │   ├── visibility: private
@@ -83,18 +83,18 @@ prog
 │           │       ├── id: build
 │           │       ├── fparmList
 │           │       │   ├── varDecl
-│           │       │   │   ├── id: a
+│           │       │   │   ├── id: A
 │           │       │   │   ├── type: float
 │           │       │   │   └── dimList
 │           │       │   ├── varDecl
-│           │       │   │   ├── id: b
+│           │       │   │   ├── id: B
 │           │       │   │   ├── type: float
 │           │       │   │   └── dimList
 │           │       │   └── varDecl
-│           │       │       ├── id: c
+│           │       │       ├── id: C
 │           │       │       ├── type: float
 │           │       │       └── dimList
-│           │       └── type: quadratic
+│           │       └── type: QUADRATIC
 │           └── memberDecl
 │               ├── visibility: public
 │               └── funcDecl
@@ -107,7 +107,7 @@ prog
 │                   └── type: float
 ├── implDefList
 │   ├── implDef
-│   │   ├── id: polynomial
+│   │   ├── id: POLYNOMIAL
 │   │   └── funcDefList
 │   │       └── funcDef
 │   │           ├── id: evaluate
@@ -122,7 +122,7 @@ prog
 │   │                   └── factor
 │   │                       └── num: 0
 │   ├── implDef
-│   │   ├── id: quadratic
+│   │   ├── id: QUADRATIC
 │   │   └── funcDefList
 │   │       ├── funcDef
 │   │       │   ├── id: evaluate
@@ -194,22 +194,22 @@ prog
 │   │           ├── id: build
 │   │           ├── fparmList
 │   │           │   ├── varDecl
-│   │           │   │   ├── id: a
+│   │           │   │   ├── id: A
 │   │           │   │   ├── type: float
 │   │           │   │   └── dimList
 │   │           │   ├── varDecl
-│   │           │   │   ├── id: b
+│   │           │   │   ├── id: B
 │   │           │   │   ├── type: float
 │   │           │   │   └── dimList
 │   │           │   └── varDecl
-│   │           │       ├── id: c
+│   │           │       ├── id: C
 │   │           │       ├── type: float
 │   │           │       └── dimList
-│   │           ├── type: quadratic
+│   │           ├── type: QUADRATIC
 │   │           └── funcBody
 │   │               ├── varDecl
 │   │               │   ├── id: new_function
-│   │               │   ├── type: quadratic
+│   │               │   ├── type: QUADRATIC
 │   │               │   └── dimList
 │   │               ├── assign
 │   │               │   ├── dot
@@ -221,7 +221,7 @@ prog
 │   │               │   │       └── indiceList
 │   │               │   └── factor
 │   │               │       └── var
-│   │               │           ├── id: a
+│   │               │           ├── id: A
 │   │               │           └── indiceList
 │   │               ├── assign
 │   │               │   ├── dot
@@ -233,7 +233,7 @@ prog
 │   │               │   │       └── indiceList
 │   │               │   └── factor
 │   │               │       └── var
-│   │               │           ├── id: b
+│   │               │           ├── id: B
 │   │               │           └── indiceList
 │   │               ├── assign
 │   │               │   ├── dot
@@ -245,7 +245,7 @@ prog
 │   │               │   │       └── indiceList
 │   │               │   └── factor
 │   │               │       └── var
-│   │               │           ├── id: c
+│   │               │           ├── id: C
 │   │               │           └── indiceList
 │   │               └── return
 │   │                   └── factor
@@ -253,24 +253,24 @@ prog
 │   │                           ├── id: new_function
 │   │                           └── indiceList
 │   └── implDef
-│       ├── id: linear
+│       ├── id: LINEAR
 │       └── funcDefList
 │           ├── funcDef
 │           │   ├── id: build
 │           │   ├── fparmList
 │           │   │   ├── varDecl
-│           │   │   │   ├── id: a
+│           │   │   │   ├── id: A
 │           │   │   │   ├── type: float
 │           │   │   │   └── dimList
 │           │   │   └── varDecl
-│           │   │       ├── id: b
+│           │   │       ├── id: B
 │           │   │       ├── type: float
 │           │   │       └── dimList
-│           │   ├── type: linear
+│           │   ├── type: LINEAR
 │           │   └── funcBody
 │           │       ├── varDecl
 │           │       │   ├── id: new_function
-│           │       │   ├── type: linear
+│           │       │   ├── type: LINEAR
 │           │       │   └── dimList
 │           │       ├── assign
 │           │       │   ├── dot
@@ -282,7 +282,7 @@ prog
 │           │       │   │       └── indiceList
 │           │       │   └── factor
 │           │       │       └── var
-│           │       │           ├── id: a
+│           │       │           ├── id: A
 │           │       │           └── indiceList
 │           │       ├── assign
 │           │       │   ├── dot
@@ -294,7 +294,7 @@ prog
 │           │       │   │       └── indiceList
 │           │       │   └── factor
 │           │       │       └── var
-│           │       │           ├── id: b
+│           │       │           ├── id: B
 │           │       │           └── indiceList
 │           │       └── return
 │           │           └── factor
@@ -353,11 +353,11 @@ prog
         └── funcBody
             ├── varDecl
             │   ├── id: f1
-            │   ├── type: linear
+            │   ├── type: LINEAR
             │   └── dimList
             ├── varDecl
             │   ├── id: f2
-            │   ├── type: quadratic
+            │   ├── type: QUADRATIC
             │   └── dimList
             ├── varDecl
             │   ├── id: counter
