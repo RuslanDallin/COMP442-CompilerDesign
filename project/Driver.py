@@ -56,6 +56,7 @@ def parserDriver():
             for deriv in deriviations:
                 # print("START =>", deriv)
                 outderivation.write("START =>" + deriv + "\n")
+                print("START =>" + deriv)
             for error in errors:
                 outsyntaxerrors.write(error + "\n")
             print(parseCheck)
