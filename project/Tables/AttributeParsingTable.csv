@@ -29,7 +29,7 @@ IMPLDEF,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,IMPLDEF → impl id /IdNode/ lcurbr /e/ R
 INDICE,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,INDICE → lsqbr ARITHEXPR rsqbr,,,,,,,,,,,,,,,,
 MEMBERDECL,,,,,,,,,,MEMBERDECL → /e/  VARDECL  /varDeclSubtree/,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,MEMBERDECL → FUNCDECL,,,,,,
 MULTOP,,,,,,,,,,,,,,,,,,,,,,,,,,,MULTOP → and,MULTOP → div,MULTOP → mult,,,,,,,,,,,,,,,,,,
-OPTSTRUCTDECL2,,,,,,,,,,,,,,OPTSTRUCTDECL2 → &epsilon,,,,,,,,,,,,OPTSTRUCTDECL2 → inherits /e/  id  /IdNode/  REPTOPTSTRUCTDECL22   /inherListSubtree/,,,,,,,,,,,,,,,,,,,,,
+OPTSTRUCTDECL2,,,,,,,,,,,,,,OPTSTRUCTDECL2 → &epsilon,,,,,,,,,,,,OPTSTRUCTDECL2 → inherits id  /IdNode/  REPTOPTSTRUCTDECL22,,,,,,,,,,,,,,,,,,,,,
 PROG,,,,,,,,,,,,,,,PROG →   /e/ REPTPROG0  /progSubtree/    ,,,,,,,,,,,,,,,,,PROG →   /e/ REPTPROG0  /progSubtree/    ,,,,,,,,,PROG →   /e/ REPTPROG0  /progSubtree/    ,,,,,,PROG →   /e/ REPTPROG0  /progSubtree/
 RELEXPR,,,,,RELEXPR → ARITHEXPR RELOP /relOpNode/ ARITHEXPR  /relOpSubtree/,RELEXPR → ARITHEXPR RELOP /relOpNode/ ARITHEXPR  /relOpSubtree/,,,,,,,,,,RELEXPR → ARITHEXPR RELOP /relOpNode/ ARITHEXPR  /relOpSubtree/,RELEXPR → ARITHEXPR RELOP /relOpNode/ ARITHEXPR  /relOpSubtree/,,,,,,,,,,,,,,,,,,,,,,,,,RELEXPR → ARITHEXPR RELOP /relOpNode/ ARITHEXPR  /relOpSubtree/,RELEXPR → ARITHEXPR RELOP /relOpNode/ ARITHEXPR  /relOpSubtree/,RELEXPR → ARITHEXPR RELOP /relOpNode/ ARITHEXPR  /relOpSubtree/,,,
 RELOP,,,,,,,,,,,,,,,,,,,,RELOP → geq,RELOP → leq,RELOP → gt,RELOP → lt,RELOP → neq,RELOP → eq,,,,,,,,,,,,,,,,,,,,,,
@@ -49,7 +49,7 @@ RIGHTRECARITHEXPR,,,,RIGHTRECARITHEXPR → &epsilon,,,,RIGHTRECARITHEXPR → &ep
 RIGHTRECTERM,,,,RIGHTRECTERM → &epsilon,,,,RIGHTRECTERM → &epsilon,,,,,,,,RIGHTRECTERM → &epsilon,RIGHTRECTERM → &epsilon,,RIGHTRECTERM → &epsilon,RIGHTRECTERM → &epsilon,RIGHTRECTERM → &epsilon,RIGHTRECTERM → &epsilon,RIGHTRECTERM → &epsilon,RIGHTRECTERM → &epsilon,RIGHTRECTERM → &epsilon,,RIGHTRECTERM → MULTOP /MulOpNode/ FACTOR /mulOpSubtree/ RIGHTRECTERM,RIGHTRECTERM → MULTOP /MulOpNode/ FACTOR /mulOpSubtree/ RIGHTRECTERM,RIGHTRECTERM → MULTOP /MulOpNode/ FACTOR /mulOpSubtree/ RIGHTRECTERM,RIGHTRECTERM → &epsilon,,,,,,,,,,,,,,,,RIGHTRECTERM → &epsilon,
 SIGN,,,,,,,,,,,,,,,,SIGN → minus,SIGN → plus,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 STATBLOCK,,,,,,STATBLOCK → STATEMENT,,STATBLOCK → &epsilon,,,,,,STATBLOCK → lcurbr REPTSTATBLOCK1 rcurbr,,,,,,,,,,,,,,,,,,,STATBLOCK → STATEMENT,STATBLOCK → STATEMENT,STATBLOCK → STATEMENT,STATBLOCK → STATEMENT,STATBLOCK → &epsilon,,STATBLOCK → STATEMENT,,,,,,,,
-STRUCTDECL,,,,,,,,,,,,,,,STRUCTDECL → struct id  /IdNode/  OPTSTRUCTDECL2 lcurbr  /e/ REPTSTRUCTDECL4  /memberDeclListSubtree/ rcurbr semi,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+STRUCTDECL,,,,,,,,,,,,,,,STRUCTDECL → struct id  /IdNode/  /e/ OPTSTRUCTDECL2 /inherListSubtree/ lcurbr  /e/ REPTSTRUCTDECL4  /memberDeclListSubtree/ rcurbr semi,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 STRUCTORIMPLORFUNC,,,,,,,,,,,,,,,STRUCTORIMPLORFUNC →   /e/ STRUCTDECL   /structDecSubtree/   ,,,,,,,,,,,,,,,,,STRUCTORIMPLORFUNC →  /e/ IMPLDEF /implDefSubtree/ ,,,,,,,,,STRUCTORIMPLORFUNC →  /e/ FUNCDEF   /funcDefSubtree/    ,,,,,,
 TERM,,,,,TERM → FACTOR RIGHTRECTERM,TERM → FACTOR RIGHTRECTERM,,,,,,,,,,TERM → FACTOR RIGHTRECTERM,TERM → FACTOR RIGHTRECTERM,,,,,,,,,,,,,,,,,,,,,,,,,TERM → FACTOR RIGHTRECTERM,TERM → FACTOR RIGHTRECTERM,TERM → FACTOR RIGHTRECTERM,,,
 TYPE,,,,,,TYPE → id,,,,,TYPE → float,TYPE → integer,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,

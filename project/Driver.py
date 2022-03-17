@@ -96,4 +96,4 @@ def astDriver():
 
 # lexDriver()
 # parserDriver()
-# astDriver()
+astDriver()
