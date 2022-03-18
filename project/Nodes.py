@@ -75,12 +75,6 @@ class structDecSubtree(Node):
         if children:
             self.children = children
 
-class funcDefListSubtree(Node):
-    def __init__(self, children=None):
-        self.name = "funcDefList"
-        if children:
-            self.children = children
-
 class funcDefSubtree(Node):
     def __init__(self, children=None):
         self.name = "funcDef"

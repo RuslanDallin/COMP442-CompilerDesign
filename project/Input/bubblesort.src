@@ -1,17 +1,17 @@
 /* sort the array */
-func bubbleSort(arr: integer[], size: integer) -> void 
+func bubbleSort(arr: integer[], size: integer) -> void
 {
   let n: integer;
   let i: integer;
   let j: integer;
-  let temp: integer; 
+  let temp: integer;
   n = size;
   i = 0;
   j = 0;
   temp = 0;
-  while (i < n-1) { 
+  while (i < n-1) {
     while (j < n-i-1) {
-      if (arr[j] > arr[j+1]) 
+      if (arr[j] > arr[j+1])
         then {
           // swap temp and arr[i]
           temp = arr[j];

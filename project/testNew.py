@@ -6,6 +6,7 @@ from prettytable import PrettyTable
 class Visitor():
     def visit(self, node):
         if type(node) is varDeclSubtree:
+            print("visiting varDeclSubtree")
             varName = node.children[0].data
             varType = node.children[1].data
             varDimlist = list()
@@ -14,11 +15,28 @@ class Visitor():
             entry = Entry("local", varName, varType, varDimlist)
             node.symRecord = entry
 
+
         if type(node) is funcBodySubtree:
-            node.symTable = PrettyTable(header=False)
-            for child in node.children:
+            print("visiting funcBodySubtree")
+            # node.symTable = PrettyTable(header=False)
+            # for child in node.children:
+            #     node.symTable.add_row(child.symRecord.list)
+            # print(node.symTable)
+
+
+        if type(node) is fparmListSubtree:
+            print("visiting fparmListSubtree")
+
+        if type(node) is funcDefSubtree:
+            print("visiting funcBodySubtree")
+            funcId = node.children[0].data
+            # funcParms = node.children[1]
+            funcType = node.children[2].data
+            node.symTable = PrettyTable(title="table: " + funcId, header=False)
+            for child in node.children[3].children:
                 node.symTable.add_row(child.symRecord.list)
             print(node.symTable)
+
 
 
         if type(node) is typeNode:
@@ -35,7 +53,8 @@ class Visitor():
 
 class symbolTable(): pass
 
-#TODO 1) inherList 2) functionList?
+#TODO 1) inherList 2) functionList? !) replace local by parm at class level
+
 
 # => varDeclSubtree
 # => memberDeclListSubtree
@@ -109,7 +128,6 @@ class BaseNode():
 
     def accept(self, visitor):
         for child in self.children:
-            print("\tcalling ", child.name, "'s visit")
             child.accept(visitor)
         visitor.visit(self)
 
@@ -159,6 +177,20 @@ class funcBodySubtree(BaseNode, Node):
         if children:
             self.children = children
 
+class fparmListSubtree(BaseNode, Node):
+    def __init__(self, children=None):
+        super(fparmListSubtree, self).__init__()
+        self.name = "fparmList"
+        if children:
+            self.children = children
+
+class funcDefSubtree(BaseNode, Node):
+    def __init__(self, children=None):
+        super(funcDefSubtree, self).__init__()
+        self.name = "funcDef"
+        if children:
+            self.children = children
+
 n1 = IdNode(id="n")
 n2 = typeNode(type="integer")
 n31 = numNode(num=3)
@@ -170,18 +202,18 @@ n22 = typeNode(type="float")
 n33 = dimListSubtree()
 n44 = varDeclSubtree((n11, n22, n33))
 
-nFunc = funcBodySubtree((n4,n44))
+funcBody = funcBodySubtree((n4,n44))
+funcParms = fparmListSubtree()
+returnType = typeNode(type="void")
+funcName = IdNode(id="bubbleSort")
+func = funcDefSubtree((funcName, funcParms, returnType, funcBody))
 
-
-print("PLAN FOR TODAY \n 1) try to make the tables symbTabes witout visitor \n \t "
-      "a) create a method Construct in each node that will do the data entry and whatnot \n "
-      "2) seperate into visitor \n")
 
 visitor = Visitor()
 
-nFunc.accept(visitor)
+func.accept(visitor)
 
-for pre, fill, node in RenderTree(nFunc):
+for pre, fill, node in RenderTree(func):
     print("%s%s" % (pre, node.name))
 
 # en1 = Entry("local", "n", "integer", visibility="private")
