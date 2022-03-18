@@ -1,6 +1,7 @@
 from LexicalAnalyzer import Token
 from anytree import Node, RenderTree
 from Nodes import *
+from prettytable import PrettyTable
 
 class Visitor():
     def visit(self, node):
@@ -10,9 +11,14 @@ class Visitor():
             varDimlist = list()
             for child in node.children[2].children:
                 varDimlist.append(child.data)
-            print("=>>",varName,varType,varDimlist)
             entry = Entry("local", varName, varType, varDimlist)
-            print(entry)
+            node.symRecord = entry
+
+        if type(node) is funcBodySubtree:
+            node.symTable = PrettyTable(header=False)
+            for child in node.children:
+                node.symTable.add_row(child.symRecord.list)
+            print(node.symTable)
 
 
         if type(node) is typeNode:
@@ -42,16 +48,17 @@ class symbolTable(): pass
 # - dimList
 # - visibility: private/public (only if memberDeclListSubtree)
 class Entry():
-    def __init__(self, category, id, type, dimList=None, visibility=None):
+    def __init__(self, category, id, type, dimList="", visibility=""):
         self.category = category
         self.id = id
         self.type = type
         self.dimList = dimList
-        if self.dimList:
+        self.visibility = visibility
+        if self.dimList != "":
             self.dimList = ""
             for dim in dimList:
                 self.dimList += "[" + str(dim) + "]"
-        self.visibility = visibility
+        self.list = [self.category, self.id, str(self.type) + str(self.dimList)]
 
     def __str__(self):
         if self.dimList and self.visibility:
@@ -68,7 +75,14 @@ class Entry():
 # - name
 # - Entry (per variable)
 class Table():
-    def __init__(self): pass
+    def __init__(self, tableName):
+        self.tableName = tableName
+        self.table = list()
+
+    def __str__(self):
+        pass
+
+
 
 # => funcDefSubtree
 # - name
@@ -90,8 +104,8 @@ class BaseNode():
     def __init__(self, token=None):
         self.name = ""
         self.token = token
-        self.symList = list()
-        self.symEntry = None
+        self.symTable = None
+        self.symRecord = None
 
     def accept(self, visitor):
         for child in self.children:
@@ -135,18 +149,28 @@ class numNode(BaseNode, Node):
         super(numNode, self).__init__()
         self.name = "num"
         self.token = token
-        self.data = num
         if num:
             self.data = num
 
+class funcBodySubtree(BaseNode, Node):
+    def __init__(self, children=None):
+        super(funcBodySubtree, self).__init__()
+        self.name = "funcBody"
+        if children:
+            self.children = children
 
-n1 = IdNode(id="x")
-n2 = typeNode(type="float")
+n1 = IdNode(id="n")
+n2 = typeNode(type="integer")
 n31 = numNode(num=3)
 n3 = dimListSubtree((n31,))
 n4 = varDeclSubtree((n1, n2, n3))
 
+n11 = IdNode(id="i")
+n22 = typeNode(type="float")
+n33 = dimListSubtree()
+n44 = varDeclSubtree((n11, n22, n33))
 
+nFunc = funcBodySubtree((n4,n44))
 
 
 print("PLAN FOR TODAY \n 1) try to make the tables symbTabes witout visitor \n \t "
@@ -155,13 +179,14 @@ print("PLAN FOR TODAY \n 1) try to make the tables symbTabes witout visitor \n \
 
 visitor = Visitor()
 
-n4.accept(visitor)
+nFunc.accept(visitor)
 
-for pre, fill, node in RenderTree(n4):
+for pre, fill, node in RenderTree(nFunc):
     print("%s%s" % (pre, node.name))
 
-# en = Entry("local", "n", "integer", visibility="private")
-# en = Entry("local", "n", "integer", (2,1))
-# en2 = Entry("local", "n", "integer", ())
+# en1 = Entry("local", "n", "integer", visibility="private")
+# en = Entry("local", "n", "integer", (2,1), visibility="private")
+# en2 = Entry("local", "n", "integer", (), visibility="private")
+# print(en1)
 # print(en)
 # print(en2)
