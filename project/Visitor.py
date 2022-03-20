@@ -3,7 +3,158 @@ from prettytable import PrettyTable
 
 
 class Visitor:
+    def createGlobalTable(self):
+        return PrettyTable(title="table: global", header=False, hrules=True)
+
     def visit(self, node):
+
+        if type(node) is progSubtree:
+            print("visiting progSubtree")
+            structChildren = node.children[0].children
+            implChildren = node.children[1].children
+            progChildren = node.children[2].children
+
+            for prog in progChildren:
+                node.symTable.add_row(prog.symRecord.list)
+            print(node.symTable)
+
+            # 1st index is row (0-n)
+            # second index is the col
+            # this fetches i in the printArray table
+            # print(node.symTable.rows[1][4].rows[1][1])
+
+
+        if type(node) is structDecSubtree:
+            print("visiting structDecSubtree")
+            classtId = node.children[0].data
+            inherChildren = node.children[1].children
+            memberDecChildren = node.children[2].children
+
+            classTable = PrettyTable(title="class: " + classtId, header=False, hrules=True)
+
+            inherList = ()
+            for child in inherChildren:
+                inherList += (child.data,)
+
+            classTable.add_row(["inherits: " + str(inherList)])
+
+            print("here3", classTable)
+
+            #placing var data members in data table
+            dataTable = PrettyTable(title="data", header=False)
+            for member in memberDecChildren:
+                if member.symRecord[0] != "function":
+                    dataTable.add_row(member.symRecord)
+
+            classTable.add_row([dataTable])
+
+
+            for member in memberDecChildren:
+                if member.symRecord[0] == "function":
+                    funcTable = PrettyTable(title="table: " + str(classtId) + "::" + str(member.symRecord[1]), header=False)
+                    funcTable.add_row(member.symRecord)
+                    classTable.add_row([funcTable])
+
+
+            print("here4",classTable)
+
+
+
+
+
+
+
+        if type(node) is funcDefSubtree:
+            print("visiting funcBodySubtree")
+            funcId = node.children[0].data
+            funcParmsChildren = node.children[1].children
+            funcType = node.children[2].data
+            funcBodyChildren = node.children[3].children
+
+            #updating local to param
+            funcParams = ()
+            for param in funcParmsChildren:
+                if param.__class__.__name__ == "varDeclSubtree":
+                    for var in funcBodyChildren:
+                        if var.__class__.__name__ == varDeclSubtree and param.symRecord.list[1] == var.symRecord.list[1]:
+                            var.symRecord.list[0] = "param"
+                    funcParams += (param.symRecord.list[2],)
+
+            # creating table
+            funcTable = PrettyTable(title="table: " + funcId, header=False)
+            for child in funcBodyChildren:
+                if child.__class__.__name__ == "varDeclSubtree":
+                    funcTable.add_row(child.symRecord.list)
+
+            node.symRecord = FunctionEntry(funcId, funcType, funcParams, visibility=None, table=funcTable)
+
+            # This should be deleted:
+            entryTable = PrettyTable(header=False)
+            entryTable.add_row(node.symRecord.list)
+            print(entryTable)
+
+        if type(node) is memberDeclSubtree:
+            print("visiting memberDeclSubtree")
+            visibility = node.children[0].data
+            if node.children[1].__class__.__name__ == "varDeclSubtree":
+                varRecord = node.children[1].symRecord.list
+                varRecord.append(visibility)
+                varRecord[0] = "data"
+                node.symRecord = varRecord
+            if node.children[1].__class__.__name__ == "funcDeclSubtree":
+                funcRecord = node.children[1].symRecord.list
+                funcRecord[3] = visibility
+                node.symRecord = funcRecord
+
+                #TODO need to move fparm from funcDec to it's own method to avoid rewriting the code
+
+        if type(node) is funcDeclSubtree:
+            print("visiting funcDeclSubtree")
+            funcId = node.children[0].data
+            funcParmsChildren = node.children[1].children
+            funcType = node.children[2].data
+
+
+            #updating local to param
+            funcParams = ()
+            funcTable = PrettyTable(title="table: " + funcId, header=False)
+            for param in funcParmsChildren:
+                if param.__class__.__name__ == "varDeclSubtree":
+                    param.symRecord.list[0] = "param"
+                    funcParams += (param.symRecord.list[2],)
+                    funcTable.add_row(param.symRecord.list)
+
+            node.symRecord = FunctionEntry(funcId, funcType, funcParams, visibility=None, table=funcTable)
+            print("here6", node.symRecord.table)
+
+            # # creating table
+            # funcTable = PrettyTable(title="table: " + funcId, header=False)
+            # for child in funcBodyChildren:
+            #     if child.__class__.__name__ == "varDeclSubtree":
+            #         print(child.symRecord.list)
+            #         funcTable.add_row(child.symRecord.list)
+            #
+            # node.symRecord = FunctionEntry(funcId, funcType, funcParams, visibility=None, table=funcTable)
+            #
+            # # This should be deleted:
+            # entryTable = PrettyTable(header=False)
+            # entryTable.add_row(node.symRecord.list)
+            # print(entryTable)
+
+        if type(node) is varDeclSubtree:
+            print("visiting varDeclSubtree")
+            varName = node.children[0].data
+            varType = node.children[1].data
+            dimListChildren = node.children[2].children
+            varDimlist = list()
+            for arrSize in dimListChildren:
+                if len(arrSize.children) > 0: #[3]
+                    varDimlist.append("[" + str(arrSize.children[0].data) + "]")
+                else: #[]
+                    varDimlist.append("[]")
+            entry = Entry(varName, varType, varDimlist)
+            node.symRecord = entry
+            print(entry)
 
         if type(node) is Node: pass
 
@@ -33,34 +184,6 @@ class Visitor:
 
         if type(node) is funcBodySubtree: pass
 
-        if type(node) is funcDefSubtree:
-            print("visiting funcBodySubtree")
-            funcId = node.children[0].data
-            funcParmsChildren = node.children[1].children
-            funcType = node.children[2].data
-            funcBodyChildren = node.children[3].children
-
-            #updating local to param
-            funcParams = ()
-            for param in funcParmsChildren:
-                for var in funcBodyChildren:
-                    if var.__class__.__name__ == varDeclSubtree and param.symRecord.list[1] == var.symRecord.list[1]:
-                        var.symRecord.list[0] = "param"
-                funcParams += (param.symRecord.list[2],)
-
-            # creating table
-            funcTable = PrettyTable(title="table: " + funcId, header=False)
-            for child in funcBodyChildren:
-                if child.__class__.__name__ == "varDeclSubtree":
-                    funcTable.add_row(child.symRecord.list)
-
-            node.symRecord = FunctionEntry(funcId, funcType, funcParams, visibility=None, table=funcTable)
-
-            # This should be deleted:
-            entryTable = PrettyTable(header=False)
-            entryTable.add_row(node.symRecord.list)
-            print(entryTable)
-
         if type(node) is funcDefListSubtree: pass
 
         if type(node) is funcDefSubtree: pass
@@ -77,22 +200,12 @@ class Visitor:
 
         if type(node) is memberDeclListSubtree: pass
 
-        if type(node) is memberDeclSubtree: pass
+
 
         if type(node) is mulOpSubtree: pass
 
         if type(node) is numNode: pass
 
-        if type(node) is progSubtree:
-            print("visiting progSubtree")
-            structChildren = node.children[0].children
-            implChildren = node.children[1].children
-            progChildren = node.children[2].children
-
-            node.symTable = PrettyTable(title="table: global", header=False, hrules=True)
-            for prog in progChildren:
-                node.symTable.add_row(prog.symRecord.list)
-            print(node.symTable)
 
 
         if type(node) is readSubtree: pass
@@ -111,24 +224,9 @@ class Visitor:
 
         if type(node) is structDecListSubtree: pass
 
-        if type(node) is structDecSubtree: pass
-
         if type(node) is typeNode: pass
 
-        if type(node) is varDeclSubtree:
-            print("visiting varDeclSubtree")
-            varName = node.children[0].data
-            varType = node.children[1].data
-            dimListChildren = node.children[2].children
-            varDimlist = list()
-            for arrSize in dimListChildren:
-                if len(arrSize.children) > 0: #[3]
-                    varDimlist.append("[" + str(arrSize.children[0].data) + "]")
-                else: #[]
-                    varDimlist.append("[]")
-            entry = Entry("local", varName, varType, varDimlist)
-            node.symRecord = entry
-            print(entry)
+
 
         if type(node) is varSubtree: pass
 
@@ -149,8 +247,8 @@ class Visitor:
 # - dimList
 # - visibility: private/public (only if memberDeclListSubtree)
 class Entry():
-    def __init__(self, category, id, type, dimList="", visibility=""):
-        self.category = category
+    def __init__(self, id, type, dimList="", visibility=""):
+        self.category = "local"
         self.id = id
         self.type = type
         self.dimList = dimList
@@ -171,6 +269,16 @@ class Entry():
         else:
             return "%s\t | %s\t | %s\t" % (self.category, self.id, self.type)
 
+class memberDataEntry():
+    def __init__(self, dataEntry, visibility):
+        self.visibility = visibility
+        self.list = dataEntry.append(self.visibility)
+
+    def __str__(self):
+        return "%s\t | %s" % (self.list, self.visibility)
+
+
+
 class FunctionEntry():
     def __init__(self, id, type, parms, visibility="", table=""):
         self.category = "function"
@@ -183,14 +291,40 @@ class FunctionEntry():
         self.parms = "()"
         if len(parms) > 0:
             self.parms = str(parms)
-
         self.parms += ":" + str(self.type)
-
         self.table = table
 
         self.visibility = ""
         if visibility:
             self.visibility = visibility
+
+        self.list = [self.category, self.id, self.parms, self.visibility, self.table]
+
+
+class ClassEntry():
+    def __init__(self, id, inherList, dataMembeEntries, funcEntries):
+        self.category = "class"
+        self.id = id
+        self.inherList = inherList
+        self.dataMembeEntries = dataMembeEntries
+
+        table = PrettyTable(title="Class: " + str(self.id), header=False)
+        table.add_row("inherit", inherList, "", "")
+
+        for data in dataMembeEntries:
+            table.add_row(data)
+
+
+
+        self.functionTableList = list()
+        for func in funcEntries:
+            self.functionTableList.append(PrettyTable(title="Function: " + str(self.id) + str(func[1]), header=False))
+
+
+
+
+
+
 
 
         self.list = [self.category, self.id, self.parms, self.visibility, self.table]
@@ -222,4 +356,5 @@ class Function():
 # - inheritance list
 # - data (data +
 # - function(s)
-def Class(self): pas
+def Class(self): pass
+

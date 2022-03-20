@@ -8,7 +8,9 @@ class BaseNode():
         self.symRecord = None
 
     def accept(self, visitor):
+        self.symTable = visitor.createGlobalTable()
         for child in self.children:
+            child.symTable = self.symTable
             child.accept(visitor)
         visitor.visit(self)
         
