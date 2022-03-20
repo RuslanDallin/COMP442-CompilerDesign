@@ -39,7 +39,7 @@
 [func, func, 41][id, main, 41][lpar, (, 41][rpar, ), 41][arrow, ->, 41][void, void, 41]
 [lcurbr, {, 42]
 [let, let, 43][id, arr, 43][colon, :, 43][integer, integer, 43][lsqbr, [, 43][intnum, 7, 43][rsqbr, ], 43][semi, ;, 43]
-[id, arr, 44][lsqbr, [, 44][intnum, 0, 44][rsqbr, ], 44][assign, =, 44][intnum, 64, 44][semi, ;, 44]
+[id, arr, 44][lsqbr, [, 44][intnum, 0, 44][rsqbr, ], 44][lsqbr, [, 44][intnum, 5, 44][rsqbr, ], 44][assign, =, 44][intnum, 64, 44][semi, ;, 44]
 [id, arr, 45][lsqbr, [, 45][intnum, 1, 45][rsqbr, ], 45][assign, =, 45][intnum, 34, 45][semi, ;, 45]
 [id, arr, 46][lsqbr, [, 46][intnum, 2, 46][rsqbr, ], 46][assign, =, 46][intnum, 25, 46][semi, ;, 46]
 [id, arr, 47][lsqbr, [, 47][intnum, 3, 47][rsqbr, ], 47][assign, =, 47][intnum, 12, 47][semi, ;, 47]

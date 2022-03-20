@@ -1,450 +1,288 @@
 prog
 ├── structDecList
 │   ├── structDec
-│   │   ├── id: POLYNOMIAL
-│   │   ├── inherList
+│   │   ├── id: POLYNOMIAL│   │   ├── inherList
 │   │   └── memberDeclList
 │   │       └── memberDecl
-│   │           ├── visibility: public
-│   │           └── funcDecl
-│   │               ├── id: evaluate
-│   │               ├── fparmList
+│   │           ├── visibility: public│   │           └── funcDecl
+│   │               ├── id: evaluate│   │               ├── fparmList
 │   │               │   └── varDecl
-│   │               │       ├── id: x
-│   │               │       ├── type: float
-│   │               │       └── dimList
-│   │               └── type: float
-│   ├── structDec
-│   │   ├── id: LINEAR
-│   │   ├── inherList
-│   │   │   └── id: POLYNOMIAL
-│   │   └── memberDeclList
+│   │               │       ├── id: x│   │               │       ├── type: float│   │               │       └── dimList
+│   │               └── type: float│   ├── structDec
+│   │   ├── id: LINEAR│   │   ├── inherList
+│   │   │   └── id: POLYNOMIAL│   │   └── memberDeclList
 │   │       ├── memberDecl
-│   │       │   ├── visibility: private
-│   │       │   └── varDecl
-│   │       │       ├── id: a
-│   │       │       ├── type: float
-│   │       │       └── dimList
+│   │       │   ├── visibility: private│   │       │   └── varDecl
+│   │       │       ├── id: a│   │       │       ├── type: float│   │       │       └── dimList
 │   │       ├── memberDecl
-│   │       │   ├── visibility: private
-│   │       │   └── varDecl
-│   │       │       ├── id: b
-│   │       │       ├── type: float
-│   │       │       └── dimList
+│   │       │   ├── visibility: private│   │       │   └── varDecl
+│   │       │       ├── id: b│   │       │       ├── type: float│   │       │       └── dimList
 │   │       ├── memberDecl
-│   │       │   ├── visibility: public
-│   │       │   └── funcDecl
-│   │       │       ├── id: build
-│   │       │       ├── fparmList
+│   │       │   ├── visibility: public│   │       │   └── funcDecl
+│   │       │       ├── id: build│   │       │       ├── fparmList
 │   │       │       │   ├── varDecl
-│   │       │       │   │   ├── id: A
-│   │       │       │   │   ├── type: float
-│   │       │       │   │   └── dimList
+│   │       │       │   │   ├── id: A│   │       │       │   │   ├── type: float│   │       │       │   │   └── dimList
 │   │       │       │   └── varDecl
-│   │       │       │       ├── id: B
-│   │       │       │       ├── type: float
-│   │       │       │       └── dimList
-│   │       │       └── type: LINEAR
-│   │       └── memberDecl
-│   │           ├── visibility: public
-│   │           └── funcDecl
-│   │               ├── id: evaluate
-│   │               ├── fparmList
+│   │       │       │       ├── id: B│   │       │       │       ├── type: float│   │       │       │       └── dimList
+│   │       │       └── type: LINEAR│   │       └── memberDecl
+│   │           ├── visibility: public│   │           └── funcDecl
+│   │               ├── id: evaluate│   │               ├── fparmList
 │   │               │   └── varDecl
-│   │               │       ├── id: x
-│   │               │       ├── type: float
-│   │               │       └── dimList
-│   │               └── type: float
-│   └── structDec
-│       ├── id: QUADRATIC
-│       ├── inherList
-│       │   └── id: POLYNOMIAL
-│       └── memberDeclList
+│   │               │       ├── id: x│   │               │       ├── type: float│   │               │       └── dimList
+│   │               └── type: float│   └── structDec
+│       ├── id: QUADRATIC│       ├── inherList
+│       │   └── id: POLYNOMIAL│       └── memberDeclList
 │           ├── memberDecl
-│           │   ├── visibility: private
-│           │   └── varDecl
-│           │       ├── id: a
-│           │       ├── type: float
-│           │       └── dimList
+│           │   ├── visibility: private│           │   └── varDecl
+│           │       ├── id: a│           │       ├── type: float│           │       └── dimList
 │           ├── memberDecl
-│           │   ├── visibility: private
-│           │   └── varDecl
-│           │       ├── id: b
-│           │       ├── type: float
-│           │       └── dimList
+│           │   ├── visibility: private│           │   └── varDecl
+│           │       ├── id: b│           │       ├── type: float│           │       └── dimList
 │           ├── memberDecl
-│           │   ├── visibility: private
-│           │   └── varDecl
-│           │       ├── id: c
-│           │       ├── type: float
-│           │       └── dimList
+│           │   ├── visibility: private│           │   └── varDecl
+│           │       ├── id: c│           │       ├── type: float│           │       └── dimList
 │           ├── memberDecl
-│           │   ├── visibility: public
-│           │   └── funcDecl
-│           │       ├── id: build
-│           │       ├── fparmList
+│           │   ├── visibility: public│           │   └── funcDecl
+│           │       ├── id: build│           │       ├── fparmList
 │           │       │   ├── varDecl
-│           │       │   │   ├── id: A
-│           │       │   │   ├── type: float
-│           │       │   │   └── dimList
+│           │       │   │   ├── id: A│           │       │   │   ├── type: float│           │       │   │   └── dimList
 │           │       │   ├── varDecl
-│           │       │   │   ├── id: B
-│           │       │   │   ├── type: float
-│           │       │   │   └── dimList
+│           │       │   │   ├── id: B│           │       │   │   ├── type: float│           │       │   │   └── dimList
 │           │       │   └── varDecl
-│           │       │       ├── id: C
-│           │       │       ├── type: float
-│           │       │       └── dimList
-│           │       └── type: QUADRATIC
-│           └── memberDecl
-│               ├── visibility: public
-│               └── funcDecl
-│                   ├── id: evaluate
-│                   ├── fparmList
+│           │       │       ├── id: C│           │       │       ├── type: float│           │       │       └── dimList
+│           │       └── type: QUADRATIC│           └── memberDecl
+│               ├── visibility: public│               └── funcDecl
+│                   ├── id: evaluate│                   ├── fparmList
 │                   │   └── varDecl
-│                   │       ├── id: x
-│                   │       ├── type: float
-│                   │       └── dimList
-│                   └── type: float
-├── implDefList
+│                   │       ├── id: x│                   │       ├── type: float│                   │       └── dimList
+│                   └── type: float├── implDefList
 │   ├── implDef
-│   │   ├── id: POLYNOMIAL
-│   │   └── funcDefList
+│   │   ├── id: POLYNOMIAL│   │   └── funcDefList
 │   │       └── funcDef
-│   │           ├── id: evaluate
-│   │           ├── fparmList
+│   │           ├── id: evaluate│   │           ├── fparmList
 │   │           │   └── varDecl
-│   │           │       ├── id: x
-│   │           │       ├── type: float
-│   │           │       └── dimList
-│   │           ├── type: float
-│   │           └── funcBody
+│   │           │       ├── id: x│   │           │       ├── type: float│   │           │       └── dimList
+│   │           ├── type: float│   │           └── funcBody
 │   │               └── return
 │   │                   └── factor
-│   │                       └── num: 0
-│   ├── implDef
-│   │   ├── id: QUADRATIC
-│   │   └── funcDefList
+│   │                       └── num: 0│   ├── implDef
+│   │   ├── id: QUADRATIC│   │   └── funcDefList
 │   │       ├── funcDef
-│   │       │   ├── id: evaluate
-│   │       │   ├── fparmList
+│   │       │   ├── id: evaluate│   │       │   ├── fparmList
 │   │       │   │   └── varDecl
-│   │       │   │       ├── id: x
-│   │       │   │       ├── type: float
-│   │       │   │       └── dimList
-│   │       │   ├── type: float
-│   │       │   └── funcBody
+│   │       │   │       ├── id: x│   │       │   │       ├── type: float│   │       │   │       └── dimList
+│   │       │   ├── type: float│   │       │   └── funcBody
 │   │       │       ├── varDecl
-│   │       │       │   ├── id: result
-│   │       │       │   ├── type: float
-│   │       │       │   └── dimList
+│   │       │       │   ├── id: result│   │       │       │   ├── type: float│   │       │       │   └── dimList
 │   │       │       ├── assign
 │   │       │       │   ├── var
-│   │       │       │   │   ├── id: result
-│   │       │       │   │   └── indiceList
+│   │       │       │   │   ├── id: result│   │       │       │   │   └── indiceList
 │   │       │       │   └── factor
 │   │       │       │       └── var
-│   │       │       │           ├── id: a
-│   │       │       │           └── indiceList
+│   │       │       │           ├── id: a│   │       │       │           └── indiceList
 │   │       │       ├── assign
 │   │       │       │   ├── var
-│   │       │       │   │   ├── id: result
-│   │       │       │   │   └── indiceList
+│   │       │       │   │   ├── id: result│   │       │       │   │   └── indiceList
 │   │       │       │   └── add
 │   │       │       │       ├── mul
 │   │       │       │       │   ├── factor
 │   │       │       │       │   │   └── var
-│   │       │       │       │   │       ├── id: result
-│   │       │       │       │   │       └── indiceList
-│   │       │       │       │   ├── MulOp: *
-│   │       │       │       │   └── factor
+│   │       │       │       │   │       ├── id: result│   │       │       │       │   │       └── indiceList
+│   │       │       │       │   ├── MulOp: *│   │       │       │       │   └── factor
 │   │       │       │       │       └── var
-│   │       │       │       │           ├── id: x
-│   │       │       │       │           └── indiceList
-│   │       │       │       ├── addOp: +
-│   │       │       │       └── factor
+│   │       │       │       │           ├── id: x│   │       │       │       │           └── indiceList
+│   │       │       │       ├── addOp: +│   │       │       │       └── factor
 │   │       │       │           └── var
-│   │       │       │               ├── id: b
-│   │       │       │               └── indiceList
+│   │       │       │               ├── id: b│   │       │       │               └── indiceList
 │   │       │       ├── assign
 │   │       │       │   ├── var
-│   │       │       │   │   ├── id: result
-│   │       │       │   │   └── indiceList
+│   │       │       │   │   ├── id: result│   │       │       │   │   └── indiceList
 │   │       │       │   └── add
 │   │       │       │       ├── mul
 │   │       │       │       │   ├── factor
 │   │       │       │       │   │   └── var
-│   │       │       │       │   │       ├── id: result
-│   │       │       │       │   │       └── indiceList
-│   │       │       │       │   ├── MulOp: *
-│   │       │       │       │   └── factor
+│   │       │       │       │   │       ├── id: result│   │       │       │       │   │       └── indiceList
+│   │       │       │       │   ├── MulOp: *│   │       │       │       │   └── factor
 │   │       │       │       │       └── var
-│   │       │       │       │           ├── id: x
-│   │       │       │       │           └── indiceList
-│   │       │       │       ├── addOp: +
-│   │       │       │       └── factor
+│   │       │       │       │           ├── id: x│   │       │       │       │           └── indiceList
+│   │       │       │       ├── addOp: +│   │       │       │       └── factor
 │   │       │       │           └── var
-│   │       │       │               ├── id: c
-│   │       │       │               └── indiceList
+│   │       │       │               ├── id: c│   │       │       │               └── indiceList
 │   │       │       └── return
 │   │       │           └── factor
 │   │       │               └── var
-│   │       │                   ├── id: result
-│   │       │                   └── indiceList
+│   │       │                   ├── id: result│   │       │                   └── indiceList
 │   │       └── funcDef
-│   │           ├── id: build
-│   │           ├── fparmList
+│   │           ├── id: build│   │           ├── fparmList
 │   │           │   ├── varDecl
-│   │           │   │   ├── id: A
-│   │           │   │   ├── type: float
-│   │           │   │   └── dimList
+│   │           │   │   ├── id: A│   │           │   │   ├── type: float│   │           │   │   └── dimList
 │   │           │   ├── varDecl
-│   │           │   │   ├── id: B
-│   │           │   │   ├── type: float
-│   │           │   │   └── dimList
+│   │           │   │   ├── id: B│   │           │   │   ├── type: float│   │           │   │   └── dimList
 │   │           │   └── varDecl
-│   │           │       ├── id: C
-│   │           │       ├── type: float
-│   │           │       └── dimList
-│   │           ├── type: QUADRATIC
-│   │           └── funcBody
+│   │           │       ├── id: C│   │           │       ├── type: float│   │           │       └── dimList
+│   │           ├── type: QUADRATIC│   │           └── funcBody
 │   │               ├── varDecl
-│   │               │   ├── id: new_function
-│   │               │   ├── type: QUADRATIC
-│   │               │   └── dimList
+│   │               │   ├── id: new_function│   │               │   ├── type: QUADRATIC│   │               │   └── dimList
 │   │               ├── assign
 │   │               │   ├── dot
 │   │               │   │   ├── var
-│   │               │   │   │   ├── id: new_function
-│   │               │   │   │   └── indiceList
+│   │               │   │   │   ├── id: new_function│   │               │   │   │   └── indiceList
 │   │               │   │   └── var
-│   │               │   │       ├── id: a
-│   │               │   │       └── indiceList
+│   │               │   │       ├── id: a│   │               │   │       └── indiceList
 │   │               │   └── factor
 │   │               │       └── var
-│   │               │           ├── id: A
-│   │               │           └── indiceList
+│   │               │           ├── id: A│   │               │           └── indiceList
 │   │               ├── assign
 │   │               │   ├── dot
 │   │               │   │   ├── var
-│   │               │   │   │   ├── id: new_function
-│   │               │   │   │   └── indiceList
+│   │               │   │   │   ├── id: new_function│   │               │   │   │   └── indiceList
 │   │               │   │   └── var
-│   │               │   │       ├── id: b
-│   │               │   │       └── indiceList
+│   │               │   │       ├── id: b│   │               │   │       └── indiceList
 │   │               │   └── factor
 │   │               │       └── var
-│   │               │           ├── id: B
-│   │               │           └── indiceList
+│   │               │           ├── id: B│   │               │           └── indiceList
 │   │               ├── assign
 │   │               │   ├── dot
 │   │               │   │   ├── var
-│   │               │   │   │   ├── id: new_function
-│   │               │   │   │   └── indiceList
+│   │               │   │   │   ├── id: new_function│   │               │   │   │   └── indiceList
 │   │               │   │   └── var
-│   │               │   │       ├── id: c
-│   │               │   │       └── indiceList
+│   │               │   │       ├── id: c│   │               │   │       └── indiceList
 │   │               │   └── factor
 │   │               │       └── var
-│   │               │           ├── id: C
-│   │               │           └── indiceList
+│   │               │           ├── id: C│   │               │           └── indiceList
 │   │               └── return
 │   │                   └── factor
 │   │                       └── var
-│   │                           ├── id: new_function
-│   │                           └── indiceList
+│   │                           ├── id: new_function│   │                           └── indiceList
 │   └── implDef
-│       ├── id: LINEAR
-│       └── funcDefList
+│       ├── id: LINEAR│       └── funcDefList
 │           ├── funcDef
-│           │   ├── id: build
-│           │   ├── fparmList
+│           │   ├── id: build│           │   ├── fparmList
 │           │   │   ├── varDecl
-│           │   │   │   ├── id: A
-│           │   │   │   ├── type: float
-│           │   │   │   └── dimList
+│           │   │   │   ├── id: A│           │   │   │   ├── type: float│           │   │   │   └── dimList
 │           │   │   └── varDecl
-│           │   │       ├── id: B
-│           │   │       ├── type: float
-│           │   │       └── dimList
-│           │   ├── type: LINEAR
-│           │   └── funcBody
+│           │   │       ├── id: B│           │   │       ├── type: float│           │   │       └── dimList
+│           │   ├── type: LINEAR│           │   └── funcBody
 │           │       ├── varDecl
-│           │       │   ├── id: new_function
-│           │       │   ├── type: LINEAR
-│           │       │   └── dimList
+│           │       │   ├── id: new_function│           │       │   ├── type: LINEAR│           │       │   └── dimList
 │           │       ├── assign
 │           │       │   ├── dot
 │           │       │   │   ├── var
-│           │       │   │   │   ├── id: new_function
-│           │       │   │   │   └── indiceList
+│           │       │   │   │   ├── id: new_function│           │       │   │   │   └── indiceList
 │           │       │   │   └── var
-│           │       │   │       ├── id: a
-│           │       │   │       └── indiceList
+│           │       │   │       ├── id: a│           │       │   │       └── indiceList
 │           │       │   └── factor
 │           │       │       └── var
-│           │       │           ├── id: A
-│           │       │           └── indiceList
+│           │       │           ├── id: A│           │       │           └── indiceList
 │           │       ├── assign
 │           │       │   ├── dot
 │           │       │   │   ├── var
-│           │       │   │   │   ├── id: new_function
-│           │       │   │   │   └── indiceList
+│           │       │   │   │   ├── id: new_function│           │       │   │   │   └── indiceList
 │           │       │   │   └── var
-│           │       │   │       ├── id: b
-│           │       │   │       └── indiceList
+│           │       │   │       ├── id: b│           │       │   │       └── indiceList
 │           │       │   └── factor
 │           │       │       └── var
-│           │       │           ├── id: B
-│           │       │           └── indiceList
+│           │       │           ├── id: B│           │       │           └── indiceList
 │           │       └── return
 │           │           └── factor
 │           │               └── var
-│           │                   ├── id: new_function
-│           │                   └── indiceList
+│           │                   ├── id: new_function│           │                   └── indiceList
 │           └── funcDef
-│               ├── id: evaluate
-│               ├── fparmList
+│               ├── id: evaluate│               ├── fparmList
 │               │   └── varDecl
-│               │       ├── id: x
-│               │       ├── type: float
-│               │       └── dimList
-│               ├── type: float
-│               └── funcBody
+│               │       ├── id: x│               │       ├── type: float│               │       └── dimList
+│               ├── type: float│               └── funcBody
 │                   ├── varDecl
-│                   │   ├── id: result
-│                   │   ├── type: float
-│                   │   └── dimList
+│                   │   ├── id: result│                   │   ├── type: float│                   │   └── dimList
 │                   ├── assign
 │                   │   ├── var
-│                   │   │   ├── id: result
-│                   │   │   └── indiceList
+│                   │   │   ├── id: result│                   │   │   └── indiceList
 │                   │   └── factor
-│                   │       └── float: 0.0
-│                   ├── assign
+│                   │       └── float: 0.0│                   ├── assign
 │                   │   ├── var
-│                   │   │   ├── id: result
-│                   │   │   └── indiceList
+│                   │   │   ├── id: result│                   │   │   └── indiceList
 │                   │   └── add
 │                   │       ├── mul
 │                   │       │   ├── factor
 │                   │       │   │   └── var
-│                   │       │   │       ├── id: a
-│                   │       │   │       └── indiceList
-│                   │       │   ├── MulOp: *
-│                   │       │   └── factor
+│                   │       │   │       ├── id: a│                   │       │   │       └── indiceList
+│                   │       │   ├── MulOp: *│                   │       │   └── factor
 │                   │       │       └── var
-│                   │       │           ├── id: x
-│                   │       │           └── indiceList
-│                   │       ├── addOp: +
-│                   │       └── factor
+│                   │       │           ├── id: x│                   │       │           └── indiceList
+│                   │       ├── addOp: +│                   │       └── factor
 │                   │           └── var
-│                   │               ├── id: b
-│                   │               └── indiceList
+│                   │               ├── id: b│                   │               └── indiceList
 │                   └── return
 │                       └── factor
 │                           └── var
-│                               ├── id: result
-│                               └── indiceList
+│                               ├── id: result│                               └── indiceList
 └── funcDefList
     └── funcDef
-        ├── id: main
-        ├── fparmList
-        ├── type: void
-        └── funcBody
+        ├── id: main        ├── fparmList
+        ├── type: void        └── funcBody
             ├── varDecl
-            │   ├── id: f1
-            │   ├── type: LINEAR
-            │   └── dimList
+            │   ├── id: f1            │   ├── type: LINEAR            │   └── dimList
             ├── varDecl
-            │   ├── id: f2
-            │   ├── type: QUADRATIC
-            │   └── dimList
+            │   ├── id: f2            │   ├── type: QUADRATIC            │   └── dimList
             ├── varDecl
-            │   ├── id: counter
-            │   ├── type: integer
-            │   └── dimList
+            │   ├── id: counter            │   ├── type: integer            │   └── dimList
             ├── assign
             │   ├── var
-            │   │   ├── id: f1
-            │   │   └── indiceList
+            │   │   ├── id: f1            │   │   └── indiceList
             │   └── factor
             │       └── dot
             │           ├── var
-            │           │   ├── id: f1
-            │           │   └── indiceList
+            │           │   ├── id: f1            │           │   └── indiceList
             │           └── funCall
-            │               ├── id: build
-            │               └── aParams
+            │               ├── id: build            │               └── aParams
             │                   ├── factor
-            │                   │   └── num: 2
-            │                   └── factor
-            │                       └── float: 3.5
-            ├── assign
+            │                   │   └── num: 2            │                   └── factor
+            │                       └── float: 3.5            ├── assign
             │   ├── var
-            │   │   ├── id: f2
-            │   │   └── indiceList
+            │   │   ├── id: f2            │   │   └── indiceList
             │   └── factor
             │       └── dot
             │           ├── var
-            │           │   ├── id: f2
-            │           │   └── indiceList
+            │           │   ├── id: f2            │           │   └── indiceList
             │           └── funCall
-            │               ├── id: build
-            │               └── aParams
+            │               ├── id: build            │               └── aParams
             │                   ├── factor
-            │                   │   ├── sign: -
-            │                   │   └── factor
-            │                   │       └── float: 2.0
-            │                   ├── factor
-            │                   │   └── float: 1.0
-            │                   └── factor
-            │                       └── float: 0.0
-            ├── assign
+            │                   │   ├── sign: -            │                   │   └── factor
+            │                   │       └── float: 2.0            │                   ├── factor
+            │                   │   └── float: 1.0            │                   └── factor
+            │                       └── float: 0.0            ├── assign
             │   ├── var
-            │   │   ├── id: counter
-            │   │   └── indiceList
+            │   │   ├── id: counter            │   │   └── indiceList
             │   └── factor
-            │       └── num: 1
-            └── while
+            │       └── num: 1            └── while
                 ├── relExpr
                 │   └── rel
                 │       ├── factor
                 │       │   └── var
-                │       │       ├── id: counter
-                │       │       └── indiceList
-                │       ├── relOp: <=
-                │       └── factor
-                │           └── num: 10
-                └── stat
+                │       │       ├── id: counter                │       │       └── indiceList
+                │       ├── relOp: <=                │       └── factor
+                │           └── num: 10                └── stat
                     ├── write
                     │   └── factor
                     │       └── var
-                    │           ├── id: counter
-                    │           └── indiceList
+                    │           ├── id: counter                    │           └── indiceList
                     ├── write
                     │   └── factor
                     │       └── dot
                     │           ├── var
-                    │           │   ├── id: f1
-                    │           │   └── indiceList
+                    │           │   ├── id: f1                    │           │   └── indiceList
                     │           └── funCall
-                    │               ├── id: evaluate
-                    │               └── aParams
+                    │               ├── id: evaluate                    │               └── aParams
                     │                   └── factor
                     │                       └── var
-                    │                           ├── id: counter
-                    │                           └── indiceList
+                    │                           ├── id: counter                    │                           └── indiceList
                     └── write
                         └── factor
                             └── dot
                                 ├── var
-                                │   ├── id: f2
-                                │   └── indiceList
+                                │   ├── id: f2                                │   └── indiceList
                                 └── funCall
-                                    ├── id: evaluate
-                                    └── aParams
+                                    ├── id: evaluate                                    └── aParams
                                         └── factor
                                             └── var
-                                                ├── id: counter
-                                                └── indiceList
+                                                ├── id: counter                                                └── indiceList

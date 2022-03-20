@@ -35,7 +35,8 @@ print(yfd)
 x.add_row([yfd])
 x.add_row([yfd])
 
-print(x)
+
+print(x.)
 
 
 

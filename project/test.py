@@ -2,96 +2,95 @@ from LexicalAnalyzer import Token
 from anytree import Node, RenderTree
 from Nodes import *
 
-
 class Visitor:
-    def visit(self, e: Node) -> None: pass
+    def visit(self, node):
 
-    def visit(self, e: IdNode) -> None: pass
+        if type(node) is Node: pass
 
-    def visit(self, e: MulOpNode) -> None: pass
+        if type(node) is IdNode: pass
 
-    def visit(self, e: aParamsSubtree) -> None: pass
+        if type(node) is MulOpNode: pass
 
-    def visit(self, e: addOpNode) -> None: pass
+        if type(node) is aParamsSubtree: pass
 
-    def visit(self, e: addOpSubtree) -> None: pass
+        if type(node) is addOpNode: pass
 
-    def visit(self, e: arraySizeSubtree) -> None: pass
+        if type(node) is addOpSubtree: pass
 
-    def visit(self, e: assignSubtree) -> None: pass
+        if type(node) is assignSubtree: pass
 
-    def visit(self, e: dimListSubtree) -> None: pass
+        if type(node) is dimListSubtree: pass
 
-    def visit(self, e: dotSubtree) -> None: pass
+        if type(node) is dotSubtree: pass
 
-    def visit(self, e: factorSubtree) -> None: pass
+        if type(node) is factorSubtree: pass
 
-    def visit(self, e: floatNode) -> None: pass
+        if type(node) is floatNode: pass
 
-    def visit(self, e: fparmListSubtree) -> None: pass
+        if type(node) is fparmListSubtree: pass
 
-    def visit(self, e: funCallSubtree) -> None: pass
+        if type(node) is funCallSubtree: pass
 
-    def visit(self, e: funcBodySubtree) -> None: pass
+        if type(node) is funcBodySubtree: pass
 
-    def visit(self, e: funcDeclSubtree) -> None: pass
+        if type(node) is funcDeclSubtree: pass
 
-    def visit(self, e: funcDefListSubtree) -> None: pass
+        if type(node) is funcDefListSubtree: pass
 
-    def visit(self, e: funcDefSubtree) -> None: pass
+        if type(node) is funcDefSubtree: pass
 
-    def visit(self, e: ifThenElseSubtree) -> None: pass
+        if type(node) is ifThenElseSubtree: pass
 
-    def visit(self, e: implDefListSubtree) -> None: pass
+        if type(node) is implDefListSubtree: pass
 
-    def visit(self, e: implDefSubtree) -> None: pass
+        if type(node) is implDefSubtree: pass
 
-    def visit(self, e: indiceListSubtree) -> None: pass
+        if type(node) is indiceListSubtree: pass
 
-    def visit(self, e: inherListSubtree) -> None: pass
+        if type(node) is inherListSubtree: pass
 
-    def visit(self, e: memberDeclListSubtree) -> None: pass
+        if type(node) is memberDeclListSubtree: pass
 
-    def visit(self, e: memberDeclSubtree) -> None: pass
+        if type(node) is memberDeclSubtree: pass
 
-    def visit(self, e: mulOpSubtree) -> None: pass
+        if type(node) is mulOpSubtree: pass
 
-    def visit(self, e: numNode) -> None: pass
+        if type(node) is numNode: pass
 
-    def visit(self, e: progSubtree) -> None: pass
+        if type(node) is progSubtree: pass
 
-    def visit(self, e: readSubtree) -> None: pass
+        if type(node) is readSubtree: pass
 
-    def visit(self, e: relExprSubtree) -> None: pass
+        if type(node) is relExprSubtree: pass
 
-    def visit(self, e: relOpNode) -> None: pass
+        if type(node) is relOpNode: pass
 
-    def visit(self, e: relOpSubtree) -> None: pass
+        if type(node) is relOpSubtree: pass
 
-    def visit(self, e: returnSubtree) -> None: pass
+        if type(node) is returnSubtree: pass
 
-    def visit(self, e: signNode) -> None: pass
+        if type(node) is signNode: pass
 
-    def visit(self, e: statSubtree) -> None: pass
+        if type(node) is statSubtree: pass
 
-    def visit(self, e: structDecListSubtree) -> None: pass
+        if type(node) is structDecListSubtree: pass
 
-    def visit(self, e: structDecSubtree) -> None: pass
+        if type(node) is structDecSubtree: pass
 
-    def visit(self, e: typeNode) -> None: pass
+        if type(node) is typeNode: pass
 
-    def visit(self, e: varDeclSubtree) -> None: pass
+        if type(node) is varDeclSubtree: pass
 
-    def visit(self, e: varSubtree) -> None: pass
+        if type(node) is varSubtree: pass
 
-    def visit(self, e: visibilityNode) -> None: pass
+        if type(node) is visibilityNode: pass
 
-    def visit(self, e: whileSubtree) -> None: pass
+        if type(node) is whileSubtree: pass
 
-    def visit(self, e: writeSubtree) -> None: pass
+        if type(node) is writeSubtree: pass
 
 class SymTabCreationVisitor(Visitor):
-    def visit(self, e: varDeclSubtree) -> None:
+    if type(node) is varDeclSubtree) -> None:
         for child in e.children:
             child.symList = e.symList
             child.accept(self)
@@ -103,12 +102,12 @@ class SymTabCreationVisitor(Visitor):
         varDeclSubtree.symEntry = SymTabEntry("var", type, id, dimlist)
 
 
-    def visit(self, e: IdNode) -> None:
+    if type(node) is IdNode) -> None:
         for child in e.children:
             child.symList = e.symList
             child.accept(self)
 
-    def visit(self, e: typeNode) -> None:
+    if type(node) is typeNode) -> None:
         for child in e.children:
             child.symList = e.symList
             child.accept(self)

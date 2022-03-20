@@ -67,6 +67,13 @@ class dotSubtree(BaseNode, Node):
 
 # Subtrees #
 
+class arrSizeSubtree(BaseNode, Node):
+    def __init__(self, children=None):
+        super(arrSizeSubtree, self).__init__()
+        self.name = "arrSize"
+        if children:
+            self.children = children
+
 class structDecListSubtree(BaseNode, Node):
     def __init__(self, children=None):
         super(structDecListSubtree, self).__init__()
@@ -273,7 +280,8 @@ class typeNode(BaseNode, Node):
         super(typeNode, self).__init__()
         self.name = "type"
         self.token = token
-        self.data = token.lexeme
+        if token:
+            self.data = token.lexeme
         if data:
             self.data = data
 
@@ -283,7 +291,8 @@ class IdNode(BaseNode, Node):
         super(IdNode, self).__init__()
         self.name = "id"
         self.token = token
-        self.data = token.lexeme
+        if token:
+            self.data = token.lexeme
         if data:
             self.data = data
 
@@ -292,7 +301,8 @@ class relOpNode(BaseNode, Node):
         super(relOpNode, self).__init__()
         self.name = "relOp"
         self.token = token
-        self.data = token.lexeme
+        if token:
+            self.data = token.lexeme
         if data:
             self.data = data
 
@@ -301,7 +311,8 @@ class numNode(BaseNode, Node):
         super(numNode, self).__init__()
         self.name = "num"
         self.token = token
-        self.data = token.lexeme
+        if token:
+            self.data = token.lexeme
         if data:
             self.data = data
 
@@ -310,7 +321,8 @@ class floatNode(BaseNode, Node):
         super(floatNode, self).__init__()
         self.name = "float"
         self.token = token
-        self.data = token.lexeme
+        if token:
+            self.data = token.lexeme
         if data:
             self.data = data
 
@@ -319,7 +331,8 @@ class visibilityNode(BaseNode, Node):
         super(visibilityNode, self).__init__()
         self.name = "visibility"
         self.token = token
-        self.data = token.lexeme
+        if token:
+            self.data = token.lexeme
         if data:
             self.data = data
 
@@ -328,7 +341,8 @@ class signNode(BaseNode, Node):
         super(signNode, self).__init__()
         self.name = "sign"
         self.token = token
-        self.data = token.lexeme
+        if token:
+            self.data = token.lexeme
         if data:
             self.data = data
 
@@ -337,7 +351,8 @@ class MulOpNode(BaseNode, Node):
         super(MulOpNode, self).__init__()
         self.name = "MulOp"
         self.token = token
-        self.data = token.lexeme
+        if token:
+            self.data = token.lexeme
         if data:
             self.data = data
 
@@ -346,7 +361,8 @@ class addOpNode(BaseNode, Node):
         super(addOpNode, self).__init__()
         self.name = "addOp"
         self.token = token
-        self.data = token.lexeme
+        if token:
+            self.data = token.lexeme
         if data:
             self.data = data
 

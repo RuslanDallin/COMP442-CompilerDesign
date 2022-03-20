@@ -5,6 +5,8 @@ from anytree import RenderTree
 from LexicalAnalyzer import Lex
 from Parser import parse
 
+from Visitor import *
+
 directoryName = "Input" # set the source folder
 directory = os.listdir(directoryName)
 
@@ -75,21 +77,18 @@ def astDriver():
             print("\n\n********* %s *********" % (SourceFileName))
             lex = Lex(src)
             parseCheck, deriviations, errors, ast = parse(lex)
-            for pre, fill, node in RenderTree(ast):
-                if node.name == "id" or node.name == "num" or node.name == "float" \
-                        or node.name == "sign" or node.name == "type" \
-                        or node.name == "visibility" or node.name.endswith("Op"):
-                    astOutput.write(str("%s%s: %s\n" % (pre, node.name, node.token.lexeme)))
-                else:
-                    astOutput.write(str("%s%s\n" % (pre, node.name)))
 
             for pre, fill, node in RenderTree(ast):
-                if node.name == "id" or node.name == "num" or node.name == "float" \
-                        or node.name == "sign" or node.name == "type" \
-                        or node.name == "visibility" or node.name.endswith("Op"):
-                    print("%s%s: %s" % (pre, node.name, node.token.lexeme))
+                if node.__class__.__name__.endswith("Node"):
+                    astOutput.write(str(("%s%s: %s" % (pre, node.name, node.data))))
+                    print("%s%s: %s" % (pre, node.name, node.data))
                 else:
                     print("%s%s" % (pre, node.name))
+                    astOutput.write(str("%s%s\n" % (pre, node.name)))
+
+
+            visitor = Visitor()
+            ast.accept(visitor)
 
             print(parseCheck)
     # ---------------------------------------------------------------------

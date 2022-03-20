@@ -166,118 +166,48 @@ class Function():
 def Class(self): pass
 
 
-class BaseNode():
-    def __init__(self, token=None):
-        self.name = ""
-        self.token = token
-        self.symTable = None
-        self.symRecord = None
-
-    def accept(self, visitor):
-        for child in self.children:
-            child.accept(visitor)
-        visitor.visit(self)
-
-
-class varDeclSubtree(BaseNode, Node):
-    def __init__(self, children=None):
-        super(varDeclSubtree, self).__init__()
-        self.name = "varDecl"
-        if children:
-            self.children = children
-
-class typeNode(BaseNode, Node):
-    def __init__(self, token=None, type=None):
-        super(typeNode, self).__init__()
-        self.name = "type"
-        self.token = token
-        if type:
-            self.data = type
-
-class IdNode(BaseNode, Node):
-    def __init__(self, token=None, id=None):
-        super(IdNode, self).__init__()
-        self.name = "id"
-        self.token = token
-        if id:
-            self.data = id
-
-class dimListSubtree(BaseNode, Node):
-    def __init__(self, children=None):
-        super(dimListSubtree, self).__init__()
-        self.name = "dimList"
-        if children:
-            self.children = children
-
-class numNode(BaseNode, Node):
-    def __init__(self, token=None, num=None):
-        super(numNode, self).__init__()
-        self.name = "num"
-        self.token = token
-        if num:
-            self.data = num
-
-class funcBodySubtree(BaseNode, Node):
-    def __init__(self, children=None):
-        super(funcBodySubtree, self).__init__()
-        self.name = "funcBody"
-        if children:
-            self.children = children
-
-class fparmListSubtree(BaseNode, Node):
-    def __init__(self, children=None):
-        super(fparmListSubtree, self).__init__()
-        self.name = "fparmList"
-        if children:
-            self.children = children
-
-class funcDefSubtree(BaseNode, Node):
-    def __init__(self, children=None):
-        super(funcDefSubtree, self).__init__()
-        self.name = "funcDef"
-        if children:
-            self.children = children
-
-n1 = IdNode(id="n")
-n2 = typeNode(type="integer")
-n31 = numNode(num=3)
+n1 = IdNode(data="n")
+n2 = typeNode(data="integer")
+n31 = numNode(data=3)
 n3 = dimListSubtree((n31,))
 n4 = varDeclSubtree((n1, n2, n3))
 
-n11 = IdNode(id="i")
-n22 = typeNode(type="float")
+n11 = IdNode(data="i")
+n22 = typeNode(data="float")
 n33 = dimListSubtree()
 n44 = varDeclSubtree((n11, n22, n33))
 
 funcBody = funcBodySubtree((n4,n44))
 
 
-par1 = IdNode(id="n")
-par2 = typeNode(type="integer")
-par3 = numNode(num=7)
+par1 = IdNode(data="n")
+par2 = typeNode(data="integer")
+par3 = numNode(data=7)
 par4 = dimListSubtree((par3,))
 par5 = varDeclSubtree((par1, par2, par4))
 
-par11 = IdNode(id="size")
-par22 = typeNode(type="integer")
+par11 = IdNode(data="size")
+par22 = typeNode(data="integer")
 par44 = dimListSubtree()
 par55 = varDeclSubtree((par11, par22, par44))
 
 funcParms = fparmListSubtree((par5, par55,))
-returnType = typeNode(type="void")
-funcName = IdNode(id="bubbleSort")
+returnType = typeNode(data="void")
+funcName = IdNode(data="bubbleSort")
 func = funcDefSubtree((funcName, funcParms, returnType, funcBody))
-
-
-visitor = Visitor()
-
-func.accept(visitor)
 
 for pre, fill, node in RenderTree(func):
     if node.__class__.__name__.endswith("Node"):
         print("%s%s: %s" % (pre, node.name, node.data))
     else:
         print("%s%s" % (pre, node.name))
+
+visitor = Visitor()
+func.accept(visitor)
+
+
+par44 = dimListSubtree()
+print(par44.children)
 
 # en1 = Entry("local", "n", "integer", visibility="private")
 # en = Entry("local", "n", "integer", (2,1), visibility="private")
