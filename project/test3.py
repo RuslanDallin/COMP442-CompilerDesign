@@ -11,9 +11,33 @@ x.add_row(["Brisbane", 5905, 1857594, 1146.4])
 print(x)
 
 
-yfd = PrettyTable(header=False)
+yfd = PrettyTable(title="bubbleSort",header=False)
 
 yfd.add_row(["function", "bubbleSort", "(integer[],integer):void ", x])
 
-
+x = PrettyTable(title="global", header=False)
 print(yfd)
+x.add_row([yfd])
+x.add_row([yfd])
+
+print(x)
+
+print("""""""""""")
+
+ors = PrettyTable(title="Class bubbleSort",header=False)
+
+ors.add_row(["function", "bubbleSort", "(integer[],integer):void ", ""])
+ors.add_row(["dsd", "bubbleSdsdort", "dsd", ""])
+ors.add_row(["","","",x])
+
+x = PrettyTable(title="global", header=False)
+print(yfd)
+x.add_row([yfd])
+x.add_row([yfd])
+
+print(x)
+
+
+
+
+

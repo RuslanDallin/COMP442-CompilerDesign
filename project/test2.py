@@ -22,3 +22,9 @@ b.att.append("c")
 
 print(a.att)
 print(b.att)
+
+
+tuple = ("integer[]","integer")
+
+print(tuple)
+

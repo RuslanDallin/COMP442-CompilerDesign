@@ -27,15 +27,40 @@ class Visitor():
         if type(node) is fparmListSubtree:
             print("visiting fparmListSubtree")
 
+        # if type(node) is funcDefSubtree:
+        #     print("visiting funcBodySubtree")
+        #     funcId = node.children[0].data
+        #     funcParms = node.children[1]
+        #     funcType = node.children[2].data
+        #     node.symTable = PrettyTable(title="table: " + funcId, header=False)
+        #     for child in node.children[3].children:
+        #         node.symTable.add_row(child.symRecord.list)
+        #     print(node.symTable)
+
         if type(node) is funcDefSubtree:
             print("visiting funcBodySubtree")
             funcId = node.children[0].data
-            # funcParms = node.children[1]
+            funcParmsChildren = node.children[1].children
             funcType = node.children[2].data
-            node.symTable = PrettyTable(title="table: " + funcId, header=False)
-            for child in node.children[3].children:
-                node.symTable.add_row(child.symRecord.list)
-            print(node.symTable)
+            funcBodyChildren = node.children[3].children
+
+            funcParams = ()
+            for param in funcParmsChildren:
+                for var in funcBodyChildren:
+                    if param.symRecord.list[1] == var.symRecord.list[1]:
+                        var.symRecord.list[0] = "param"
+                funcParams += (param.symRecord.list[2],)
+
+            funcTable = PrettyTable(title="table: " + funcId, header=False)
+            for child in funcBodyChildren:
+                funcTable.add_row(child.symRecord.list)
+
+            node.symRecord = FunctionEntry(funcId, funcType, funcParams, visibility=None, table=funcTable)
+
+            #This should be deleted:
+            entryTable = PrettyTable(header=False)
+            entryTable.add_row(node.symRecord.list)
+            print(entryTable)
 
 
 
@@ -53,7 +78,7 @@ class Visitor():
 
 class symbolTable(): pass
 
-#TODO 1) inherList 2) functionList? !) replace local by parm at class level
+
 
 
 # => varDeclSubtree
@@ -88,6 +113,28 @@ class Entry():
             return "%s\t | %s\t | %s\t | %s\t" % (self.category, self.id, self.type, self.visibility)
         else:
             return "%s\t | %s\t | %s\t" % (self.category, self.id, self.type)
+
+class FunctionEntry():
+    def __init__(self, id, type, parms, visibility="", table=""):
+        self.category = "function"
+        self.id = id
+
+        self.type = ""
+        if type:
+            self.type = type
+
+        self.parms = "()"
+        if len(parms) > 0:
+            self.parms = str(parms) + ":" + str(self.type)
+
+        self.table = table
+
+        self.visibility = ""
+        if visibility:
+            self.visibility = visibility
+
+
+        self.list = [self.category, self.id, self.parms, self.visibility, self.table]
 
 # => funcBodySubtree
 # => memberDeclListSubtree
@@ -203,7 +250,20 @@ n33 = dimListSubtree()
 n44 = varDeclSubtree((n11, n22, n33))
 
 funcBody = funcBodySubtree((n4,n44))
-funcParms = fparmListSubtree()
+
+
+par1 = IdNode(id="n")
+par2 = typeNode(type="integer")
+par3 = numNode(num=7)
+par4 = dimListSubtree((par3,))
+par5 = varDeclSubtree((par1, par2, par4))
+
+par11 = IdNode(id="size")
+par22 = typeNode(type="integer")
+par44 = dimListSubtree()
+par55 = varDeclSubtree((par11, par22, par44))
+
+funcParms = fparmListSubtree((par5, par55,))
 returnType = typeNode(type="void")
 funcName = IdNode(id="bubbleSort")
 func = funcDefSubtree((funcName, funcParms, returnType, funcBody))
@@ -214,7 +274,10 @@ visitor = Visitor()
 func.accept(visitor)
 
 for pre, fill, node in RenderTree(func):
-    print("%s%s" % (pre, node.name))
+    if node.__class__.__name__.endswith("Node"):
+        print("%s%s: %s" % (pre, node.name, node.data))
+    else:
+        print("%s%s" % (pre, node.name))
 
 # en1 = Entry("local", "n", "integer", visibility="private")
 # en = Entry("local", "n", "integer", (2,1), visibility="private")
@@ -222,3 +285,10 @@ for pre, fill, node in RenderTree(func):
 # print(en1)
 # print(en)
 # print(en2)
+
+#TODO
+# 1) RE_READ the requirements to have them in the back of your mind
+# 1) inherList
+# 2) functionList?
+# !) replace local by parm at class level
+print("#TODO 1) inherList 2) functionList? !) replace local by parm at class level")
