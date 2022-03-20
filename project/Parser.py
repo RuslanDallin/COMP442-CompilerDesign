@@ -159,13 +159,10 @@ def ASTBuilder(previousToken, newNode):
 
 def printAST(node):
     for pre, fill, node in RenderTree(node):
-        if node.name == "id" or node.name == "num" or node.name == "float" \
-                or node.name == "sign" or node.name == "type" \
-                or node.name == "visibility" or node.name.endswith("Op"):
-            print("%s%s: %s" % (pre, node.name, node.token.lexeme))
+        if node.__class__.__name__.endswith("Node"):
+            print("%s%s: %s" % (pre, node.name, node.data))
         else:
             print("%s%s" % (pre, node.name))
-
 
 def parse(lexA):
     prodStack.append("START")

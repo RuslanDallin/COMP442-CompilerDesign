@@ -1,9 +1,22 @@
 from anytree import Node
 
+class BaseNode():
+    def __init__(self, token=None):
+        self.name = ""
+        self.token = token
+        self.symTable = None
+        self.symRecord = None
+
+    def accept(self, visitor):
+        for child in self.children:
+            child.accept(visitor)
+        visitor.visit(self)
+        
 # Special Subtrees #
 
-class progSubtree(Node):
+class progSubtree(BaseNode, Node):
     def __init__(self, children=None):
+        super(progSubtree, self).__init__()
         self.name = "prog"
         if children:
             self.children = children
@@ -13,8 +26,9 @@ class progSubtree(Node):
         self.funcDefList = children[2]
 
 
-class implDefSubtree(Node):
+class implDefSubtree(BaseNode, Node):
     def __init__(self, children=None):
+        super(implDefSubtree, self).__init__()
         self.name = "implDef"
         if children:
             self.children = children
@@ -24,8 +38,9 @@ class implDefSubtree(Node):
             self.funcDefList.append(child)
 
 
-class assignSubtree(Node):
+class assignSubtree(BaseNode, Node):
     def __init__(self, children=None):
+        super(assignSubtree, self).__init__()
         self.name = "assign"
         if children:
             self.children = children
@@ -37,8 +52,9 @@ class assignSubtree(Node):
         self.children = newChildren
 
 
-class dotSubtree(Node):
+class dotSubtree(BaseNode, Node):
     def __init__(self, children=None):
+        super(dotSubtree, self).__init__()
         self.name = "dot"
         if children:
             self.children = children
@@ -51,178 +67,200 @@ class dotSubtree(Node):
 
 # Subtrees #
 
-class structDecListSubtree(Node):
+class structDecListSubtree(BaseNode, Node):
     def __init__(self, children=None):
+        super(structDecListSubtree, self).__init__()
         self.name = "structDecList"
         if children:
             self.children = children
 
-class implDefListSubtree(Node):
+class implDefListSubtree(BaseNode, Node):
     def __init__(self, children=None):
+        super(implDefListSubtree, self).__init__()
         self.name = "implDefList"
         if children:
             self.children = children
 
-class funcDefListSubtree(Node):
+class funcDefListSubtree(BaseNode, Node):
     def __init__(self, children=None):
+        super(funcDefListSubtree, self).__init__()
         self.name = "funcDefList"
         if children:
             self.children = children
 
-class structDecSubtree(Node):
+class structDecSubtree(BaseNode, Node):
     def __init__(self, children=None):
+        super(structDecSubtree, self).__init__()
         self.name = "structDec"
         if children:
             self.children = children
 
-class funcDefSubtree(Node):
+class funcDefSubtree(BaseNode, Node):
     def __init__(self, children=None):
+        super(funcDefSubtree, self).__init__()
         self.name = "funcDef"
         if children:
             self.children = children
 
-class funcDeclSubtree(Node):
+class funcDeclSubtree(BaseNode, Node):
     def __init__(self, children=None):
+        super(funcDeclSubtree, self).__init__()
         self.name = "funcDecl"
         if children:
             self.children = children
 
 
-class varDeclSubtree(Node):
+class varDeclSubtree(BaseNode, Node):
     def __init__(self, children=None):
+        super(varDeclSubtree, self).__init__()
         self.name = "varDecl"
         if children:
             self.children = children
 
-class memberDeclSubtree(Node):
+class memberDeclSubtree(BaseNode, Node):
     def __init__(self, children=None):
+        super(memberDeclSubtree, self).__init__()
         self.name = "memberDecl"
         if children:
             self.children = children
 
-class arraySizeSubtree(Node):
-    def __init__(self, *nums):
-        self.name = "arraySize"
-        if nums:
-            self.children = nums
-
-class dimListSubtree(Node):
+class dimListSubtree(BaseNode, Node):
     def __init__(self, children=None):
+        super(dimListSubtree, self).__init__()
         self.name = "dimList"
         if children:
             self.children = children
 
-class inherListSubtree(Node):
+class inherListSubtree(BaseNode, Node):
     def __init__(self, children=None):
+        super(inherListSubtree, self).__init__()
         self.name = "inherList"
         if children:
             self.children = children
 
-class fparmListSubtree(Node):
+class fparmListSubtree(BaseNode, Node):
     def __init__(self, children=None):
+        super(fparmListSubtree, self).__init__()
         self.name = "fparmList"
         if children:
             self.children = children
 
-class funcBodySubtree(Node):
+class funcBodySubtree(BaseNode, Node):
     def __init__(self, children=None):
+        super(funcBodySubtree, self).__init__()
         self.name = "funcBody"
         if children:
             self.children = children
 
 
-class indiceListSubtree(Node):
+class indiceListSubtree(BaseNode, Node):
     def __init__(self, children=None):
+        super(indiceListSubtree, self).__init__()
         self.name = "indiceList"
         if children:
             self.children = children
 
-class varSubtree(Node):
+class varSubtree(BaseNode, Node):
     def __init__(self, children=None):
+        super(varSubtree, self).__init__()
         self.name = "var"
         if children:
             self.children = children
 
 
-class aParamsSubtree(Node):
+class aParamsSubtree(BaseNode, Node):
     def __init__(self, children=None):
+        super(aParamsSubtree, self).__init__()
         self.name = "aParams"
         if children:
             self.children = children
 
-class readSubtree(Node):
+class readSubtree(BaseNode, Node):
     def __init__(self, children=None):
+        super(readSubtree, self).__init__()
         self.name = "read"
         if children:
             self.children = children
 
-class funCallSubtree(Node):
+class funCallSubtree(BaseNode, Node):
     def __init__(self, children=None):
+        super(funCallSubtree, self).__init__()
         self.name = "funCall"
         if children:
             self.children = children
 
-class relOpSubtree(Node):
+class relOpSubtree(BaseNode, Node):
     def __init__(self, children=None):
+        super(relOpSubtree, self).__init__()
         self.name = "rel"
         if children:
             self.children = children
 
-class mulOpSubtree(Node):
+class mulOpSubtree(BaseNode, Node):
     def __init__(self, children=None):
+        super(mulOpSubtree, self).__init__()
         self.name = "mul"
         if children:
             self.children = children
 
-class factorSubtree(Node):
+class factorSubtree(BaseNode, Node):
     def __init__(self, children=None):
+        super(factorSubtree, self).__init__()
         self.name = "factor"
         if children:
             self.children = children
 
-class addOpSubtree(Node):
+class addOpSubtree(BaseNode, Node):
     def __init__(self, children=None):
+        super(addOpSubtree, self).__init__()
         self.name = "add"
         if children:
             self.children = children
 
-class writeSubtree(Node):
+class writeSubtree(BaseNode, Node):
     def __init__(self, children=None):
+        super(writeSubtree, self).__init__()
         self.name = "write"
         if children:
             self.children = children
 
-class returnSubtree(Node):
+class returnSubtree(BaseNode, Node):
     def __init__(self, children=None):
+        super(returnSubtree, self).__init__()
         self.name = "return"
         if children:
             self.children = children
 
-class relExprSubtree(Node):
+class relExprSubtree(BaseNode, Node):
     def __init__(self, children=None):
+        super(relExprSubtree, self).__init__()
         self.name = "relExpr"
         if children:
             self.children = children
 
-class statSubtree(Node):
+class statSubtree(BaseNode, Node):
     def __init__(self, children=None):
+        super(statSubtree, self).__init__()
         self.name = "stat"
         if children:
             self.children = children
 
-class ifThenElseSubtree(Node):
+class ifThenElseSubtree(BaseNode, Node):
     def __init__(self, children=None):
+        super(ifThenElseSubtree, self).__init__()
         self.name = "ifThenElse"
         if children:
             self.children = children
 
-class whileSubtree(Node):
+class whileSubtree(BaseNode, Node):
     def __init__(self, children=None):
+        super(whileSubtree, self).__init__()
         self.name = "while"
         if children:
             self.children = children
-class memberDeclListSubtree(Node):
+class memberDeclListSubtree(BaseNode, Node):
     def __init__(self, children=None):
+        super(memberDeclListSubtree, self).__init__()
         self.name = "memberDeclList"
         if children:
             self.children = children
@@ -230,76 +268,85 @@ class memberDeclListSubtree(Node):
 # Nodes #
 
 
-class typeNode(Node):
-    def __init__(self, token, type=None):
+class typeNode(BaseNode, Node):
+    def __init__(self, token=None, data=None):
+        super(typeNode, self).__init__()
         self.name = "type"
         self.token = token
-        self.type = token.lexeme
-        if type:
-            self.type = type
+        self.data = token.lexeme
+        if data:
+            self.data = data
 
 
-class IdNode(Node):
-    def __init__(self, token, id=None):
+class IdNode(BaseNode, Node):
+    def __init__(self, token=None, data=None):
+        super(IdNode, self).__init__()
         self.name = "id"
         self.token = token
-        self.id = token.lexeme
-        if id:
-            self.type = id
+        self.data = token.lexeme
+        if data:
+            self.data = data
 
-class relOpNode(Node):
-    def __init__(self, token, relOp=None):
+class relOpNode(BaseNode, Node):
+    def __init__(self, token=None, data=None):
+        super(relOpNode, self).__init__()
         self.name = "relOp"
         self.token = token
-        self.relOp = token.lexeme
-        if relOp:
-            self.relOp = relOp
+        self.data = token.lexeme
+        if data:
+            self.data = data
 
-class numNode(Node):
-    def __init__(self, token, num=None):
+class numNode(BaseNode, Node):
+    def __init__(self, token=None, data=None):
+        super(numNode, self).__init__()
         self.name = "num"
         self.token = token
-        self.num = token.lexeme
-        if num:
-            self.num = num
+        self.data = token.lexeme
+        if data:
+            self.data = data
 
-class floatNode(Node):
-    def __init__(self, token, float=None):
+class floatNode(BaseNode, Node):
+    def __init__(self, token=None, data=None):
+        super(floatNode, self).__init__()
         self.name = "float"
         self.token = token
-        self.float = token.lexeme
-        if float:
-            self.float = float
+        self.data = token.lexeme
+        if data:
+            self.data = data
 
-class visibilityNode(Node):
-    def __init__(self, token, visibility=None):
+class visibilityNode(BaseNode, Node):
+    def __init__(self, token=None, data=None):
+        super(visibilityNode, self).__init__()
         self.name = "visibility"
         self.token = token
-        self.visibility = token.lexeme
-        if visibility:
-            self.visibility = visibility
+        self.data = token.lexeme
+        if data:
+            self.data = data
 
-class signNode(Node):
-    def __init__(self, token, sign=None):
+class signNode(BaseNode, Node):
+    def __init__(self, token=None, data=None):
+        super(signNode, self).__init__()
         self.name = "sign"
         self.token = token
-        self.sign = token.lexeme
-        if sign:
-            self.sign = sign
+        self.data = token.lexeme
+        if data:
+            self.data = data
 
-class MulOpNode(Node):
-    def __init__(self, token, MulOp=None):
+class MulOpNode(BaseNode, Node):
+    def __init__(self, token=None, data=None):
+        super(MulOpNode, self).__init__()
         self.name = "MulOp"
         self.token = token
-        self.MulOp = token.lexeme
-        if MulOp:
-            self.sign = MulOp
+        self.data = token.lexeme
+        if data:
+            self.data = data
 
-class addOpNode(Node):
-    def __init__(self, token, addOp=None):
+class addOpNode(BaseNode, Node):
+    def __init__(self, token=None, data=None):
+        super(addOpNode, self).__init__()
         self.name = "addOp"
         self.token = token
-        self.visibility = token.lexeme
-        if addOp:
-            self.addOp = addOp
+        self.data = token.lexeme
+        if data:
+            self.data = data
 
