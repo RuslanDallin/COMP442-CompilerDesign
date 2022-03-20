@@ -14,8 +14,14 @@ class Visitor:
             implChildren = node.children[1].children
             progChildren = node.children[2].children
 
+            for struct in structChildren:
+                node.symTable.add_row([struct.symRecord])
+
+
+
             for prog in progChildren:
-                node.symTable.add_row(prog.symRecord.list)
+                node.symTable.add_row([prog.symRecord])
+
             print(node.symTable)
 
             # 1st index is row (0-n)
@@ -43,21 +49,26 @@ class Visitor:
             #placing var data members in data table
             dataTable = PrettyTable(title="data", header=False)
             for member in memberDecChildren:
-                if member.symRecord[0] != "function":
+                if member.symRecord[0] != "function": #data member
                     dataTable.add_row(member.symRecord)
 
             classTable.add_row([dataTable])
 
-
+            functionsTable = PrettyTable(title="functions ", header=False, hrules=True)
             for member in memberDecChildren:
                 if member.symRecord[0] == "function":
-                    funcTable = PrettyTable(title="table: " + str(classtId) + "::" + str(member.symRecord[1]), header=False)
-                    funcTable.add_row(member.symRecord)
-                    classTable.add_row([funcTable])
+                    # funcTable = PrettyTable(title="table: " + str(classtId) + "::" + str(member.symRecord[1]), header=False)
+                    functionsTable.add_row(member.symRecord)
 
-
+            classTable.add_row([functionsTable])
+            node.symRecord = classTable
             print("here4",classTable)
 
+            functionsTable = PrettyTable(title="test ", header=False, hrules=True)
+
+            functionsTable.add_row([classTable])
+            functionsTable.add_row([classTable])
+            print(functionsTable)
 
 
 
@@ -81,17 +92,20 @@ class Visitor:
                     funcParams += (param.symRecord.list[2],)
 
             # creating table
-            funcTable = PrettyTable(title="table: " + funcId, header=False)
+            funcVarTable = PrettyTable(title="table: " + funcId, header=False)
             for child in funcBodyChildren:
                 if child.__class__.__name__ == "varDeclSubtree":
-                    funcTable.add_row(child.symRecord.list)
+                    funcVarTable.add_row(child.symRecord.list)
 
-            node.symRecord = FunctionEntry(funcId, funcType, funcParams, visibility=None, table=funcTable)
+            func = FunctionEntry(funcId, funcType, funcParams, visibility=None, table=funcVarTable)
+            funcTable = PrettyTable(title="function: " + funcId, header=False)
+            funcTable.add_row(func.list)
 
+            node.symRecord = funcTable
             # This should be deleted:
-            entryTable = PrettyTable(header=False)
-            entryTable.add_row(node.symRecord.list)
-            print(entryTable)
+            # entryTable = PrettyTable(header=False)
+            # entryTable.add_row(node.symRecord.list)
+            # print(entryTable)
 
         if type(node) is memberDeclSubtree:
             print("visiting memberDeclSubtree")

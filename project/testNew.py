@@ -222,3 +222,37 @@ print(par44.children)
 # 2) functionList?
 # !) replace local by parm at class level
 print("#TODO 1) inherList 2) functionList? !) replace local by parm at class level")
+
+# class ClassEntry():
+#     def __init__(self, id, inherList, dataMembeEntries, functionMembers):
+#         self.category = "class"
+#         self.id = id
+#
+#         self.inherList = ()
+#         for child in inherList:
+#             self.inherList += (child.data,)
+#
+#         # placing var data members in data table
+#         self.dataMembeEntries = PrettyTable(title="data", header=False)
+#         for member in dataMembeEntries:
+#             if member.symRecord[0] != "function":  # var member
+#                 self.dataMembeEntries.add_row(member.symRecord)
+#
+#         self.functionMembers = list()
+#         for member in dataMembeEntries:
+#             if member.symRecord[0] == "function":
+#                 funcTable = PrettyTable(title="table: " + str(classtId) + "::" + str(member.symRecord[1]), header=False)
+#                 funcTable.add_row(member.symRecord)
+#                 classTable.add_row([funcTable])
+#
+#         table = PrettyTable(title="Class: " + str(self.id), header=False)
+#         table.add_row("inherit", inherList, "", "")
+#
+#         for data in dataMembeEntries:
+#             table.add_row(data)
+
+        #
+        #
+        # self.functionTableList = list()
+        # for func in funcEntries:
+        #     self.functionTableList.append(PrettyTable(title="Function: " + str(self.id) + str(func[1]), header=False))
