@@ -1,8 +1,5 @@
 // ====== struct declarations ====== //
-struct POLYNOMIAL inherits LINEAR {
-	private let newA: float;
-	private let newB: float;
-	private let a: float;
+struct POLYNOMIAL {
 	public func evaluate(x: float) -> float;
 };
 

@@ -86,13 +86,33 @@ def astDriver():
                     print("%s%s" % (pre, node.name))
                     astOutput.write(str("%s%s\n" % (pre, node.name)))
 
+            print(parseCheck)
+    # ---------------------------------------------------------------------
+
+
+def visitorDriver():
+    # TO BE DELETED -----------------------------------------------------
+    directoryName = "Input"  # set the source folder
+    directory = os.listdir(directoryName)
+    for file in directory:
+        filename = os.fsdecode(file)
+        if file.endswith(".src"):  # go through all .src files
+            SourceFileName = filename[0:-4]
+            src = open(directoryName + "/" + SourceFileName + ".src", 'r')  # reading
+            tableOutput = open("Output/" + SourceFileName + ".outsymboltables", 'w')  # symTable
+            print("\n\n********* %s *********" % (SourceFileName))
+            lex = Lex(src)
+            parseCheck, deriviations, errors, ast = parse(lex)
 
             visitor = Visitor()
             ast.accept(visitor)
 
-            print(parseCheck)
+            print(ast.symTable)
+            tableOutput.write(str(ast.symTable))
+
     # ---------------------------------------------------------------------
 
 # lexDriver()
 # parserDriver()
-astDriver()
+# astDriver()
+visitorDriver()

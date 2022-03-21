@@ -118,21 +118,16 @@ class Visitor:
             for prog in progChildren:
                 node.symTable.add_row([prog.symRecord])
 
-            print(node.symTable)
-            print("\n")
-
-            print(self.checkCircular(node))
-            # print(self.inherMigration(node))
-
             # print(node.symTable)
+            # print("\n")
 
-            # print(node.symTable)
+            self.checkCircular(node)
+            self.inherMigration(node)
 
             # 1st index is row (0-n)
             # second index is the col
             # this fetches i in the printArray table
             # print(node.symTable.rows[1][4].rows[1][1])
-
 
         if type(node) is structDecSubtree:
             print("visiting structDecSubtree")

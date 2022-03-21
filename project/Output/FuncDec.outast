@@ -1,9 +1,0 @@
-prog
-├── structDecList
-├── implDefList
-└── funcDefList
-    └── funcDef
-        ├── id: test
-        ├── fparmList
-        ├── type: void
-        └── funcBody
