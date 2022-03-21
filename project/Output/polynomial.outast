@@ -2,7 +2,16 @@ prog
 ├── structDecList
 │   ├── structDec
 │   │   ├── id: POLYNOMIAL│   │   ├── inherList
-│   │   └── memberDeclList
+│   │   │   └── id: LINEAR│   │   └── memberDeclList
+│   │       ├── memberDecl
+│   │       │   ├── visibility: private│   │       │   └── varDecl
+│   │       │       ├── id: newA│   │       │       ├── type: float│   │       │       └── dimList
+│   │       ├── memberDecl
+│   │       │   ├── visibility: private│   │       │   └── varDecl
+│   │       │       ├── id: newB│   │       │       ├── type: float│   │       │       └── dimList
+│   │       ├── memberDecl
+│   │       │   ├── visibility: private│   │       │   └── varDecl
+│   │       │       ├── id: a│   │       │       ├── type: float│   │       │       └── dimList
 │   │       └── memberDecl
 │   │           ├── visibility: public│   │           └── funcDecl
 │   │               ├── id: evaluate│   │               ├── fparmList
@@ -10,7 +19,7 @@ prog
 │   │               │       ├── id: x│   │               │       ├── type: float│   │               │       └── dimList
 │   │               └── type: float│   ├── structDec
 │   │   ├── id: LINEAR│   │   ├── inherList
-│   │   │   └── id: POLYNOMIAL│   │   └── memberDeclList
+│   │   │   ├── id: POLYNOMIAL│   │   │   └── id: test│   │   └── memberDeclList
 │   │       ├── memberDecl
 │   │       │   ├── visibility: private│   │       │   └── varDecl
 │   │       │       ├── id: a│   │       │       ├── type: float│   │       │       └── dimList

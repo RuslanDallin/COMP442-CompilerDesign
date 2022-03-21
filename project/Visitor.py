@@ -1,10 +1,108 @@
 from Nodes import *
 from prettytable import PrettyTable
 
+ErrorList = list()
 
 class Visitor:
+
+
     def createGlobalTable(self):
         return PrettyTable(title="table: global", header=False, hrules=True)
+
+    def getClassNames(self, node):
+        sections = node.symTable.rows
+        ClassNames = list()
+        for table in sections:
+            if table[0].title.split(" ")[0].lower() == "class:":
+                ClassNames.append(table[0].title.split(" ")[1].lower())
+        return ClassNames
+
+
+    def getSubTable(self, node, className):
+        sections = node.symTable.rows
+        nbClasses = len(sections)
+        for table in sections:
+            if table[0].title.split(" ")[1].lower() == className.lower():
+                return table[0]
+        else:
+            return str(-1)
+
+    def getFunctionTable(self, node, functionName, className=None):
+        if className:
+            table = self.getSubTable(node, className)
+            functionsTable = table.rows[2][0]
+            for function in functionsTable:
+                if function[0].rows[0][1].lower() == functionName.lower():
+                    return function[0]
+            else:
+                return str(-1)
+        else: #free function
+            return self.getSubTable(node, functionName)
+
+    def getData(self, node, className):
+        classTable = self.getSubTable(node, className)
+        if classTable != "-1":
+            dataList = list()
+            for data in classTable.rows[1][0].rows:
+                dataList.append(data)
+
+            return dataList
+        else:
+            return str(-1)
+
+    def addData(self, node, className, newRow):
+        classTable = self.getSubTable(node, className)
+        if classTable != "-1":
+            classTable.rows[1][0].add_row(newRow)
+        else:
+            return str(-1)
+
+    def getInher(self, node, className):
+            classTable = self.getSubTable(node, className)
+            if classTable != "-1":
+                inherList = list()
+                for child in classTable.rows[0][0]:
+                    inherList.append(child.lower())
+                return inherList
+            else:
+                return str(-1)
+
+    def checkCircular(self, node):
+        classList = self.getClassNames(node)
+        for childClass in classList:  # for every class
+            childInherList = self.getInher(node, childClass)
+            for parentClass in childInherList:
+                parentInherList = self.getInher(node, parentClass)
+                if childClass in parentInherList:
+                    error = "Circular dependence " + str(self.getSubTable(node,childClass).rows[3][0])
+                    print(error)
+                    ErrorList.append(error)
+
+    def inherMigration(self, node):
+        classList = self.getClassNames(node)
+        for childClass in classList: # for every class 
+            for parentClass in self.getInher(node, childClass): #parentClass
+                if parentClass.lower() in classList:
+                    parentClassData = self.getData(node, parentClass)
+                    childClassData = self.getData(node, childClass)
+                    parentVars = [row[1] for row in parentClassData]
+                    childVars = [row[1] for row in childClassData]
+
+                    count = 0
+                    for cVar in childVars:
+                        if cVar in parentVars:
+                            error = "Shadowed inherited members", childClassData[count][4]
+                            print(error)
+                            ErrorList.append(error)
+                        count += 1
+
+                    count = 0
+                    for pVar in parentVars:
+                        if pVar not in childVars:
+                            self.addData(node, childClass, parentClassData[count])
+                        count += 1
+
+
 
     def visit(self, node):
 
@@ -17,12 +115,18 @@ class Visitor:
             for struct in structChildren:
                 node.symTable.add_row([struct.symRecord])
 
-
-
             for prog in progChildren:
                 node.symTable.add_row([prog.symRecord])
 
             print(node.symTable)
+            print("\n")
+
+            print(self.checkCircular(node))
+            # print(self.inherMigration(node))
+
+            # print(node.symTable)
+
+            # print(node.symTable)
 
             # 1st index is row (0-n)
             # second index is the col
@@ -33,18 +137,19 @@ class Visitor:
         if type(node) is structDecSubtree:
             print("visiting structDecSubtree")
             classtId = node.children[0].data
+            location = node.children[0].token.location
             inherChildren = node.children[1].children
             memberDecChildren = node.children[2].children
 
-            classTable = PrettyTable(title="class: " + classtId, header=False, hrules=True)
+            classTable = PrettyTable(title="class: " + classtId, header=False)
 
             inherList = ()
             for child in inherChildren:
                 inherList += (child.data,)
 
-            classTable.add_row(["inherits: " + str(inherList)])
+            classTable.add_row([inherList])
 
-            print("here3", classTable)
+            print(classTable)
 
             #placing var data members in data table
             dataTable = PrettyTable(title="data", header=False)
@@ -61,23 +166,15 @@ class Visitor:
                     functionsTable.add_row(member.symRecord)
 
             classTable.add_row([functionsTable])
+            classTable.add_row([location])
             node.symRecord = classTable
-            print("here4",classTable)
-
-            functionsTable = PrettyTable(title="test ", header=False, hrules=True)
-
-            functionsTable.add_row([classTable])
-            functionsTable.add_row([classTable])
-            print(functionsTable)
-
-
-
 
 
 
         if type(node) is funcDefSubtree:
             print("visiting funcBodySubtree")
             funcId = node.children[0].data
+            location = node.children[0].token.location
             funcParmsChildren = node.children[1].children
             funcType = node.children[2].data
             funcBodyChildren = node.children[3].children
@@ -97,7 +194,7 @@ class Visitor:
                 if child.__class__.__name__ == "varDeclSubtree":
                     funcVarTable.add_row(child.symRecord.list)
 
-            func = FunctionEntry(funcId, funcType, funcParams, visibility=None, table=funcVarTable)
+            func = FunctionEntry(funcId, funcType, funcParams, visibility=None, table=funcVarTable, location=location)
             funcTable = PrettyTable(title="function: " + funcId, header=False)
             funcTable.add_row(func.list)
 
@@ -112,7 +209,7 @@ class Visitor:
             visibility = node.children[0].data
             if node.children[1].__class__.__name__ == "varDeclSubtree":
                 varRecord = node.children[1].symRecord.list
-                varRecord.append(visibility)
+                varRecord[3] = visibility
                 varRecord[0] = "data"
                 node.symRecord = varRecord
             if node.children[1].__class__.__name__ == "funcDeclSubtree":
@@ -125,6 +222,7 @@ class Visitor:
         if type(node) is funcDeclSubtree:
             print("visiting funcDeclSubtree")
             funcId = node.children[0].data
+            location = node.children[0].token.location
             funcParmsChildren = node.children[1].children
             funcType = node.children[2].data
 
@@ -138,8 +236,7 @@ class Visitor:
                     funcParams += (param.symRecord.list[2],)
                     funcTable.add_row(param.symRecord.list)
 
-            node.symRecord = FunctionEntry(funcId, funcType, funcParams, visibility=None, table=funcTable)
-            print("here6", node.symRecord.table)
+            node.symRecord = FunctionEntry(funcId, funcType, funcParams, visibility=None, table=funcTable, location=location)
 
             # # creating table
             # funcTable = PrettyTable(title="table: " + funcId, header=False)
@@ -158,6 +255,7 @@ class Visitor:
         if type(node) is varDeclSubtree:
             print("visiting varDeclSubtree")
             varName = node.children[0].data
+            location = node.children[0].token.location
             varType = node.children[1].data
             dimListChildren = node.children[2].children
             varDimlist = list()
@@ -166,7 +264,7 @@ class Visitor:
                     varDimlist.append("[" + str(arrSize.children[0].data) + "]")
                 else: #[]
                     varDimlist.append("[]")
-            entry = Entry(varName, varType, varDimlist)
+            entry = Entry(varName, varType, varDimlist, location=location)
             node.symRecord = entry
             print(entry)
 
@@ -250,6 +348,8 @@ class Visitor:
 
         if type(node) is writeSubtree: pass
 
+
+
 # => varDeclSubtree
 # => memberDeclListSubtree
 # - category:
@@ -261,17 +361,18 @@ class Visitor:
 # - dimList
 # - visibility: private/public (only if memberDeclListSubtree)
 class Entry():
-    def __init__(self, id, type, dimList="", visibility=""):
+    def __init__(self, id, type, dimList="", visibility="", location=""):
         self.category = "local"
         self.id = id
         self.type = type
         self.dimList = dimList
         self.visibility = visibility
         self.dimStr = ""
+        self.location = location
         if self.dimList != "":
             for dim in self.dimList:
                 self.dimStr += dim
-        self.list = [self.category, self.id, str(self.type) + str(self.dimStr)]
+        self.list = [self.category, self.id, str(self.type) + str(self.dimStr),  self.visibility, self.location]
 
     def __str__(self):
         if self.dimList and self.visibility:
@@ -294,9 +395,10 @@ class memberDataEntry():
 
 
 class FunctionEntry():
-    def __init__(self, id, type, parms, visibility="", table=""):
+    def __init__(self, id, type, parms, visibility="", table="", location=""):
         self.category = "function"
         self.id = id
+        self.location =location
 
         self.type = ""
         if type:
@@ -312,9 +414,9 @@ class FunctionEntry():
         if visibility:
             self.visibility = visibility
 
-        self.list = [self.category, self.id, self.parms, self.visibility, self.table]
+        self.list = [self.category, self.id, self.parms, self.visibility, self.table, self.location]
 
-
+#not used
 class ClassEntry():
     def __init__(self, id, inherList, dataMembeEntries, funcEntries):
         self.category = "class"
@@ -334,14 +436,8 @@ class ClassEntry():
         for func in funcEntries:
             self.functionTableList.append(PrettyTable(title="Function: " + str(self.id) + str(func[1]), header=False))
 
-
-
-
-
-
-
-
         self.list = [self.category, self.id, self.parms, self.visibility, self.table]
+
 
 # => funcBodySubtree
 # => memberDeclListSubtree

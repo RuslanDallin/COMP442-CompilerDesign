@@ -1,9 +1,12 @@
 // ====== struct declarations ====== //
-struct POLYNOMIAL {
+struct POLYNOMIAL inherits LINEAR {
+	private let newA: float;
+	private let newB: float;
+	private let a: float;
 	public func evaluate(x: float) -> float;
 };
 
-struct LINEAR inherits POLYNOMIAL {
+struct LINEAR inherits POLYNOMIAL, test {
 	private let a: float;
 	private let b: float;
 	public  func build(A: float, B: float) -> LINEAR;
@@ -80,6 +83,7 @@ func main() -> void
     write(f2.evaluate(counter));
   };
 }
+
 /*
     classes
     --------------------------------------
