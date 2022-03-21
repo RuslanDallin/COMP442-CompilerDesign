@@ -4,6 +4,8 @@ from prettytable import PrettyTable
 ErrorList = list()
 
 class Visitor:
+    def __init__(self):
+        self.globalTable = PrettyTable(title="table: global", header=False, hrules=True)
 
 
     def createGlobalTable(self):
@@ -27,17 +29,6 @@ class Visitor:
         else:
             return str(-1)
 
-    def getFunctionTable(self, node, functionName, className=None):
-        if className:
-            table = self.getSubTable(node, className)
-            functionsTable = table.rows[2][0]
-            for function in functionsTable:
-                if function[0].rows[0][1].lower() == functionName.lower():
-                    return function[0]
-            else:
-                return str(-1)
-        else: #free function
-            return self.getSubTable(node, functionName)
 
     def getData(self, node, className):
         classTable = self.getSubTable(node, className)
@@ -102,6 +93,47 @@ class Visitor:
                             self.addData(node, childClass, parentClassData[count])
                         count += 1
 
+    def getFunctionTable(self, node, functionName, className=None):
+        if className:
+            table = self.getSubTable(node, className)
+            functionsTable = table.rows[2][0]
+            for function in functionsTable:
+                if function[0].rows[0][1].lower() == functionName.lower():
+                    return function[0]
+            else:
+                return str(-1)
+        else: #free function
+            return self.getSubTable(node, functionName)
+
+    def getSetVarTable(self, node, functionName, className, newRow=None):
+        funcTable = self.getFunctionTable(node, functionName, className=className)
+        if funcTable != "-1":
+            varTable = funcTable.rows[0][4]
+            if newRow:
+                varTable.add_row(newRow)
+            return funcTable.rows[0][4]
+        else:
+            return str(-1)
+
+
+
+    def bindFunction(self, node, funcDef, className):
+        classList = self.getClassNames(node)
+
+        funcName = funcDef.title.split(" ")[1]
+
+        funcTable = self.getFunctionTable(node, functionName=funcName, className=className.lower()) #from structs
+        if funcTable == "-1":
+            error = "undeclared member function definition " + str(funcDef[0].rows[0][5])
+            print(error)
+            ErrorList.append(error)
+        else:
+            if funcDef[0].rows[0][1] == funcTable[0].rows[0][1]: #same name - Can be overloaded
+                if funcDef[0].rows[0][2] == funcTable[0].rows[0][2]: #same params - Not overloaded
+                    pass
+
+        for row in funcDef.rows[0][4].rows:
+            self.getSetVarTable(node, funcName, className, row)
 
 
     def visit(self, node):
@@ -112,14 +144,20 @@ class Visitor:
             implChildren = node.children[1].children
             progChildren = node.children[2].children
 
-            for struct in structChildren:
-                node.symTable.add_row([struct.symRecord])
+
+            for impl in implChildren:
+                className = impl.symRecord[0]
+                for func in impl.symRecord[1]:
+                    self.bindFunction(node,func,className)
+
+
 
             for prog in progChildren:
                 node.symTable.add_row([prog.symRecord])
 
-            # print(node.symTable)
-            # print("\n")
+            print(node.symTable)
+
+            print("\n")
 
             self.checkCircular(node)
             self.inherMigration(node)
@@ -128,6 +166,21 @@ class Visitor:
             # second index is the col
             # this fetches i in the printArray table
             # print(node.symTable.rows[1][4].rows[1][1])
+
+
+        if type(node) is implDefSubtree:
+            print("visiting implDefSubtree")
+
+            impleFunctions = list()
+            implId = node.children[0].data
+            functions = node.children[1].children
+
+            for func in functions:
+                impleFunctions.append((func.symRecord))
+
+            node.symRecord = list()
+            node.symRecord.append(implId)
+            node.symRecord.append(impleFunctions)
 
         if type(node) is structDecSubtree:
             print("visiting structDecSubtree")
@@ -163,7 +216,7 @@ class Visitor:
             classTable.add_row([functionsTable])
             classTable.add_row([location])
             node.symRecord = classTable
-
+            node.symTable.add_row([node.symRecord])
 
 
         if type(node) is funcDefSubtree:
@@ -187,7 +240,7 @@ class Visitor:
             funcVarTable = PrettyTable(title="table: " + funcId, header=False)
             for child in funcBodyChildren:
                 if child.__class__.__name__ == "varDeclSubtree":
-                    funcVarTable.add_row(child.symRecord.list)
+                    funcVarTable.add_row([x for x in child.symRecord.list if x])
 
             func = FunctionEntry(funcId, funcType, funcParams, visibility=None, table=funcVarTable, location=location)
             funcTable = PrettyTable(title="function: " + funcId, header=False)
@@ -229,7 +282,7 @@ class Visitor:
                 if param.__class__.__name__ == "varDeclSubtree":
                     param.symRecord.list[0] = "param"
                     funcParams += (param.symRecord.list[2],)
-                    funcTable.add_row(param.symRecord.list)
+                    funcTable.add_row([x for x in param.symRecord.list if x])
 
             node.symRecord = FunctionEntry(funcId, funcType, funcParams, visibility=None, table=funcTable, location=location)
 
@@ -298,8 +351,6 @@ class Visitor:
         if type(node) is ifThenElseSubtree: pass
 
         if type(node) is implDefListSubtree: pass
-
-        if type(node) is implDefSubtree: pass
 
         if type(node) is indiceListSubtree: pass
 

@@ -104,10 +104,19 @@ def visitorDriver():
             lex = Lex(src)
             parseCheck, deriviations, errors, ast = parse(lex)
 
+
+            for pre, fill, node in RenderTree(ast):
+                if node.__class__.__name__.endswith("Node"):
+                    print("%s%s: %s" % (pre, node.name, node.data))
+                else:
+                    print("%s%s" % (pre, node.name))
+
+
             visitor = Visitor()
             ast.accept(visitor)
+            # ast.accept(visitor)
 
-            print(ast.symTable)
+            # print(ast.symTable)
             tableOutput.write(str(ast.symTable))
 
     # ---------------------------------------------------------------------
