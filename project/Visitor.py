@@ -115,11 +115,20 @@ class Visitor:
         else:
             return str(-1)
 
+    def getFuncNameAndParam(self, funcTable=None):
+        if funcTable:
+            return funcTable[0].rows[0][1], funcTable[0].rows[0][2]
+
+    def checkOverloaded(self, node, implRecord):
+        classList = self.getClassNames(node)
+        for className in classList:
+            self.getFunctionTable(node,)
+        #TODO loop through all struct functions.
+        # if the FuncName and FuncParms don't match Impl's ones
+        # then 9.2 overloaded
 
 
     def bindFunction(self, node, funcDef, className):
-        classList = self.getClassNames(node)
-
         funcName = funcDef.title.split(" ")[1]
 
         funcTable = self.getFunctionTable(node, functionName=funcName, className=className.lower()) #from structs
@@ -128,13 +137,10 @@ class Visitor:
             print(error)
             ErrorList.append(error)
         else:
-            if funcDef[0].rows[0][1] == funcTable[0].rows[0][1]: #same name - Can be overloaded
-                if funcDef[0].rows[0][2] == funcTable[0].rows[0][2]: #same params - Not overloaded
-                    pass
-
-        for row in funcDef.rows[0][4].rows:
-            self.getSetVarTable(node, funcName, className, row)
-
+            if self.getFuncNameAndParam(funcDef)[0] == self.getFuncNameAndParam(funcTable)[0]: #same name - Can be overloaded
+                if self.getFuncNameAndParam(funcDef)[1] == self.getFuncNameAndParam(funcTable)[1]: #same params - Not overloaded
+                    for row in funcDef.rows[0][4].rows:
+                        self.getSetVarTable(node, funcName, className, row)
 
     def visit(self, node):
 
@@ -149,6 +155,7 @@ class Visitor:
                 className = impl.symRecord[0]
                 for func in impl.symRecord[1]:
                     self.bindFunction(node,func,className)
+                    # print(self.getFuncNameAndParam(funcTable=func)[1])
 
 
 
@@ -265,7 +272,6 @@ class Visitor:
                 funcRecord[3] = visibility
                 node.symRecord = funcRecord
 
-                #TODO need to move fparm from funcDec to it's own method to avoid rewriting the code
 
         if type(node) is funcDeclSubtree:
             print("visiting funcDeclSubtree")
