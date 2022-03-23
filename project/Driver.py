@@ -4,6 +4,9 @@ from anytree import RenderTree
 
 from LexicalAnalyzer import Lex
 from Parser import parse
+from SymTableVisitor import *
+from TypeCheckingVisitor import *
+
 
 from Visitor import *
 
@@ -112,8 +115,8 @@ def visitorDriver():
                     print("%s%s" % (pre, node.name))
 
 
-            visitor = Visitor()
-            ast.accept(visitor)
+            symTableVisitor = SymTableVisitor()
+            ast.accept(symTableVisitor)
             # ast.accept(visitor)
 
             # print(ast.symTable)
