@@ -163,7 +163,22 @@ class Visitor:
 
 
 
-
+    def checkUnbindedFunctions(self, node):
+        for className in self.getClassNames(node):
+            for pair in self.getAllFuncNamesAndParms(node, className):
+                for impl in ImplFunctions:
+                    if className == impl.className.lower():
+                        if pair not in impl.functions:
+                            if pair[0] in impl.functions[0]:
+                                funcTable = self.getFunctionTable(node, pair[0], params=pair[1], className=className)
+                                error = "Overloaded member function " + str(funcTable.rows[0][5])
+                                print(error)
+                                ErrorList.append(error)
+                            else:
+                                funcTable = self.getFunctionTable(node, pair[0], params=pair[1], className=className)
+                                error = "undefined member function declaration " + str(funcTable.rows[0][5])
+                                print(error)
+                                ErrorList.append(error)
 
 
     def visit(self, node):
@@ -191,33 +206,27 @@ class Visitor:
                 implClass = implEntry(className,group)
                 ImplFunctions.append(implClass)
 
+            self.checkUnbindedFunctions(node)
 
-            for className in self.getClassNames(node):
-                for pair in self.getAllFuncNamesAndParms(node, className):
-                    for impl in ImplFunctions:
-                        if className == impl.className.lower():
-                            if pair not in impl.functions:
-                                if pair[0] in impl.functions[0]:
-                                    funcTable = self.getFunctionTable(node, pair[0], params=pair[1], className=className)
-                                    error = "Overloaded member function " + str(funcTable.rows[0][5])
-                                    print(error)
-                                    ErrorList.append(error)
-                                else:
-                                    funcTable = self.getFunctionTable(node, pair[0], params=pair[1], className=className)
-                                    print(self.getFunctionTable(node, pair[0],  params=pair[1], className=className))
-                                    error = "undefined member function declaration " + str(funcTable.rows[0][5])
-                                    print(error)
-                                    ErrorList.append(error)
-
-                    # if list(pair) not in ImplFunctions:
-                    #     if pair[0] in ImplFunctions[0]:
-                    #         print("Overloaded member function", pair)
-                    #     else:
-                    #         print("undefined member function declaration", pair)
-
+            freeFuncs = list()
+            overLoadFlag = False
             for prog in progChildren:
+                name, parms = self.getFuncNameAndParam(prog.symRecord)
+                for freeF in freeFuncs:
+                    if freeF[0] == name:
+                        overLoadFlag = True
+                        if freeF[1] == parms:
+                            overLoadFlag = False
+                    if overLoadFlag:
+                        error = "Overloaded free function " + str(prog.symRecord.rows[0][5])
+                        print(error)
+                        ErrorList.append(error)
+                    else:
+                        error = "multiple defined free function " + str(prog.symRecord.rows[0][5])
+                        print(error)
+                        ErrorList.append(error)
+                freeFuncs.append(self.getFuncNameAndParam(prog.symRecord))
                 node.symTable.add_row([prog.symRecord])
-
 
             print(node.symTable)
 
@@ -261,13 +270,20 @@ class Visitor:
 
             classTable.add_row([inherList])
 
-            print(classTable)
+            # printprint(classTable)
 
             #placing var data members in data table
             dataTable = PrettyTable(title="data", header=False)
             for member in memberDecChildren:
                 if member.symRecord[0] != "function": #data member
+                    for row in dataTable.rows:
+                        if row[1] == member.symRecord[1]:
+                            error = "multiple declared identifier in class " + str(member.symRecord[4])
+                            print(error)
+                            ErrorList.append(error)
                     dataTable.add_row(member.symRecord)
+
+
 
             classTable.add_row([dataTable])
 
@@ -280,6 +296,12 @@ class Visitor:
             classTable.add_row([functionsTable])
             classTable.add_row([location])
             node.symRecord = classTable
+
+            for row in  node.symTable.rows:
+                if row[0].title == node.symRecord.title:
+                    error = "multiply declared class " + str(node.symRecord.rows[3][0])
+                    print(error)
+                    ErrorList.append(error)
             node.symTable.add_row([node.symRecord])
 
 
@@ -304,6 +326,11 @@ class Visitor:
             funcVarTable = PrettyTable(title="table: " + funcId, header=False)
             for child in funcBodyChildren:
                 if child.__class__.__name__ == "varDeclSubtree":
+                    for row in funcVarTable.rows:
+                        if row[1] == child.symRecord.id:
+                            error = "multiple declared identifier in function " + str(child.symRecord.list[4])
+                            print(error)
+                            ErrorList.append(error)
                     funcVarTable.add_row([x for x in child.symRecord.list if x])
 
             func = FunctionEntry(funcId, funcType, funcParams, visibility=None, table=funcVarTable, location=location)
@@ -311,10 +338,6 @@ class Visitor:
             funcTable.add_row(func.list)
 
             node.symRecord = funcTable
-            # This should be deleted:
-            # entryTable = PrettyTable(header=False)
-            # entryTable.add_row(node.symRecord.list)
-            # print(entryTable)
 
         if type(node) is memberDeclSubtree:
             print("visiting memberDeclSubtree")
@@ -349,19 +372,6 @@ class Visitor:
 
             node.symRecord = FunctionEntry(funcId, funcType, funcParams, visibility=None, table=funcTable, location=location)
 
-            # # creating table
-            # funcTable = PrettyTable(title="table: " + funcId, header=False)
-            # for child in funcBodyChildren:
-            #     if child.__class__.__name__ == "varDeclSubtree":
-            #         print(child.symRecord.list)
-            #         funcTable.add_row(child.symRecord.list)
-            #
-            # node.symRecord = FunctionEntry(funcId, funcType, funcParams, visibility=None, table=funcTable)
-            #
-            # # This should be deleted:
-            # entryTable = PrettyTable(header=False)
-            # entryTable.add_row(node.symRecord.list)
-            # print(entryTable)
 
         if type(node) is varDeclSubtree:
             print("visiting varDeclSubtree")
@@ -377,7 +387,6 @@ class Visitor:
                     varDimlist.append("[]")
             entry = Entry(varName, varType, varDimlist, location=location)
             node.symRecord = entry
-            print(entry)
 
         if type(node) is Node: pass
 

@@ -16,7 +16,6 @@ struct QUADRATIC inherits POLYNOMIAL {
 	private let c: float;
 	public  func build(A: float, B: float, C: float) -> QUADRATIC;
 	public  func evaluate(x: float) -> float;
-	public  func evaluate(x: integer) -> float;
 };
 
 // ====== struct implementations ====== //
