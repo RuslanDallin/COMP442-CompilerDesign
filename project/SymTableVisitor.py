@@ -4,14 +4,8 @@ class SymTableVisitor (Visitor):
     def visit(self, node):
 
         if type(node) is progSubtree:
-            structChildren = node.children[0].children
             implChildren = node.children[1].children
             progChildren = node.children[2].children
-
-            print("\n")
-
-
-            print("\n")
 
 
             self.inherMigration(node)
@@ -27,7 +21,7 @@ class SymTableVisitor (Visitor):
 
 
             freeFuncs = list()
-            overLoadFlag = False
+            overLoadFlag = None
             for prog in progChildren:
                 name, parms = self.getFuncNameAndParam(prog.symRecord)
                 for freeF in freeFuncs:
@@ -35,11 +29,11 @@ class SymTableVisitor (Visitor):
                         overLoadFlag = True
                         if freeF[1] == parms:
                             overLoadFlag = False
-                    if overLoadFlag:
+                    if overLoadFlag == True:
                         error = "Overloaded free function " + str(prog.symRecord.rows[0][5])
                         print(error)
                         ErrorList.append(error)
-                    else:
+                    elif overLoadFlag == False:
                         error = "multiple defined free function " + str(prog.symRecord.rows[0][5])
                         print(error)
                         ErrorList.append(error)
@@ -50,9 +44,6 @@ class SymTableVisitor (Visitor):
             self.checkUnbindedFunctions(node)
             self.checkCircular(node)
 
-            print(node.symTable)
-
-            print("\n")
 
             # 1st index is row (0-n)
             # second index is the col

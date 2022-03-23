@@ -117,10 +117,12 @@ def visitorDriver():
 
             symTableVisitor = SymTableVisitor()
             ast.accept(symTableVisitor)
-            # ast.accept(visitor)
-
-            # print(ast.symTable)
+            print(ast.symTable)
             tableOutput.write(str(ast.symTable))
+
+            typeCheckingVisitor = TypeCheckingVisitor()
+            ast.accept(typeCheckingVisitor)
+
 
     # ---------------------------------------------------------------------
 
