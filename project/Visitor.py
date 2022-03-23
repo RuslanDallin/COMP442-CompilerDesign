@@ -56,6 +56,23 @@ class Visitor:
         else:
             return str(-1)
 
+    def addFunction(self, node, className, newFunc):
+        classTable = self.getSubTable(node, className)
+        if classTable != "-1":
+            functionsTable = classTable.rows[2][0]
+            functionsTable.add_row(newFunc)
+        else:
+            return str(-1)
+
+    def getFunctionsTable(self, node, className):
+        classTable = self.getSubTable(node, className)
+        if classTable != "-1":
+            functionsTable = classTable.rows[2][0]
+            return functionsTable
+        else:
+            return str(-1)
+
+
     def getInher(self, node, className):
             classTable = self.getSubTable(node, className)
             if classTable != "-1":
@@ -84,9 +101,12 @@ class Visitor:
                 if parentClass.lower() in classList:
                     parentClassData = self.getData(node, parentClass)
                     childClassData = self.getData(node, childClass)
+                    parentFuncs = self.getFunctionsTable(node, parentClass)
+                    childFuncs = self.getFunctionsTable(node, childClass)
                     parentVars = [row[1] for row in parentClassData]
                     childVars = [row[1] for row in childClassData]
 
+                    #checking Shadowed
                     count = 0
                     for cVar in childVars:
                         if cVar in parentVars:
@@ -95,11 +115,26 @@ class Visitor:
                             ErrorList.append(error)
                         count += 1
 
+                    # adding missing
                     count = 0
                     for pVar in parentVars:
                         if pVar not in childVars:
                             self.addData(node, childClass, parentClassData[count])
                         count += 1
+
+                    # checking for overwritten funcs
+                    for cFunc in childFuncs:
+                        if self.getFuncNameAndParam(cFunc) in self.getAllFuncNamesAndParms(node, parentClass):
+                            error = "Overridden inherited member function " + str(cFunc.rows[0][5])
+                            print(error)
+                            ErrorList.append(error)
+
+                    # adding inh funcs
+                    for pFunc in parentFuncs:
+                        if self.getFuncNameAndParam(pFunc) not in self.getAllFuncNamesAndParms(node, childClass):
+                            self.addFunction(node,childClass, pFunc[0].rows[0])
+
+
 
     def getFunctionTable(self, node, functionName, params=None, className=None):
         if className:
@@ -195,7 +230,7 @@ class Visitor:
             print("\n")
 
 
-
+            self.inherMigration(node)
             for impl in implChildren:
                 className = impl.symRecord[0]
                 group = list()
@@ -206,7 +241,6 @@ class Visitor:
                 implClass = implEntry(className,group)
                 ImplFunctions.append(implClass)
 
-            self.checkUnbindedFunctions(node)
 
             freeFuncs = list()
             overLoadFlag = False
@@ -228,12 +262,13 @@ class Visitor:
                 freeFuncs.append(self.getFuncNameAndParam(prog.symRecord))
                 node.symTable.add_row([prog.symRecord])
 
+
+            self.checkUnbindedFunctions(node)
+            self.checkCircular(node)
+
             print(node.symTable)
 
             print("\n")
-
-            self.checkCircular(node)
-            self.inherMigration(node)
 
             # 1st index is row (0-n)
             # second index is the col
