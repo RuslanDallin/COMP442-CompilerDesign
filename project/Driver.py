@@ -103,6 +103,7 @@ def visitorDriver():
             SourceFileName = filename[0:-4]
             src = open(directoryName + "/" + SourceFileName + ".src", 'r')  # reading
             tableOutput = open("Output/" + SourceFileName + ".outsymboltables", 'w')  # symTable
+            errosOutput = open("Output/" + SourceFileName + ".outsemanticerrors", 'w')  # symTable
             print("\n\n********* %s *********" % (SourceFileName))
             lex = Lex(src)
             parseCheck, deriviations, errors, ast = parse(lex)
@@ -121,8 +122,12 @@ def visitorDriver():
             tableOutput.write(str(ast.symTable))
 
             typeCheckingVisitor = TypeCheckingVisitor()
-            ast.accept(typeCheckingVisitor)
+            ast.accept(typeCheckingVisitor, ast.symTable)
 
+            for error in ErrorList:
+                print(error)
+                errosOutput.write(str(error))
+                errosOutput.write("\n")
 
     # ---------------------------------------------------------------------
 

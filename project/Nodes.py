@@ -7,12 +7,15 @@ class BaseNode():
         self.symTable = None
         self.symRecord = None
 
-    def accept(self, visitor):
+    def accept(self, visitor, table=None):
         self.symTable = visitor.globalTable
+        if table:
+            self.symTable = table
         for child in self.children:
             child.symTable = self.symTable
-            child.accept(visitor)
+            child.accept(visitor, table)
         visitor.visit(self)
+
         
 # Special Subtrees #
 

@@ -31,11 +31,9 @@ class SymTableVisitor (Visitor):
                             overLoadFlag = False
                     if overLoadFlag == True:
                         error = "Overloaded free function " + str(prog.symRecord.rows[0][5])
-                        print(error)
                         ErrorList.append(error)
                     elif overLoadFlag == False:
                         error = "multiple defined free function " + str(prog.symRecord.rows[0][5])
-                        print(error)
                         ErrorList.append(error)
                 freeFuncs.append(self.getFuncNameAndParam(prog.symRecord))
                 node.symTable.add_row([prog.symRecord])
@@ -44,11 +42,6 @@ class SymTableVisitor (Visitor):
             self.checkUnbindedFunctions(node)
             self.checkCircular(node)
 
-
-            # 1st index is row (0-n)
-            # second index is the col
-            # this fetches i in the printArray table
-            # print(node.symTable.rows[1][4].rows[1][1])
 
 
         if type(node) is implDefSubtree:
@@ -78,7 +71,6 @@ class SymTableVisitor (Visitor):
 
             classTable.add_row([inherList])
 
-            # printprint(classTable)
 
             #placing var data members in data table
             dataTable = PrettyTable(title="data", header=False)
@@ -87,7 +79,6 @@ class SymTableVisitor (Visitor):
                     for row in dataTable.rows:
                         if row[1] == member.symRecord[1]:
                             error = "multiple declared identifier in class " + str(member.symRecord[4])
-                            print(error)
                             ErrorList.append(error)
                     dataTable.add_row(member.symRecord)
 
@@ -108,7 +99,6 @@ class SymTableVisitor (Visitor):
             for row in  node.symTable.rows:
                 if row[0].title == node.symRecord.title:
                     error = "multiply declared class " + str(node.symRecord.rows[3][0])
-                    print(error)
                     ErrorList.append(error)
             node.symTable.add_row([node.symRecord])
 
@@ -136,7 +126,7 @@ class SymTableVisitor (Visitor):
                     for row in funcVarTable.rows:
                         if row[1] == child.symRecord.id:
                             error = "multiple declared identifier in function " + str(child.symRecord.list[4])
-                            print(error)
+                            
                             ErrorList.append(error)
                     funcVarTable.add_row([x for x in child.symRecord.list if x])
 
