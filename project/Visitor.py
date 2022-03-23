@@ -2,6 +2,7 @@ from Nodes import *
 from prettytable import PrettyTable
 
 ErrorList = list()
+ImplFunctions = list()
 
 class Visitor:
     def __init__(self):
@@ -19,6 +20,13 @@ class Visitor:
                 ClassNames.append(table[0].title.split(" ")[1].lower())
         return ClassNames
 
+    def getFreeNames(self, node):
+        sections = node.symTable.rows
+        funcNames = list()
+        for table in sections:
+            if table[0].title.split(" ")[0].lower() == "function:":
+                funcNames.append(table[0].title.split(" ")[1].lower())
+        return funcNames
 
     def getSubTable(self, node, className):
         sections = node.symTable.rows
@@ -93,12 +101,17 @@ class Visitor:
                             self.addData(node, childClass, parentClassData[count])
                         count += 1
 
-    def getFunctionTable(self, node, functionName, className=None):
+    def getFunctionTable(self, node, functionName, params=None, className=None):
         if className:
             table = self.getSubTable(node, className)
             functionsTable = table.rows[2][0]
             for function in functionsTable:
                 if function[0].rows[0][1].lower() == functionName.lower():
+                    if params:
+                        if function[0].rows[0][2].lower() == params:
+                            return function[0]
+                        else:
+                            continue
                     return function[0]
             else:
                 return str(-1)
@@ -119,28 +132,39 @@ class Visitor:
         if funcTable:
             return funcTable[0].rows[0][1], funcTable[0].rows[0][2]
 
-    def checkOverloaded(self, node, implRecord):
-        classList = self.getClassNames(node)
-        for className in classList:
-            self.getFunctionTable(node,)
-        #TODO loop through all struct functions.
-        # if the FuncName and FuncParms don't match Impl's ones
-        # then 9.2 overloaded
+    def getAllFuncNamesAndParms(self, node, className=None):
+        nameAndParms = list()
+        if className:
+            table = self.getSubTable(node, className)
+            functionsTable = table.rows[2][0]
+            for funcTable in functionsTable:
+                nameAndParms.append(self.getFuncNameAndParam(funcTable))
+        else:
+            freeFuncList = self.getFreeNames(node)
+            for func in freeFuncList:
+                funcTable = self.getSubTable(node, func)
+                nameAndParms.append(self.getFuncNameAndParam(funcTable))
+        return nameAndParms
 
 
     def bindFunction(self, node, funcDef, className):
         funcName = funcDef.title.split(" ")[1]
 
-        funcTable = self.getFunctionTable(node, functionName=funcName, className=className.lower()) #from structs
-        if funcTable == "-1":
+        funcDecl = self.getFunctionTable(node, functionName=funcName, className=className.lower()) #from structs
+        if funcDecl == "-1":
             error = "undeclared member function definition " + str(funcDef[0].rows[0][5])
             print(error)
             ErrorList.append(error)
         else:
-            if self.getFuncNameAndParam(funcDef)[0] == self.getFuncNameAndParam(funcTable)[0]: #same name - Can be overloaded
-                if self.getFuncNameAndParam(funcDef)[1] == self.getFuncNameAndParam(funcTable)[1]: #same params - Not overloaded
+            if self.getFuncNameAndParam(funcDef)[0] == self.getFuncNameAndParam(funcDecl)[0]: #same name - Can be overloaded
+                if self.getFuncNameAndParam(funcDef)[1] == self.getFuncNameAndParam(funcDecl)[1]: #same params - Not overloaded
                     for row in funcDef.rows[0][4].rows:
                         self.getSetVarTable(node, funcName, className, row)
+
+
+
+
+
 
     def visit(self, node):
 
@@ -150,17 +174,50 @@ class Visitor:
             implChildren = node.children[1].children
             progChildren = node.children[2].children
 
+            print("\n")
+
+
+            print("\n")
+
+
 
             for impl in implChildren:
                 className = impl.symRecord[0]
+                group = list()
                 for func in impl.symRecord[1]:
-                    self.bindFunction(node,func,className)
-                    # print(self.getFuncNameAndParam(funcTable=func)[1])
+                    name, parm = self.getFuncNameAndParam(func)
+                    group.append((name,parm))
+                    self.bindFunction(node, func, className)
+                implClass = implEntry(className,group)
+                ImplFunctions.append(implClass)
 
 
+            for className in self.getClassNames(node):
+                for pair in self.getAllFuncNamesAndParms(node, className):
+                    for impl in ImplFunctions:
+                        if className == impl.className.lower():
+                            if pair not in impl.functions:
+                                if pair[0] in impl.functions[0]:
+                                    funcTable = self.getFunctionTable(node, pair[0], params=pair[1], className=className)
+                                    error = "Overloaded member function " + str(funcTable.rows[0][5])
+                                    print(error)
+                                    ErrorList.append(error)
+                                else:
+                                    funcTable = self.getFunctionTable(node, pair[0], params=pair[1], className=className)
+                                    print(self.getFunctionTable(node, pair[0],  params=pair[1], className=className))
+                                    error = "undefined member function declaration " + str(funcTable.rows[0][5])
+                                    print(error)
+                                    ErrorList.append(error)
+
+                    # if list(pair) not in ImplFunctions:
+                    #     if pair[0] in ImplFunctions[0]:
+                    #         print("Overloaded member function", pair)
+                    #     else:
+                    #         print("undefined member function declaration", pair)
 
             for prog in progChildren:
                 node.symTable.add_row([prog.symRecord])
+
 
             print(node.symTable)
 
@@ -217,8 +274,8 @@ class Visitor:
             functionsTable = PrettyTable(title="functions ", header=False, hrules=True)
             for member in memberDecChildren:
                 if member.symRecord[0] == "function":
-                    # funcTable = PrettyTable(title="table: " + str(classtId) + "::" + str(member.symRecord[1]), header=False)
                     functionsTable.add_row(member.symRecord)
+
 
             classTable.add_row([functionsTable])
             classTable.add_row([location])
@@ -467,6 +524,15 @@ class FunctionEntry():
             self.visibility = visibility
 
         self.list = [self.category, self.id, self.parms, self.visibility, self.table, self.location]
+
+
+class implEntry():
+    def __init__(self, className, functions):
+        self.className = className
+        self.functions = functions
+
+    def __str__(self):
+        return "%s => %s" % (self.className, self.functions)
 
 #not used
 class ClassEntry():

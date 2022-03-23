@@ -216,6 +216,23 @@ print(par44.children)
 # print(en)
 # print(en2)
 
+class StructEntry():
+    def __init__(self, className, location, inherList, varList, funcList):
+        self.className = className
+        self.location = location
+        self.inherList = inherList
+        self.varList = varList
+        self.funcList = funcList
+
+    def buildTable(self):
+        classTable = PrettyTable(title="class: " + className, header=False)
+        classTable.add_row([inherList])
+
+        dataTable = PrettyTable(title="data", header=False)
+        for var in self.varList:
+            dataTable.add_row(var.symRecord)
+            classTable.add_row([dataTable])
+
 #TODO
 # 1) RE_READ the requirements to have them in the back of your mind
 # 1) inherList
