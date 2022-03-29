@@ -108,7 +108,7 @@ x2 = PrettyTable(title="func 2")
 x2.field_names = ["inherlist", "dataTable", "functions", "location"]
 x2.add_rows(
     [
-        ["LINEAR", 1295, 1158259, 600.5],
+        ["Thoar", "Hol", 1233, 600.5],
     ]
 )
 
@@ -124,6 +124,16 @@ y.add_rows(
 
 print(y)
 
-func2 = y.rows[0][2][1]
+func1Table = y.rows[0][2][0]
+func2Table = y.rows[0][2][1]
 
-print(func2)
+
+
+print(func1Table)
+print(func2Table)
+
+func1Table.add_rows([func2Table.rows[0]])
+
+print(y)
+
+

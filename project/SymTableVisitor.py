@@ -5,42 +5,49 @@ class SymTableVisitor (Visitor):
 
         if type(node) is progSubtree:
             implChildren = node.children[1].children
-            progChildren = node.children[2].children
+            funcChildren = node.children[2].children
 
 
-            self.inherMigration(node)
-            for impl in implChildren:
-                className = impl.symRecord[0]
-                group = list()
-                for func in impl.symRecord[1]:
-                    name, parm = self.getFuncNameAndParam(func)
-                    group.append((name,parm))
-                    self.bindFunction(node, func, className)
-                implClass = implEntry(className,group)
-                ImplFunctions.append(implClass)
+            # self.inherMigration(node)
+            # for impl in implChildren:
+            #     className = impl.symRecord[0]
+            #     group = list()
+            #     for func in impl.symRecord[1]:
+            #         name, parm = self.getFuncNameAndParam(func)
+            #         group.append((name,parm))
+            #         self.bindFunction(node, func, className)
+            #     implClass = implEntry(className,group)
+            #     ImplFunctions.append(implClass)
+            #
+            #
+            # freeFuncs = list()
+            # overLoadFlag = None
+            # for func in funcChildren:
+            #     name, parms = self.getFuncNameAndParam(func.symRecord)
+            #     for freeF in freeFuncs:
+            #         if freeF[0] == name:
+            #             overLoadFlag = True
+            #             if freeF[1] == parms:
+            #                 overLoadFlag = False
+            #         if overLoadFlag == True:
+            #             error = "Overloaded free function " + str(func.symRecord.rows[0][5])
+            #             ErrorList.append(error)
+            #         elif overLoadFlag == False:
+            #             error = "multiple defined free function " + str(func.symRecord.rows[0][5])
+            #             ErrorList.append(error)
+            #     freeFuncs.append(self.getFuncNameAndParam(func.symRecord))
+            #     node.symTable.add_row([func.symRecord])
+            #
+            #
+            # self.checkUnbindedFunctions(node)
+            # self.checkCircular(node)
 
+            functionsTable = PrettyTable(title="functions ", hrules=True)
+            functionsTable.field_names = ["category", "name", "params", "visibility", "parmVars", "location"]
+            for func in funcChildren:
+                functionsTable.add_row(func.symRecord)
 
-            freeFuncs = list()
-            overLoadFlag = None
-            for prog in progChildren:
-                name, parms = self.getFuncNameAndParam(prog.symRecord)
-                for freeF in freeFuncs:
-                    if freeF[0] == name:
-                        overLoadFlag = True
-                        if freeF[1] == parms:
-                            overLoadFlag = False
-                    if overLoadFlag == True:
-                        error = "Overloaded free function " + str(prog.symRecord.rows[0][5])
-                        ErrorList.append(error)
-                    elif overLoadFlag == False:
-                        error = "multiple defined free function " + str(prog.symRecord.rows[0][5])
-                        ErrorList.append(error)
-                freeFuncs.append(self.getFuncNameAndParam(prog.symRecord))
-                node.symTable.add_row([prog.symRecord])
-
-
-            self.checkUnbindedFunctions(node)
-            self.checkCircular(node)
+            node.symTable.add_row(["", "", "", functionsTable, ""])
 
 
 
@@ -63,17 +70,18 @@ class SymTableVisitor (Visitor):
             inherChildren = node.children[1].children
             memberDecChildren = node.children[2].children
 
-            classTable = PrettyTable(title="class: " + classtId, header=False)
+            # classTable = PrettyTable(title="class: " + classtId)
 
             inherList = ()
             for child in inherChildren:
                 inherList += (child.data,)
 
-            classTable.add_row([inherList])
+            # classTable.add_row([inherList])
 
 
             #placing var data members in data table
             dataTable = PrettyTable(title="data", header=False)
+
             for member in memberDecChildren:
                 if member.symRecord[0] != "function": #data member
                     for row in dataTable.rows:
@@ -84,23 +92,30 @@ class SymTableVisitor (Visitor):
 
 
 
-            classTable.add_row([dataTable])
+            # classTable.add_row([dataTable])
 
-            functionsTable = PrettyTable(title="functions ", header=False, hrules=True)
+            functionsTable = PrettyTable(title="functions ",  hrules=True)
+            functionsTable.field_names = ["category", "name", "params", "visibility", "parmVars", "location"]
             for member in memberDecChildren:
                 if member.symRecord[0] == "function":
                     functionsTable.add_row(member.symRecord)
 
 
-            classTable.add_row([functionsTable])
-            classTable.add_row([location])
-            node.symRecord = classTable
+            # classTable.add_row([functionsTable])
+            # classTable.add_row([location])
 
-            for row in  node.symTable.rows:
-                if row[0].title == node.symRecord.title:
-                    error = "multiply declared class " + str(node.symRecord.rows[3][0])
-                    ErrorList.append(error)
-            node.symTable.add_row([node.symRecord])
+            # classTable.add_row([classtId, inherList, dataTable, functionsTable, location])
+
+            # node.symRecord = classTable
+
+
+
+            # for row in  node.symTable.rows:
+            #     if row[0].title == node.symRecord.title:
+            #         error = "multiply declared class " + str(node.symRecord.rows[3][0])
+            #         ErrorList.append(error)
+
+            node.symTable.add_row([classtId, inherList, dataTable, functionsTable, location])
 
 
         if type(node) is funcDefSubtree:
@@ -131,10 +146,13 @@ class SymTableVisitor (Visitor):
                     funcVarTable.add_row([x for x in child.symRecord.list if x])
 
             func = FunctionEntry(funcId, funcType, funcParams, visibility=None, table=funcVarTable, location=location)
-            funcTable = PrettyTable(title="function: " + funcId, header=False)
-            funcTable.add_row(func.list)
+            # funcTable = PrettyTable(title="function: " + funcId, header=False)
+            # funcTable.add_row(func.list)
+            #
+            #
+            # node.symRecord = funcTable
 
-            node.symRecord = funcTable
+            node.symRecord = func.list
 
         if type(node) is memberDeclSubtree:
             visibility = node.children[0].data
