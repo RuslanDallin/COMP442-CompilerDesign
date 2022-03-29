@@ -1,15 +1,43 @@
-Overridden inherited member function 10
-Overridden inherited member function 18
-undeclared class 41
-. operator used on non-class type 42
-. operator used on non-class type 43
-. operator used on non-class type 44
+multiply declared class 6
+multiple declared identifier in class 13
+multiple declared identifier in function 109
+Overridden inherited member function 16
+Overridden inherited member function 25
+('Shadowed inherited members', 37)
+undeclared member function definition 84
+multiple defined free function 95
+Overloaded free function 96
+Overloaded free function 96
+Overloaded free function 98
+Overloaded free function 98
+Overloaded free function 98
+Overloaded free function 102
+Overloaded free function 102
+Overloaded free function 102
+Overloaded free function 102
+undefined member function declaration 4
+undefined member function declaration 4
+undefined member function declaration 4
+undefined member function declaration 4
 undeclared class 52
 . operator used on non-class type 53
 . operator used on non-class type 54
-undeclared class 69
-undeclared class 70
-. operator used on non-class type 72
-. operator used on non-class type 73
+undeclared class 78
 . operator used on non-class type 79
 . operator used on non-class type 80
+. operator used on non-class type 81
+undeclared class 86
+. operator used on non-class type 87
+. operator used on non-class type 88
+. operator used on non-class type 89
+undeclared class 104
+undeclared class 105
+undeclared class 106
+undeclared class 107
+. operator used on non-class type 112
+. operator used on non-class type 113
+. operator used on non-class type 114
+. operator used on non-class type 115
+. operator used on non-class type 123
+. operator used on non-class type 127
+. operator used on non-class type 128
