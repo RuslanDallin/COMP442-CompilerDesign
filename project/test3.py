@@ -76,3 +76,54 @@ table2.title="Goog"
 print(table2)
 
 print(ors.title)
+
+
+x = PrettyTable(title="func 1")
+
+x.field_names = ["inherlist", "dataTable", "functions", "location"]
+x.add_rows(
+    [
+        ["LINEAR", 1295, 1158259, 600.5],
+        ["poly", 5905, 1857594, 1146.4],
+        ["", 112, 120900, 1714.7],
+        ["Hobart", 1357, 205556, 619.5],
+        ["Sydney", 2058, 4336374, 1214.8],
+        ["Melbourne", 1566, 3806092, 646.9],
+        ["Perth", 5386, 1554769, 869.4],
+    ]
+)
+
+
+print(x)
+print(x.get_string(fields=["inherlist", "dataTable"], start = 4, end=5).strip())
+
+print(x.rows[1][2])
+
+for row in x:
+    print(row.get_string(fields=["inherlist", "dataTable"]).strip())
+
+
+x2 = PrettyTable(title="func 2")
+
+x2.field_names = ["inherlist", "dataTable", "functions", "location"]
+x2.add_rows(
+    [
+        ["LINEAR", 1295, 1158259, 600.5],
+    ]
+)
+
+
+y = PrettyTable(title="class B")
+
+y.field_names = ["inherlist", "dataTable", "functions", "location"]
+y.add_rows(
+    [
+        [["LINEAR", "poly"], table, [x,x2,x], 2],
+    ]
+)
+
+print(y)
+
+func2 = y.rows[0][2][1]
+
+print(func2)
