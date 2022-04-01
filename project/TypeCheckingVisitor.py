@@ -30,7 +30,6 @@ class TypeCheckingVisitor(Visitor):
             else:
                 if typeV.data not in self.getClassNames(node):
                     error = "undeclared class " + str(typeV.token.location)
-                    print(error)
                     ErrorList.append(error)
 
 
@@ -55,8 +54,7 @@ class TypeCheckingVisitor(Visitor):
             if leftChild.__class__.__name__ == "varSubtree":
                 varID = leftChild.children[0]
                 if varID not in self.getClassNames(node):
-                    error = ". operator used on non-class type " + str(varID.token.location)
-                    print(error)
+                    error = "operator used on non-class type " + str(varID.token.location)
                     ErrorList.append(error)
 
         if type(node) is factorSubtree: pass

@@ -93,7 +93,6 @@ class Visitor:
                 parentInherList = self.getInher(node, parentClass)
                 if childClass in parentInherList:
                     error = "Circular dependence " + str(self.getSubTable(node,childClass).rows[3][0])
-                    print(error)
                     ErrorList.append(error)
 
     def inherMigration(self, node):
@@ -113,7 +112,6 @@ class Visitor:
                     for cVar in childVars:
                         if cVar in parentVars:
                             error = "Shadowed inherited members", childClassData[count][4]
-                            print(error)
                             ErrorList.append(error)
                         count += 1
 
@@ -128,7 +126,6 @@ class Visitor:
                     for cFunc in childFuncs:
                         if self.getFuncNameAndParam(cFunc) in self.getAllFuncNamesAndParms(node, parentClass):
                             error = "Overridden inherited member function " + str(cFunc.rows[0][5])
-                            print(error)
                             ErrorList.append(error)
 
                     # adding inh funcs
@@ -189,7 +186,6 @@ class Visitor:
         funcDecl = self.getFunctionTable(node, functionName=funcName, className=className.lower()) #from structs
         if funcDecl == "-1":
             error = "undeclared member function definition " + str(funcDef[0].rows[0][5])
-            print(error)
             ErrorList.append(error)
         else:
             if self.getFuncNameAndParam(funcDef)[0] == self.getFuncNameAndParam(funcDecl)[0]: #same name - Can be overloaded
@@ -208,12 +204,10 @@ class Visitor:
                             if pair[0] in impl.functions[0]:
                                 funcTable = self.getFunctionTable(node, pair[0], params=pair[1], className=className)
                                 error = "Overloaded member function " + str(funcTable.rows[0][5])
-                                print(error)
                                 ErrorList.append(error)
                             else:
                                 funcTable = self.getFunctionTable(node, pair[0], params=pair[1], className=className)
                                 error = "undefined member function declaration " + str(funcTable.rows[0][5])
-                                print(error)
                                 ErrorList.append(error)
 
 
