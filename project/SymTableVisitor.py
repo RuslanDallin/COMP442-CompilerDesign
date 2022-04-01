@@ -210,7 +210,13 @@ class SymTableVisitor (Visitor):
             for arrSize in dimListChildren:
                 if len(arrSize.children) > 0: #[3]
                     varDimlist.append("[" + str(arrSize.children[0].data) + "]")
-                    # dimOffSet *= arrSize.children[0].data
+                    try:
+                        dimOffSet *= int(arrSize.children[0].data)
+                    except:
+                        error = "Array index is not an integer " + str(location)
+                        ErrorList.append(error)
+
+
                 else: #[]
                     varDimlist.append("[]")
             entry = Entry(varName, varType, varDimlist, location=location, dimOffSet=dimOffSet)

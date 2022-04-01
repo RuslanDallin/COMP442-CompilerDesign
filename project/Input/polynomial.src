@@ -56,7 +56,7 @@ impl LINEAR {
   }
   func evaluate(x: float) -> float 
   {
-    let result: float;
+    let result: float[3][2];
     result = 0.0;
     result = a * x + b;
     return (result);

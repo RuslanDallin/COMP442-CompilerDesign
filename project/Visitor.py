@@ -155,11 +155,15 @@ class Visitor:
         funcTable = self.getFunctionTable(node, functionName, className=className)
         if funcTable != "-1":
             varTable = funcTable.rows[0][4]
-            if newRow:
-                if newRow[1] not in [row[1] for row in varTable.rows]:
+            counter = 0
+            for row in varTable.rows:
+                if row[1] == newRow[1]:
+                    varTable.del_row(counter)
                     varTable.add_row(newRow)
-                else:
-                    pass
+                    break
+                    counter += 1
+            else:
+                varTable.add_row(newRow)
             return funcTable.rows[0][4]
         else:
             return str(-1)
@@ -195,7 +199,6 @@ class Visitor:
             if self.getFuncNameAndParam(funcDef)[0] == self.getFuncNameAndParam(funcDecl)[0]: #same name - Can be overloaded
                 if self.getFuncNameAndParam(funcDef)[1] == self.getFuncNameAndParam(funcDecl)[1]: #same params - Not overloaded
                     for row in funcDef.rows[0][4].rows:
-                        print(row)
                         self.getSetVarTable(node, funcName, className, row)
 
 
