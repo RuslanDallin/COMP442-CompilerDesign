@@ -2,6 +2,7 @@ import os
 
 from anytree import RenderTree
 
+from ComputeMemSizeVisitor import *
 from LexicalAnalyzer import Lex
 from Parser import parse
 from SymTableVisitor import *
@@ -123,6 +124,10 @@ def visitorDriver():
 
             typeCheckingVisitor = TypeCheckingVisitor()
             ast.accept(typeCheckingVisitor, ast.symTable)
+
+            memoryVisitor = ComputeMemSizeVisitor()
+            ast.accept(memoryVisitor, ast.symTable)
+
 
             for error in ErrorList:
                 # print(error)

@@ -1,16 +1,47 @@
 from Visitor import *
 
-class TypeCheckingVisitor(Visitor):
+class ComputeMemSizeVisitor(Visitor):
+
+    def offSetEntry(listEntry):
+        if listEntry[2] == "int":
+            listEntry[3] = 4
+        if listEntry[2] == "float":
+            listEntry[3] = 8
+
+
+
     def visit(self, node):
 
-        # symTable = node.symTable
-        # for child in node.children:
-        #     child.symTable = symTable
-
-        # node.base
 
 
-        if type(node) is progSubtree: pass
+
+
+        if type(node) is progSubtree:
+
+            for classTable in node.symTable.rows:
+                if classTable[0].title.startswith("class:"):
+                    className = classTable[0].title.split(" ")[1]
+                    funcsTable = classTable[0][2][0]
+                    for funcs in funcsTable.rows:
+                        for func in funcs[0]:
+                            print(className)
+                            funcName = func.rows[0][1]
+                            print(funcName)
+                            varTable = func.rows[0][4]
+                            for entry in varTable.rows:
+                                print(entry)
+                            print("\n")
+
+                else: # free funcs
+                    className = "Free"
+                    print(className)
+                    funcName = classTable[0].rows[0][1]
+                    print(funcName)
+                    varTable = classTable[0].rows[0][4]
+                    for entry in varTable.rows:
+                        print(entry)
+                    print("\n")
+
 
 
         if type(node) is implDefSubtree: pass
@@ -23,14 +54,7 @@ class TypeCheckingVisitor(Visitor):
 
         if type(node) is funcDeclSubtree: pass
 
-        if type(node) is varDeclSubtree:
-            typeV = node.children[1]
-            if typeV.data == "integer" or typeV.data == "float":
-                pass
-            else:
-                if typeV.data not in self.getClassNames(node):
-                    error = "undeclared class " + str(typeV.token.location)
-                    ErrorList.append(error)
+        if type(node) is varDeclSubtree: pass
 
         if type(node) is Node: pass
 
@@ -48,13 +72,7 @@ class TypeCheckingVisitor(Visitor):
 
         if type(node) is dimListSubtree: pass
 
-        if type(node) is dotSubtree:
-            leftChild = node.children[0]
-            if leftChild.__class__.__name__ == "varSubtree":
-                varID = leftChild.children[0]
-                if varID not in self.getClassNames(node):
-                    error = "operator used on non-class type " + str(varID.token.location)
-                    ErrorList.append(error)
+        if type(node) is dotSubtree: pass
 
         if type(node) is factorSubtree: pass
 
@@ -75,13 +93,6 @@ class TypeCheckingVisitor(Visitor):
         if type(node) is implDefListSubtree: pass
 
         if type(node) is indiceListSubtree: pass
-            # factors = node.children
-            # if factors:
-            #     for factor in factors:
-            #         print(factor.children[0].__class__.__name__)
-            #         # if factor.children[0].__class__.__name__.endswith("Node"):
-            #         #     print(factor.children[0].data)
-
 
         if type(node) is inherListSubtree: pass
 

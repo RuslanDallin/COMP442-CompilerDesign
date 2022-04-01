@@ -3,18 +3,27 @@ from anytree import Node
 class BaseNode():
     def __init__(self, token=None):
         self.name = ""
+        self.data = None
         self.token = token
         self.symTable = None
         self.symRecord = None
 
     def accept(self, visitor, table=None):
-        self.symTable = visitor.globalTable
-        if table:
-            self.symTable = table
-        for child in self.children:
-            child.symTable = self.symTable
-            child.accept(visitor, table)
-        visitor.visit(self)
+        if visitor.__class__.__name__ == "SymTableVisitor" or visitor.__class__.__name__ == "TypeCheckingVisitor" or visitor.__class__.__name__ == "ComputeMemSizeVisitor":
+            self.symTable = visitor.globalTable
+            if table:
+                self.symTable = table
+            for child in self.children:
+                child.symTable = self.symTable
+                child.accept(visitor, table)
+            visitor.visit(self)
+
+        else:
+            visitor.visit(self)
+
+
+
+
 
         
 # Special Subtrees #

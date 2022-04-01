@@ -113,6 +113,7 @@ class SymTableVisitor (Visitor):
             #updating local to param
             funcParams = ()
             for param in funcParmsChildren:
+                print(param.symRecord)
                 if param.__class__.__name__ == "varDeclSubtree":
                     for var in funcBodyChildren:
                         if var.__class__.__name__ == varDeclSubtree and param.symRecord.list[1] == var.symRecord.list[1]:
@@ -126,15 +127,19 @@ class SymTableVisitor (Visitor):
                     for row in funcVarTable.rows:
                         if row[1] == child.symRecord.id:
                             error = "multiple declared identifier in function " + str(child.symRecord.list[4])
-                            
+
+
+
                             ErrorList.append(error)
-                    funcVarTable.add_row([x for x in child.symRecord.list if x])
+                    funcVarTable.add_row(child.symRecord.list)
 
             func = FunctionEntry(funcId, funcType, funcParams, visibility=None, table=funcVarTable, location=location)
             funcTable = PrettyTable(title="function: " + funcId, header=False)
             funcTable.add_row(func.list)
 
             node.symRecord = funcTable
+            print("FuncDef")
+            print(funcTable)
 
         if type(node) is memberDeclSubtree:
             visibility = node.children[0].data
@@ -163,10 +168,12 @@ class SymTableVisitor (Visitor):
                 if param.__class__.__name__ == "varDeclSubtree":
                     param.symRecord.list[0] = "param"
                     funcParams += (param.symRecord.list[2],)
-                    funcTable.add_row([x for x in param.symRecord.list if x])
+                    funcTable.add_row(param.symRecord.list)
 
             node.symRecord = FunctionEntry(funcId, funcType, funcParams, visibility=None, table=funcTable, location=location)
 
+            print("FuncDec")
+            print(funcTable)
 
         if type(node) is varDeclSubtree:
             varName = node.children[0].data
