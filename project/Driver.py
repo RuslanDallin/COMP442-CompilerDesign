@@ -125,8 +125,8 @@ def visitorDriver():
             typeCheckingVisitor = TypeCheckingVisitor()
             ast.accept(typeCheckingVisitor, ast.symTable)
 
-            memoryVisitor = ComputeMemSizeVisitor()
-            ast.accept(memoryVisitor, ast.symTable)
+            # memoryVisitor = ComputeMemSizeVisitor()
+            # ast.accept(memoryVisitor, ast.symTable)
 
 
             for error in ErrorList:

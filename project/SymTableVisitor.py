@@ -110,28 +110,53 @@ class SymTableVisitor (Visitor):
             funcType = node.children[2].data
             funcBodyChildren = node.children[3].children
 
+
+            paramList = list()
+
             #updating local to param
             funcParams = ()
             for param in funcParmsChildren:
                 print(param.symRecord)
-                if param.__class__.__name__ == "varDeclSubtree":
-                    for var in funcBodyChildren:
-                        if var.__class__.__name__ == varDeclSubtree and param.symRecord.list[1] == var.symRecord.list[1]:
-                            var.symRecord.list[0] = "param"
-                    funcParams += (param.symRecord.list[2],)
+                paramList.append(param.symRecord)
+
+                funcParams += (param.symRecord.list[2],)
+
+            print("+++++++++++++")
+
+
+
+            varList = list()
+            for child in funcBodyChildren:
+                if child.__class__.__name__ == "varDeclSubtree":
+                    print(child.symRecord)
+                    varList.append(child.symRecord)
+
+
+                    # funcVarTable.add_row(child.symRecord.list)
+
+            # combine params with vars
+            paramList.reverse()
+            for param in paramList:
+                if param in varList:
+                    error = "multiple declared identifier in function " + str(param.location)
+                    ErrorList.append(error)
+                else:
+                    param.category = "param"
+                    param.list[0] = "param"
+                    varList.insert(0,param)
 
             # creating table
             funcVarTable = PrettyTable(title="table: " + funcId, header=False)
-            for child in funcBodyChildren:
-                if child.__class__.__name__ == "varDeclSubtree":
-                    for row in funcVarTable.rows:
-                        if row[1] == child.symRecord.id:
-                            error = "multiple declared identifier in function " + str(child.symRecord.list[4])
+            for var in varList:
+                if var.list[1] in [row[1] for row in funcVarTable.rows ]:
+                    error = "multiple declared identifier in function " + str(param.location)
+                    ErrorList.append(error)
+                else:
+                    funcVarTable.add_row(var.list)
 
 
 
-                            ErrorList.append(error)
-                    funcVarTable.add_row(child.symRecord.list)
+
 
             func = FunctionEntry(funcId, funcType, funcParams, visibility=None, table=funcVarTable, location=location)
             funcTable = PrettyTable(title="function: " + funcId, header=False)
@@ -181,12 +206,14 @@ class SymTableVisitor (Visitor):
             varType = node.children[1].data
             dimListChildren = node.children[2].children
             varDimlist = list()
+            dimOffSet = 1
             for arrSize in dimListChildren:
                 if len(arrSize.children) > 0: #[3]
                     varDimlist.append("[" + str(arrSize.children[0].data) + "]")
+                    # dimOffSet *= arrSize.children[0].data
                 else: #[]
                     varDimlist.append("[]")
-            entry = Entry(varName, varType, varDimlist, location=location)
+            entry = Entry(varName, varType, varDimlist, location=location, dimOffSet=dimOffSet)
             node.symRecord = entry
 
         if type(node) is Node: pass

@@ -156,10 +156,14 @@ class Visitor:
         if funcTable != "-1":
             varTable = funcTable.rows[0][4]
             if newRow:
-                varTable.add_row(newRow)
+                if newRow[1] not in [row[1] for row in varTable.rows]:
+                    varTable.add_row(newRow)
+                else:
+                    pass
             return funcTable.rows[0][4]
         else:
             return str(-1)
+
 
     def getFuncNameAndParam(self, funcTable=None):
         if funcTable:
@@ -191,6 +195,7 @@ class Visitor:
             if self.getFuncNameAndParam(funcDef)[0] == self.getFuncNameAndParam(funcDecl)[0]: #same name - Can be overloaded
                 if self.getFuncNameAndParam(funcDef)[1] == self.getFuncNameAndParam(funcDecl)[1]: #same params - Not overloaded
                     for row in funcDef.rows[0][4].rows:
+                        print(row)
                         self.getSetVarTable(node, funcName, className, row)
 
 
@@ -212,7 +217,7 @@ class Visitor:
 
 
 class Entry():
-    def __init__(self, id, type, dimList="", visibility="", location=""):
+    def __init__(self, id, type, dimList="", visibility="", location="", dimOffSet=1):
         self.category = "local"
         self.id = id
         self.type = type
@@ -220,10 +225,15 @@ class Entry():
         self.visibility = visibility
         self.dimStr = ""
         self.location = location
+        self.offset = ""
+        if type == "integer": self.offset = 4 * dimOffSet
+        if type == "float": self.offset = 8 * dimOffSet
+
         if self.dimList != "":
             for dim in self.dimList:
                 self.dimStr += dim
-        self.list = [self.category, self.id, str(self.type) + str(self.dimStr),  self.visibility, self.location]
+
+        self.list = [self.category, self.id, str(self.type) + str(self.dimStr),  self.visibility, self.location, self.offset]
 
     def __str__(self):
         if self.dimList and self.visibility:
@@ -234,6 +244,12 @@ class Entry():
             return "%s\t | %s\t | %s\t | %s\t" % (self.category, self.id, self.type, self.visibility)
         else:
             return "%s\t | %s\t | %s\t" % (self.category, self.id, self.type)
+
+    def __eq__(self, other):
+        if isinstance(other, self.__class__):
+            return self.id == other.id and self.dimStr == other.dimStr
+        else:
+            return False
 
 class memberDataEntry():
     def __init__(self, dataEntry, visibility):

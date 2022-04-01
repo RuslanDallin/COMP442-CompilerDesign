@@ -1,4 +1,3 @@
-
 // ====== struct declarations ====== //
 struct POLYNOMIAL {
 	public func evaluate(x: float) -> float;
@@ -20,79 +19,97 @@ struct QUADRATIC inherits POLYNOMIAL {
 };
 
 // ====== struct implementations ====== //
-impl POLYNOMIAL {
-  func evaluate(x: float) -> float                                // 2.1, 2.2
+impl POLYNOMIAL {   
+  func evaluate(x: float) -> float
   {
-    return (0);                                                   // 2.3
+    return (0);
   }
 }
-
-impl QUADRATIC {
-  func evaluate(x: float) -> float                                // 2.1, 2.2
+  
+impl QUADRATIC { 
+  func evaluate(x: float) -> float
   {
-    let result: float;                                            // 1.1
+    let result: float;
     //Using Horner's method
-    result = a;                                                   // 3.1
-    result = result * x + b;                                      // 3.1, 5.1
-    result = result * x + c;                                      // 3.1, 5.1
-    return (result);                                              // 2.3
+    result = a;
+    result = result * x + b;
+    result = result * x + c;
+    return (result);
   }
-  func build(A: float, B: float, C: float) -> QUADRATIC           // 2.1, 2.2
+  func build(A: float, B: float, C: float) -> QUADRATIC 
   {
-    let new_function: QUADRATIC ;                                 // 1.3
-    new_function.a = A;// 3.1, 5.3
-    new_function.b = B;// 3.1, 5.3
-    new_function.c = C;// 3.1, 5.3
-    return (new_function);                                        // 2.3
+    let new_function: QUADRATIC ;
+    new_function.a = A;
+    new_function.b = B;
+    new_function.c = C;
+    return (new_function);
   }
 }
-
+  
 impl LINEAR {
-  func build(A: float, B: float) -> LINEAR                        // 2.1, 2.2
+  func build(A: float, B: float) -> LINEAR 
   {
-    let new_function: LINEAR;                                     // 1.3
-    new_function.a = A;                                           // 3.1, 5.3
-    new_function.b = B;                                           // 3.1, 5.3
-    return (new_function);                                        // 2.3
+    let new_function: LINEAR;
+    new_function.a = A;
+    new_function.b = B;
+    return (new_function);
   }
-  func evaluate(x: float) -> float                                // 2.1, 2.2
+  func evaluate(x: float) -> float 
   {
-    let result[2]: float;                                            // 1.1
-    result = 0.0;                                                 // 3.1
-    result = a * x + b;                                           // 3.1, 5.1
-    return (result);                                              // 2.3
+    let result: float;
+    result = 0.0;
+    result = a * x + b;
+    return (result);
   }
-}
+} 
 
 // ====== main ====== //
-func main() -> void                                               // 2.1, 2.2
+func main() -> void
 {
-  let f1: LINEAR;                                                 // 1.3
-  let f2: QUADRATIC;                                              // 1.3
-  let counter: integer;                                           // 1.1
-  f1 = f1.build(2, 3.5);                                          // 2.1, 2.2, 2.4
-  f2 = f2.build(-2.0, 1.0, 0.0);                                  // 2.1, 2.2, 2.4
-  counter = 1;                                                    // 3.1
-
-  while(counter <= 10)                                            // 3.3, 5.1
+  let f1: LINEAR;
+  let f2: QUADRATIC;
+  let counter: integer;
+  f1 = f1.build(2, 3.5);
+  f2 = f2.build(-2.0, 1.0, 0.0);
+  counter = 1;
+	
+  while(counter <= 10)
   {
-    write(counter);                                               // 3.4
-    write(f1.evaluate(counter));                                  // 3.4, 2.1, 2.2, 2.4
-    write(f2.evaluate(counter));                                  // 3.4, 2.1, 2.2, 2.4
-  };
-}func main2() -> void                                               // 2.1, 2.2
-{
-  let f1: LINEAR;                                                 // 1.3
-  let f2: QUADRATIC;                                              // 1.3
-  let counter: integer;                                           // 1.1
-  f1 = f1.build(2, 3.5);                                          // 2.1, 2.2, 2.4
-  f2 = f2.build(-2.0, 1.0, 0.0);                                  // 2.1, 2.2, 2.4
-  counter = 1;                                                    // 3.1
-
-  while(counter <= 10)                                            // 3.3, 5.1
-  {
-    write(counter);                                               // 3.4
-    write(f1.evaluate(counter));                                  // 3.4, 2.1, 2.2, 2.4
-    write(f2.evaluate(counter));                                  // 3.4, 2.1, 2.2, 2.4
+    write(counter);
+    write(f1.evaluate(counter));
+    write(f2.evaluate(counter));
   };
 }
+/*
+1.   |X| global symbol table
+2.   |X| class symbol table
+3.1  |X| class data member
+3.2  |X| function's local variable
+4.1  |X| free function
+4.2  |X| member function
+6.1  | | undeclared member function definition
+6.2  | | undefined member function declaration
+8.1  | | multiply declared class
+8.2  | | multiply declared free function
+8.3  | | multiply declared identifier in class
+8.4  | | multiply declared identifier in function
+8.5  | | shadowed inherited data member
+9.1  | | Overloaded free function
+9.2  | | Overloaded member function
+9.3  | | Overridden inherited member function
+10.1 | | Type error in expression
+10.2 | | Type error in assignment statement 
+10.3 | | Type error in return statement
+11.1 | | Undeclared local variable
+11.2 | | Undeclared data member
+11.3 | | Undeclared member function
+11.4 | | Undeclared free function
+11.5 | | Undeclared class
+12.1 | | Function call with wrong number of parameters
+12.2 | | Function call with wrong type of parameters
+13.1 | | Use of array with wrong number of dimensions
+13.2 | | Array index is not an integer
+13.3 | | Array parameter using wrong number of dimensions
+14.1 | | Circular class dependency
+15.1 | | "." operator used on non-class type
+*/
