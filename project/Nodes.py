@@ -10,8 +10,9 @@ class BaseNode():
         self.token = token
         self.symTable = None
         self.symRecord = None
-        self.tempVarEntries = None
+        self.tempVarEntries = None # should be deleted if not used
         self.type = None
+        self.counter = None
 
     # func def overrides accept !
     def accept(self, visitor, table=None):
@@ -126,6 +127,7 @@ class funcDefSubtree(BaseNode, Node):
         super(funcDefSubtree, self).__init__()
         self.name = "funcDef"
         self.tempVarEntries = ["first"]
+        self.counter = [1]
         if children:
             self.children = children
 

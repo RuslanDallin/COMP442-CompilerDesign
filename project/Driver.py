@@ -119,14 +119,16 @@ def visitorDriver():
 
             symTableVisitor = SymTableVisitor()
             ast.accept(symTableVisitor)
-            print(ast.symTable)
-            tableOutput.write(str(ast.symTable))
+
 
             typeCheckingVisitor = TypeCheckingVisitor()
             ast.accept(typeCheckingVisitor, ast.symTable)
 
             memoryVisitor = ComputeMemSizeVisitor()
             ast.accept(memoryVisitor, ast.symTable)
+
+            print(ast.symTable)
+            tableOutput.write(str(ast.symTable))
 
 
             for error in ErrorList:
