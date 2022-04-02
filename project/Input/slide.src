@@ -1,0 +1,19 @@
+func f(p1: integer, p2: integer, p3: integer) -> int
+{
+    let retval: integer;
+    retval = p1 + p2 * p3;
+    write(retval);
+    return (retval);
+}
+
+func program() -> void
+{
+    let a: integer;
+    let b: integer;
+    let c: integer;
+    a = 1;
+    b = 2;
+    c = 3;
+    a = f(a,b,c) * b + c;
+    write(a);
+}

@@ -10,6 +10,12 @@ class Visitor:
 
     def visit(self, node): pass
 
+    def addTempVar(self, list, type="integer", location=""):
+        varName = "t" + str(len(list))
+        if type == "integer": offset = 4
+        if type == "float": offset = 8
+        list.append(["temp", varName, type, "", location, offset])
+
 
     def createGlobalTable(self):
         return PrettyTable(title="table: global", header=False, hrules=True)

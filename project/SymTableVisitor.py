@@ -1,7 +1,23 @@
 from Visitor import *
 
+tempVarCounter = 1
+
 class SymTableVisitor (Visitor):
     def visit(self, node):
+
+        # if "OpNode" in node.__class__.__name__:
+        #     print(node.name)
+        #     # print(node.ancestors)
+        #     for s in node.siblings:
+        #         print(s.name)
+        #     # print(node.siblings)
+        #
+        #     # self.addTempVar()
+        #     node.tempVarEntries.append(node.__class__.__name__)
+        #     # print(node.tempVarEntries)
+        #     print("\n")
+        #     # node.tempVarEntries.append(node.name)
+        #     # entry = Entry("tempvar", "t" + str(tempVarCounter), varDimlist, location=location, dimOffSet=dimOffSet)
 
         if type(node) is progSubtree:
             implChildren = node.children[1].children
@@ -149,12 +165,10 @@ class SymTableVisitor (Visitor):
             funcVarTable = PrettyTable(title="table: " + funcId, header=False)
             for var in varList:
                 if var.list[1] in [row[1] for row in funcVarTable.rows ]:
-                    error = "multiple declared identifier in function " + str(param.location)
+                    error = "multiple declared identifier in function " + str(var.location)
                     ErrorList.append(error)
                 else:
                     funcVarTable.add_row(var.list)
-
-
 
 
 
@@ -163,8 +177,6 @@ class SymTableVisitor (Visitor):
             funcTable.add_row(func.list)
 
             node.symRecord = funcTable
-            print("FuncDef")
-            print(funcTable)
 
         if type(node) is memberDeclSubtree:
             visibility = node.children[0].data
@@ -197,8 +209,6 @@ class SymTableVisitor (Visitor):
 
             node.symRecord = FunctionEntry(funcId, funcType, funcParams, visibility=None, table=funcTable, location=location)
 
-            print("FuncDec")
-            print(funcTable)
 
         if type(node) is varDeclSubtree:
             varName = node.children[0].data
@@ -215,8 +225,6 @@ class SymTableVisitor (Visitor):
                     except:
                         error = "Array index is not an integer " + str(location)
                         ErrorList.append(error)
-
-
                 else: #[]
                     varDimlist.append("[]")
             entry = Entry(varName, varType, varDimlist, location=location, dimOffSet=dimOffSet)
@@ -247,6 +255,7 @@ class SymTableVisitor (Visitor):
         if type(node) is fparmListSubtree: pass
 
         if type(node) is funCallSubtree: pass
+            # node.tempVarEntries.append(node.__class__.__name__)
 
         if type(node) is funcBodySubtree: pass
 

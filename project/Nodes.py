@@ -1,28 +1,33 @@
 from anytree import Node
 
+
+
 class BaseNode():
+
     def __init__(self, token=None):
         self.name = ""
         self.data = None
         self.token = token
         self.symTable = None
         self.symRecord = None
+        self.tempVarEntries = None
+        self.type = None
 
+    # func def overrides accept !
     def accept(self, visitor, table=None):
-        if visitor.__class__.__name__ == "SymTableVisitor" or visitor.__class__.__name__ == "TypeCheckingVisitor" or visitor.__class__.__name__ == "ComputeMemSizeVisitor":
+        if visitor.__class__.__name__ == "SymTableVisitor" or visitor.__class__.__name__ == "TypeCheckingVisitor":
             self.symTable = visitor.globalTable
             if table:
                 self.symTable = table
             for child in self.children:
+                if self.tempVarEntries:
+                    child.tempVarEntries = self.tempVarEntries
                 child.symTable = self.symTable
                 child.accept(visitor, table)
             visitor.visit(self)
 
         else:
             visitor.visit(self)
-
-
-
 
 
         
@@ -120,8 +125,10 @@ class funcDefSubtree(BaseNode, Node):
     def __init__(self, children=None):
         super(funcDefSubtree, self).__init__()
         self.name = "funcDef"
+        self.tempVarEntries = ["first"]
         if children:
             self.children = children
+
 
 class funcDeclSubtree(BaseNode, Node):
     def __init__(self, children=None):
