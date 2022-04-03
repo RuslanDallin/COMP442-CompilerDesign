@@ -140,3 +140,5 @@ print(y)
 table.add_row(["5", "5", "5"])
 
 print(y)
+y.add_column(column="3", fieldname="newCol")
+print(y)

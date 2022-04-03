@@ -33,30 +33,11 @@ class ComputeMemSizeVisitor(Visitor):
         if type(node) is progSubtree:
             self.callAccept(node)
 
+            print(node.symTable)
+            # self.getAllVarTables(node)
 
-            # for row in node.symTable.rows:
-            #     if row[0].title.startswith("class:"):
-            #         className = row[0].title.split(" ")[1]
-            #         funcsTable = row[0][2][0]
-            #         for funcs in funcsTable.rows:
-            #             for func in funcs[0]:
-            #                 print(className)
-            #                 funcName = func.rows[0][1]
-            #                 print(funcName)
-            #                 varTable = func.rows[0][4]
-            #                 for entry in varTable.rows:
-            #                     print(entry)
-            #                 print("\n")
-            #
-            #     else: # free funcs
-            #         className = "Free"
-            #         print(className)
-            #         funcName = row[0].rows[0][1]
-            #         print(funcName)
-            #         varTable = row[0].rows[0][4]
-            #         for entry in varTable.rows:
-            #             print(entry)
-            #         print("\n")
+
+
 
 
         if type(node) is factorSubtree:
@@ -203,11 +184,6 @@ class ComputeMemSizeVisitor(Visitor):
             if child.token != None:
                 return child.token.location
 
-    def getFuncReturnType(self, node, funcId, classPar=None):
-        func = self.getFuncTableDuo(node, funcId, classPar)
-        paramsLine = func.rows[0][2]
-        return paramsLine.split(":")[1]
-
     def getFuncTableDuo(self, node, funcPar, classPar=None):
         # if className emoty means it's a free func
         if classPar:
@@ -225,8 +201,40 @@ class ComputeMemSizeVisitor(Visitor):
         else:  # free func
             for row in node.symTable.rows:
                 if row[0].title.startswith("function:"):
-                    className = "Free"
                     funcName = row[0].rows[0][1]
                     if funcName == funcPar:
                         return row[0]
+
+    # not used but could be useful
+    def getAllVarTables(self, node):
+        for row in node.symTable.rows:
+            if row[0].title.startswith("class:"):
+                className = row[0].title.split(" ")[1]
+                funcsTable = row[0][2][0]
+                offSetCounter = 0
+                offSetTotalCol = [0]
+                for funcs in funcsTable.rows:
+                    for func in funcs[0]:
+                        print(className)
+                        funcName = func.rows[0][1]
+                        print(funcName)
+                        varTable = func.rows[0][4]
+                        for entry in varTable.rows:
+                            offSet = int(entry[-1])
+                            # offSetCounter -= offSet
+                            print(offSet)
+                            # offSetTotalCol.append("fdf")
+                            print(entry)
+                        print(offSetTotalCol)
+                        print("\n")
+
+            else:  # free funcs
+                className = "Free"
+                print(className)
+                funcName = row[0].rows[0][1]
+                print(funcName)
+                varTable = row[0].rows[0][4]
+                for entry in varTable.rows:
+                    print(entry)
+                print("\n")
 

@@ -13,6 +13,11 @@ class Visitor:
     def createGlobalTable(self):
         return PrettyTable(title="table: global", header=False, hrules=True)
 
+    def getFuncReturnType(self, node, funcId, classPar=None):
+        func = self.getFuncTableDuo(node, funcId, classPar)
+        paramsLine = func.rows[0][2]
+        return paramsLine.split(":")[1]
+
     def getClassNames(self, node):
         sections = node.symTable.rows
         ClassNames = list()
@@ -228,8 +233,10 @@ class Entry():
         self.dimStr = ""
         self.location = location
         self.offset = ""
+
         if type == "integer": self.offset = 4 * dimOffSet
-        if type == "float": self.offset = 8 * dimOffSet
+        elif type == "float": self.offset = 8 * dimOffSet
+        else: self.offset = 4 * dimOffSet # until I find how to get the class offset
 
         if self.dimList != "":
             for dim in self.dimList:

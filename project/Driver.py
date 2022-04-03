@@ -127,8 +127,8 @@ def visitorDriver():
             memoryVisitor = ComputeMemSizeVisitor()
             ast.accept(memoryVisitor, ast.symTable)
 
-            print(ast.symTable)
-            tableOutput.write(str(ast.symTable))
+            # print(ast.symTable)
+            # tableOutput.write(str(ast.symTable))
 
 
             for error in ErrorList:

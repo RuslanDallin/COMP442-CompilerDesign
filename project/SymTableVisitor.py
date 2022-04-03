@@ -23,7 +23,6 @@ class SymTableVisitor (Visitor):
             implChildren = node.children[1].children
             progChildren = node.children[2].children
 
-
             self.inherMigration(node)
             for impl in implChildren:
                 className = impl.symRecord[0]
@@ -79,7 +78,7 @@ class SymTableVisitor (Visitor):
             inherChildren = node.children[1].children
             memberDecChildren = node.children[2].children
 
-            classTable = PrettyTable(title="class: " + classtId, header=False)
+            classTable = PrettyTable(title="class: " + classtId, header=False, hrules=True)
 
             inherList = ()
             for child in inherChildren:
@@ -87,7 +86,7 @@ class SymTableVisitor (Visitor):
 
             classTable.add_row([inherList])
 
-
+            classScope = 0
             #placing var data members in data table
             dataTable = PrettyTable(title="data", header=False)
             for member in memberDecChildren:
@@ -96,6 +95,7 @@ class SymTableVisitor (Visitor):
                         if row[1] == member.symRecord[1]:
                             error = "multiple declared identifier in class " + str(member.symRecord[4])
                             ErrorList.append(error)
+                    classScope += member.symRecord[-1]
                     dataTable.add_row(member.symRecord)
 
 
@@ -110,6 +110,7 @@ class SymTableVisitor (Visitor):
 
             classTable.add_row([functionsTable])
             classTable.add_row([location])
+            classTable.add_row([-classScope])
             node.symRecord = classTable
 
             for row in  node.symTable.rows:
@@ -129,26 +130,17 @@ class SymTableVisitor (Visitor):
 
             paramList = list()
 
-            #updating local to param
+            #Go through all param vars and add to list
             funcParams = ()
             for param in funcParmsChildren:
-                print(param.symRecord)
                 paramList.append(param.symRecord)
-
                 funcParams += (param.symRecord.list[2],)
 
-            print("+++++++++++++")
-
-
-
+            # Go through all local vars and add to list
             varList = list()
             for child in funcBodyChildren:
                 if child.__class__.__name__ == "varDeclSubtree":
-                    print(child.symRecord)
                     varList.append(child.symRecord)
-
-
-                    # funcVarTable.add_row(child.symRecord.list)
 
             # combine params with vars
             paramList.reverse()
@@ -161,7 +153,7 @@ class SymTableVisitor (Visitor):
                     param.list[0] = "param"
                     varList.insert(0,param)
 
-            # creating table
+            # add params and vars to table
             funcVarTable = PrettyTable(title="table: " + funcId, header=False)
             for var in varList:
                 if var.list[1] in [row[1] for row in funcVarTable.rows ]:
@@ -169,8 +161,6 @@ class SymTableVisitor (Visitor):
                     ErrorList.append(error)
                 else:
                     funcVarTable.add_row(var.list)
-
-
 
             func = FunctionEntry(funcId, funcType, funcParams, visibility=None, table=funcVarTable, location=location)
             funcTable = PrettyTable(title="function: " + funcId, header=False)
