@@ -2,6 +2,7 @@ import os
 
 from anytree import RenderTree
 
+from CodeGeneration import *
 from ComputeMemSizeVisitor import *
 from LexicalAnalyzer import Lex
 from Parser import parse
@@ -117,15 +118,17 @@ def visitorDriver():
                     print("%s%s" % (pre, node.name))
 
 
-            symTableVisitor = SymTableVisitor()
-            ast.accept(symTableVisitor)
-
+            symTable = SymTableVisitor()
+            ast.accept(symTable)
 
             # typeCheckingVisitor = TypeCheckingVisitor()
             # ast.accept(typeCheckingVisitor, ast.symTable)
 
-            memoryVisitor = ComputeMemSizeVisitor()
-            ast.accept(memoryVisitor, ast.symTable)
+            computeMemSize = ComputeMemSizeVisitor()
+            ast.accept(computeMemSize, ast.symTable)
+
+            CodeGeneration = CodeGenerationVisitor()
+            ast.accept(CodeGeneration, ast.symTable)
 
             # print(ast.symTable)
             # tableOutput.write(str(ast.symTable))

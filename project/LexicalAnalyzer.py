@@ -6,7 +6,7 @@ transTable.set_index("State", inplace=True)
 LexemeDic = {"==": "eq", "+": "plus", "(": "lpar", ";": "semi", "<>": "neq", "-": "minus",
              "&": "and", ")": "rpar", ",": "comma", "<": "lt", "*": "mult", "!": "not", "{": "lcurbr",
              ".": "dot", ">": "gt", "/": "div", "}": "rcurbr", ":": "colon", "<=": "leq", "=": "assign",
-             "[": "lsqbr", "::": "coloncplon", ">=": "geq", "]": "rsqbr", "->": "arrow", "|":"or"}
+             "[": "lsqbr", "::": "coloncplon", ">=": "geq", "]": "rsqbr", "->": "arrow", "|" : "or"}
 
 reservedWords = ["if", "then", "else", "intnum", "floatnum", "void", "public", "private", "func", "var","struct",
                  "while", "func", "read", "write", "return", "self", "inherits", "let", "impl", "integer", "float"]

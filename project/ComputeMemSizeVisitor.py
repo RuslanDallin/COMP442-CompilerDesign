@@ -1,13 +1,5 @@
 from Visitor import *
 
-
-# for child in self.children:
-#     if self.tempVarEntries:
-#         child.tempVarEntries = self.tempVarEntries
-#     child.symTable = self.symTable
-#     child.accept(visitor, table)
-# visitor.visit(self)
-
 class ComputeMemSizeVisitor(Visitor):
 
 
@@ -20,6 +12,8 @@ class ComputeMemSizeVisitor(Visitor):
             rightChild = node.children[2]
 
             if leftChild.type != rightChild.type:
+                print("=>", node.name)
+                print(leftChild.type, rightChild.type)
                 error = "invalid to have operands of arithmetic operators to be of different types " + str(self.fetchLocation(node))
                 ErrorList.append(error)
                 node.type = "integer"
@@ -32,15 +26,8 @@ class ComputeMemSizeVisitor(Visitor):
 
         if type(node) is progSubtree:
             self.callAccept(node)
-
-
-            # print(self.getMultiTable(node, classPar="QUADRATIC"))
-            # print(self.getClassScope(node, classPar="QUADRATIC"))
-
-
             print(self.getAllVarTables(node))
 
-            print(node.symTable)
 
 
 
@@ -49,30 +36,34 @@ class ComputeMemSizeVisitor(Visitor):
             child = node.children[0]
             if child.name == "float": child.type = "float"
             if child.name == "num": child.type = "integer"
+            node.data = child.data
             if child.name == "var":
-                varId = child.children[0].data
+                node.data = child.children[0].data
                 varTable = self.anchestorVars(node)
                 for varEntry in varTable.rows:
-                    if varId == varEntry[1]:
+                    if node.data == varEntry[1]:
                         child.type = varEntry[2]
                         break
                 else:
                     classname = self.anchestorClassName(node)
-                    dataTable = self.getData(node, className=classname)
-                    for entry in dataTable:
-                        if varId == entry[1]:
-                            child.type = entry[2]
+                    if classname:
+                        dataTable = self.getData(node, className=classname)
+                        for entry in dataTable:
+                            if node.data == entry[1]:
+                                child.type = entry[2]
 
             if child.name == "funCall":
                 funcId = child.children[0].data
                 child.type = self.getFuncReturnType(node, funcId)
-                if node.type == "int": child.type = "integer"
+                if child.type == "int": child.type = "integer"
 
                 tempVar = self.addTempVar(node, child.type, self.fetchLocation(node))
                 self.addVar(node, tempVar)
                 node.counter.append(node.counter[-1] + 1)
 
             node.type = child.type
+
+
 
 
         if type(node) is implDefSubtree: self.callAccept(node)
@@ -148,7 +139,9 @@ class ComputeMemSizeVisitor(Visitor):
 
         if type(node) is typeNode: self.callAccept(node)
 
-        if type(node) is varSubtree: self.callAccept(node)
+        if type(node) is varSubtree:
+            self.callAccept(node)
+            node.data = node.children[0].data
 
         if type(node) is visibilityNode: self.callAccept(node)
 
@@ -156,135 +149,117 @@ class ComputeMemSizeVisitor(Visitor):
 
         if type(node) is writeSubtree: self.callAccept(node)
 
-    def callAccept(self, node):
-        for child in node.children:
-            child.symTable = node.symTable
-            if node.counter:
-                child.counter = node.counter
-            child.accept(self)
-        self.visit(self)
-
-    def addTempVar(self, node, type="integer", location="", offset=4):
-        varName = "t" + str(node.counter[-1])
-        if type == "integer": offset = 4
-        if type == "float": offset = 8
-        name = "temp" + node.name.title()
-        return [name, varName, type, "", location, offset]
-
-
-    def anchestorFunc(self, node):
-        for a in node.anchestors:
-            if a.name == "funcDef":
-                return a.symRecord
-
-    def anchestorVars(self, node):
-        func = self.anchestorFunc(node)
-        return func.rows[0][4]
-
-    def anchestorClassName(self, node):
-        for parent in node.anchestors:
-            if parent.name == "implDef":
-                return parent.children[0].data
-
-
-
-    def addVar(self, node, varEntry):
-        varTable = self.anchestorVars(node)
-        varTable.add_row(varEntry)
-
-    def fetchLocation(self, node):
-        for child in node.descendants:
-            if child.token != None:
-                return child.token.location
-
-    def getFuncReturnType(self, node, funcId, classPar=None):
-        func = self.getMultiTable(node, funcId, classPar)
-        paramsLine = func.rows[0][2]
-        return paramsLine.split(":")[1]
-
-    def getClassScope(self, node, classPar):
-        return self.getMultiTable(node, classPar=classPar).rows[-1][0]
-
-    def getMultiTable(self, node, funcPar=None, classPar=None):
-        # if className emoty means it's a free func
-        if classPar:
-            for row in node.symTable.rows:
-                if row[0].title.startswith("class:"):
-                    className = row[0].title.split(" ")[1]
-                    if className.lower() == classPar.lower():
-
-                        if funcPar == None: # if funcPar is empty, this method returns a class
-                            return row[0]
-
-                        funcsTable = row[0][2][0] # else, return the class's funcPar
-                        for funcs in funcsTable.rows:
-                            for func in funcs[0]:
-                                funcName = func.rows[0][1]
-                                if funcName.lower() == funcPar.lower():
-                                    return func
-
-        else:  # if classPar is empty, this method returns the funcPar free function
-            for row in node.symTable.rows:
-                if row[0].title.startswith("function:"):
-                    funcName = row[0].rows[0][1]
-                    if funcName.lower() == funcPar.lower():
-                        return row[0]
-
-    def getMain(self, node):
-        return self.getFunctionTable(node, functionName="main", params="():void")
-
-    # not used but could be useful
-    def getAllVarTables(self, node):
-        for row in node.symTable.rows:
-            if row[0].title.startswith("class:"):
-                className = row[0].title.split(" ")[1]
-                funcsTable = row[0][2][0]
-
-                for funcs in funcsTable.rows:
-                    for func in funcs[0]:
-                        self.addCumulativeOffset(node, func)
-            else:  # free funcs
-                className = "Free"
-                print(className)
-                funcName = row[0].rows[0][1]
-                print(funcName)
-                varTable = row[0].rows[0][4]
-                for entry in varTable.rows:
-                    print(entry)
-                print("\n")
-
-                self.addCumulativeOffset(node, row[0])
-
-    def addCumulativeOffset(self, node, funcTable):
-        mainFunc = self.getMain(node)
-
-        if funcTable.get_string() == mainFunc.get_string():
-            offSetCounter = 0 #main func so lowest offset
-        else:
-            offSetCounter = -8 # reserve two spaces on stack for jump and return
-
-        offSetTotalCol = list()
-
-
-        varTable = funcTable.rows[0][4]
-        for entry in varTable.rows:
-
-
-
-            try:
-                offSetCounter -= int(entry[-1])
-            except:  # if type is a class type
-                entry[-1] = -self.getClassScope(node, classPar=entry[-1])
-                if entry[-1] == None:
-                    error = "Undeclared class" + str(entry[-2])
-                    ErrorList.append(error)
-                offSetCounter -= int(entry[-1])
-
-            offSetTotalCol.append(offSetCounter)
-
-            print(entry, entry[-1], offSetCounter)
-            # offSetTotalCol.append(offSetCounter)
-
-        varTable.add_column(fieldname="cumul", column=offSetTotalCol)
-        print(offSetTotalCol)
-        print("\n")
+    # def callAccept(self, node):
+    #     for child in node.children:
+    #         child.symTable = node.symTable
+    #         if node.counter:
+    #             child.counter = node.counter
+    #         child.accept(self)
+    #     self.visit(self)
+    #
+    # def addTempVar(self, node, type="integer", location="", offset=4):
+    #     varName = "t" + str(node.counter[-1])
+    #     if type == "integer": offset = 4
+    #     if type == "float": offset = 8
+    #     name = "temp" + node.name.title()
+    #     return [name, varName, type, "", location, offset]
+    #
+    #
+    # def anchestorFunc(self, node):
+    #     for a in node.anchestors:
+    #         if a.name == "funcDef":
+    #             return a.symRecord
+    #
+    # def anchestorVars(self, node):
+    #     func = self.anchestorFunc(node)
+    #     return func.rows[0][4]
+    #
+    # def anchestorClassName(self, node):
+    #     for parent in node.anchestors:
+    #         if parent.name == "implDef":
+    #             return parent.children[0].data
+    #
+    #
+    #
+    # def addVar(self, node, varEntry):
+    #     varTable = self.anchestorVars(node)
+    #     varTable.add_row(varEntry)
+    #
+    # def fetchLocation(self, node):
+    #     for child in node.descendants:
+    #         if child.token != None:
+    #             return child.token.location
+    #
+    # def getFuncReturnType(self, node, funcId, classPar=None):
+    #     func = self.getMultiTable(node, funcId, classPar)
+    #     paramsLine = func.rows[0][2]
+    #     return paramsLine.split(":")[1]
+    #
+    # def getClassScope(self, node, classPar):
+    #     return self.getMultiTable(node, classPar=classPar).rows[-1][0]
+    #
+    # def getMultiTable(self, node, funcPar=None, classPar=None):
+    #     # if className emoty means it's a free func
+    #     if classPar:
+    #         for row in node.symTable.rows:
+    #             if row[0].title.startswith("class:"):
+    #                 className = row[0].title.split(" ")[1]
+    #                 if className.lower() == classPar.lower():
+    #
+    #                     if funcPar == None: # if funcPar is empty, this method returns a class
+    #                         return row[0]
+    #
+    #                     funcsTable = row[0][2][0] # else, return the class's funcPar
+    #                     for funcs in funcsTable.rows:
+    #                         for func in funcs[0]:
+    #                             funcName = func.rows[0][1]
+    #                             if funcName.lower() == funcPar.lower():
+    #                                 return func
+    #
+    #     else:  # if classPar is empty, this method returns the funcPar free function
+    #         for row in node.symTable.rows:
+    #             if row[0].title.startswith("function:"):
+    #                 funcName = row[0].rows[0][1]
+    #                 if funcName.lower() == funcPar.lower():
+    #                     return row[0]
+    #
+    # def getMain(self, node):
+    #     return self.getFunctionTable(node, functionName="main", params="():void")
+    #
+    # # not used but could be useful
+    # def getAllVarTables(self, node):
+    #     for row in node.symTable.rows:
+    #         if row[0].title.startswith("class:"):
+    #             className = row[0].title.split(" ")[1]
+    #             funcsTable = row[0][2][0]
+    #
+    #             for funcs in funcsTable.rows:
+    #                 for func in funcs[0]:
+    #                     self.addCumulativeOffset(node, func)
+    #         else:  # free funcs
+    #             self.addCumulativeOffset(node, row[0])
+    #
+    # def addCumulativeOffset(self, node, funcTable):
+    #     mainFunc = self.getMain(node)
+    #
+    #     if funcTable.get_string() == mainFunc.get_string():
+    #         offSetCounter = 0 #main func so lowest offset
+    #     else:
+    #         offSetCounter = -8 # reserve two spaces on stack for jump and return
+    #
+    #     offSetTotalCol = list()
+    #
+    #     varTable = funcTable.rows[0][4]
+    #     for entry in varTable.rows:
+    #
+    #         try:
+    #             offSetCounter -= int(entry[-1])
+    #         except:  # if type is a class type
+    #             entry[-1] = -self.getClassScope(node, classPar=entry[-1])
+    #             if entry[-1] == None:
+    #                 error = "Undeclared class" + str(entry[-2])
+    #                 ErrorList.append(error)
+    #             offSetCounter -= int(entry[-1])
+    #
+    #         offSetTotalCol.append(offSetCounter)
+    #     varTable.add_column(fieldname="cumul", column=offSetTotalCol)
