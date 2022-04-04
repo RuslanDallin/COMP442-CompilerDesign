@@ -259,9 +259,9 @@ class ComputeMemSizeVisitor(Visitor):
         mainFunc = self.getMain(node)
 
         if funcTable.get_string() == mainFunc.get_string():
-            offSetCounter = -4 #main func so lowest offset
+            offSetCounter = 0 #main func so lowest offset
         else:
-            offSetCounter = -12 # reserve two spaces on stack for jump and return
+            offSetCounter = -8 # reserve two spaces on stack for jump and return
 
         offSetTotalCol = list()
 
@@ -269,7 +269,7 @@ class ComputeMemSizeVisitor(Visitor):
         varTable = funcTable.rows[0][4]
         for entry in varTable.rows:
 
-            offSetTotalCol.append(offSetCounter)
+
 
             try:
                 offSetCounter -= int(entry[-1])
@@ -279,6 +279,8 @@ class ComputeMemSizeVisitor(Visitor):
                     error = "Undeclared class" + str(entry[-2])
                     ErrorList.append(error)
                 offSetCounter -= int(entry[-1])
+
+            offSetTotalCol.append(offSetCounter)
 
             print(entry, entry[-1], offSetCounter)
             # offSetTotalCol.append(offSetCounter)

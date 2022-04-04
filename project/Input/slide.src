@@ -6,7 +6,7 @@ func f(p1: integer, p2: integer, p3: integer) -> int
     return (retval);
 }
 
-func program() -> void
+func main() -> void
 {
     let a: integer;
     let b: integer;
