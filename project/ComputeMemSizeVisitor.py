@@ -33,10 +33,14 @@ class ComputeMemSizeVisitor(Visitor):
         if type(node) is progSubtree:
             self.callAccept(node)
 
+
+            # print(self.getMultiTable(node, classPar="QUADRATIC"))
+            # print(self.getClassScope(node, classPar="QUADRATIC"))
+
+
+            print(self.getAllVarTables(node))
+
             print(node.symTable)
-            # self.getAllVarTables(node)
-
-
 
 
 
@@ -52,6 +56,13 @@ class ComputeMemSizeVisitor(Visitor):
                     if varId == varEntry[1]:
                         child.type = varEntry[2]
                         break
+                else:
+                    classname = self.anchestorClassName(node)
+                    dataTable = self.getData(node, className=classname)
+                    for entry in dataTable:
+                        if varId == entry[1]:
+                            child.type = entry[2]
+
             if child.name == "funCall":
                 funcId = child.children[0].data
                 child.type = self.getFuncReturnType(node, funcId)
@@ -160,11 +171,6 @@ class ComputeMemSizeVisitor(Visitor):
         name = "temp" + node.name.title()
         return [name, varName, type, "", location, offset]
 
-    def offSetEntry(listEntry):
-        if listEntry[2] == "int":
-            listEntry[3] = 4
-        if listEntry[2] == "float":
-            listEntry[3] = 8
 
     def anchestorFunc(self, node):
         for a in node.anchestors:
@@ -175,6 +181,13 @@ class ComputeMemSizeVisitor(Visitor):
         func = self.anchestorFunc(node)
         return func.rows[0][4]
 
+    def anchestorClassName(self, node):
+        for parent in node.anchestors:
+            if parent.name == "implDef":
+                return parent.children[0].data
+
+
+
     def addVar(self, node, varEntry):
         varTable = self.anchestorVars(node)
         varTable.add_row(varEntry)
@@ -184,26 +197,41 @@ class ComputeMemSizeVisitor(Visitor):
             if child.token != None:
                 return child.token.location
 
-    def getFuncTableDuo(self, node, funcPar, classPar=None):
+    def getFuncReturnType(self, node, funcId, classPar=None):
+        func = self.getMultiTable(node, funcId, classPar)
+        paramsLine = func.rows[0][2]
+        return paramsLine.split(":")[1]
+
+    def getClassScope(self, node, classPar):
+        return self.getMultiTable(node, classPar=classPar).rows[-1][0]
+
+    def getMultiTable(self, node, funcPar=None, classPar=None):
         # if className emoty means it's a free func
         if classPar:
             for row in node.symTable.rows:
                 if row[0].title.startswith("class:"):
                     className = row[0].title.split(" ")[1]
-                    if className == classPar:
-                        funcsTable = row[0][2][0]
+                    if className.lower() == classPar.lower():
+
+                        if funcPar == None: # if funcPar is empty, this method returns a class
+                            return row[0]
+
+                        funcsTable = row[0][2][0] # else, return the class's funcPar
                         for funcs in funcsTable.rows:
                             for func in funcs[0]:
                                 funcName = func.rows[0][1]
-                                if funcName == funcPar:
+                                if funcName.lower() == funcPar.lower():
                                     return func
 
-        else:  # free func
+        else:  # if classPar is empty, this method returns the funcPar free function
             for row in node.symTable.rows:
                 if row[0].title.startswith("function:"):
                     funcName = row[0].rows[0][1]
-                    if funcName == funcPar:
+                    if funcName.lower() == funcPar.lower():
                         return row[0]
+
+    def getMain(self, node):
+        return self.getFunctionTable(node, functionName="main", params="():void")
 
     # not used but could be useful
     def getAllVarTables(self, node):
@@ -211,23 +239,10 @@ class ComputeMemSizeVisitor(Visitor):
             if row[0].title.startswith("class:"):
                 className = row[0].title.split(" ")[1]
                 funcsTable = row[0][2][0]
-                offSetCounter = 0
-                offSetTotalCol = [0]
+
                 for funcs in funcsTable.rows:
                     for func in funcs[0]:
-                        print(className)
-                        funcName = func.rows[0][1]
-                        print(funcName)
-                        varTable = func.rows[0][4]
-                        for entry in varTable.rows:
-                            offSet = int(entry[-1])
-                            # offSetCounter -= offSet
-                            print(offSet)
-                            # offSetTotalCol.append("fdf")
-                            print(entry)
-                        print(offSetTotalCol)
-                        print("\n")
-
+                        self.addCumulativeOffset(node, func)
             else:  # free funcs
                 className = "Free"
                 print(className)
@@ -238,3 +253,36 @@ class ComputeMemSizeVisitor(Visitor):
                     print(entry)
                 print("\n")
 
+                self.addCumulativeOffset(node, row[0])
+
+    def addCumulativeOffset(self, node, funcTable):
+        mainFunc = self.getMain(node)
+
+        if funcTable.get_string() == mainFunc.get_string():
+            offSetCounter = -4 #main func so lowest offset
+        else:
+            offSetCounter = -12 # reserve two spaces on stack for jump and return
+
+        offSetTotalCol = list()
+
+
+        varTable = funcTable.rows[0][4]
+        for entry in varTable.rows:
+
+            offSetTotalCol.append(offSetCounter)
+
+            try:
+                offSetCounter -= int(entry[-1])
+            except:  # if type is a class type
+                entry[-1] = -self.getClassScope(node, classPar=entry[-1])
+                if entry[-1] == None:
+                    error = "Undeclared class" + str(entry[-2])
+                    ErrorList.append(error)
+                offSetCounter -= int(entry[-1])
+
+            print(entry, entry[-1], offSetCounter)
+            # offSetTotalCol.append(offSetCounter)
+
+        varTable.add_column(fieldname="cumul", column=offSetTotalCol)
+        print(offSetTotalCol)
+        print("\n")

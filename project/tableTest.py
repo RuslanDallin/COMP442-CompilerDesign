@@ -142,3 +142,18 @@ table.add_row(["5", "5", "5"])
 print(y)
 y.add_column(column="3", fieldname="newCol")
 print(y)
+
+table2 = PrettyTable(["Column 1", "Column 2", "Column 3"])
+table2.add_row(["1", "2", "3"])
+table2.add_row(["4", "5", "6"])
+table2.add_row(["7", "8", table])
+
+print(table2)
+
+table5 = PrettyTable(["Column 1", "Column 2", "Column 3"])
+table5.add_row(["1", "2", "3"])
+table5.add_row(["4", "5", "6"])
+table5.add_row(["7", "8", table])
+
+print(table5)
+print(table2.get_string() == table5.get_string())

@@ -99,7 +99,6 @@ class SymTableVisitor (Visitor):
                     dataTable.add_row(member.symRecord)
 
 
-
             classTable.add_row([dataTable])
 
             functionsTable = PrettyTable(title="functions ", header=False, hrules=True)
@@ -154,7 +153,8 @@ class SymTableVisitor (Visitor):
                     varList.insert(0,param)
 
             # add params and vars to table
-            funcVarTable = PrettyTable(title="table: " + funcId, header=False)
+            funcVarTable = PrettyTable(title="table: " + funcId)
+            funcVarTable.field_names = ["cat", "name", "type", "scope", "loc", "offset"]
             for var in varList:
                 if var.list[1] in [row[1] for row in funcVarTable.rows ]:
                     error = "multiple declared identifier in function " + str(var.location)
@@ -190,7 +190,8 @@ class SymTableVisitor (Visitor):
 
             #updating local to param
             funcParams = ()
-            funcTable = PrettyTable(title="table: " + funcId, header=False)
+            funcTable = PrettyTable(title="table: " + funcId)
+            funcTable.field_names = ["cat", "name", "type", "scope", "loc", "offset"]
             for param in funcParmsChildren:
                 if param.__class__.__name__ == "varDeclSubtree":
                     param.symRecord.list[0] = "param"
