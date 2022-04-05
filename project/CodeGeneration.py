@@ -166,24 +166,25 @@ class CodeGenerationVisitor(Visitor):
                 return
             for child in node.children[1].children:
                 param = params.pop()
+                parmNewoffset = param[-1] + self.anchestorFuncScope(node)
 
                 comment = "		% pass " + str(child.data) + " into " + str(param[1])
                 load = self.moonLW(tempReg, self.getOffset(node, child.data), comment)
-                store = self.moonSW(param[-1], tempReg)
+                store = self.moonSW(parmNewoffset, tempReg)
                 print(load)
                 print(store)
 
             print("\n")
 
             comment = "		% increment stack frame"
-            incr = self.moonAddi("r14", "r14", self.anchestorFuncScope(node)+4, comment)
+            incr = self.moonAddi("r14", "r14", self.anchestorFuncScope(node), comment)
             print(incr)
 
             jump = self.moonJL(functionName)
             print(jump)
 
             comment = "		% decrement stack frame"
-            decr = self.moonSubi("r14", "r14", self.anchestorFuncScope(node)+4, comment)
+            decr = self.moonSubi("r14", "r14", self.anchestorFuncScope(node), comment)
             tempVar = node.counter.pop()
 
             comment = "		% " + tempVar + " = " + functionName
@@ -265,7 +266,7 @@ class CodeGenerationVisitor(Visitor):
             var = node.children[0].data
             comment = "		% return " + var
             load = self.moonLW(tempReg, self.getOffset(node,var), comment)
-            store = self.moonSW("-4", tempReg)
+            store = self.moonSW("0", tempReg)
 
             print(load)
             print(store)
