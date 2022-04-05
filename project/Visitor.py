@@ -252,8 +252,6 @@ class Visitor:
             if parent.name == "implDef":
                 return parent.children[0].data
 
-
-
     def addVar(self, node, varEntry):
         varTable = self.anchestorVars(node)
         varTable.add_row(varEntry)
@@ -336,6 +334,9 @@ class Visitor:
 
             offSetTotalCol.append(offSetCounter)
         varTable.add_column(fieldname="cumul", column=offSetTotalCol)
+
+
+
 
 
 # ============================================================================================================
