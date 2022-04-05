@@ -35,6 +35,10 @@ class ComputeMemSizeVisitor(Visitor):
         if type(node) is factorSubtree:
             self.callAccept(node)
             child = node.children[0]
+
+            if len(node.children) > 1: # negative number
+                child = node.children[1]
+
             if child.name == "float": child.type = "float"
             if child.name == "num": child.type = "integer"
             node.data = child.data

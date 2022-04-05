@@ -2,9 +2,19 @@ func f(p1: integer, p2: integer, p3: integer) -> int
 {
     let retval: integer;
     retval = p1 + p2 * p3;
-    write(retval);
     return (retval);
 }
+
+func temp(p1: integer, p3: integer) -> int
+{
+    let tempa: integer;
+    let c: integer;
+    c = 4 * 2;
+    tempa = p3 - c;
+    return (tempa);
+}
+
+
 
 func main() -> void
 {
@@ -14,6 +24,6 @@ func main() -> void
     a = 1;
     b = 2;
     c = 3;
-    a = f(a,b,c) * b + c;
-    write(a);
+    a = f(a,b,c) * temp(a,c);
+    write(7);
 }
