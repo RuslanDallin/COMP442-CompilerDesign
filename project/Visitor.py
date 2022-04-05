@@ -263,6 +263,8 @@ class Visitor:
 
     def getFuncReturnType(self, node, funcId, classPar=None):
         func = self.getMultiTable(node, funcId, classPar)
+        if func == None:
+            return
         paramsLine = func.rows[0][2]
         return paramsLine.split(":")[1]
 

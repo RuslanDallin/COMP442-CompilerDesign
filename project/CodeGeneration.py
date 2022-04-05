@@ -12,9 +12,6 @@ class CodeGenerationVisitor(Visitor):
 
         if type(node) is progSubtree:
             print(node.symTable)
-            entry = "entry \naddi r14, r0, topaddr"
-            print(self.moonAppendText(entry))
-
             print("\n")
             self.callAccept(node)
 
@@ -23,9 +20,18 @@ class CodeGenerationVisitor(Visitor):
 
         if type(node) is funcDefSubtree:
             node.counter.pop()
-            for i in range (len(node.counter)):
+            for i in range (len(node.counter)): #use this counter to know which t1..tn to use
                 node.counter[i] = "t" + str(node.counter[i])
             node.counter.reverse()
+            halt = "hlt \nbuf res 20"
+
+            main = self.getMain(node)
+            if node.symRecord.get_string() == main.get_string():
+                entry = "entry \naddi r14, r0, topaddr \n"
+            else:
+                entry = str(node.symRecord.rows[0][1]) + " sw -8(r14), r15"
+
+            print(self.moonAppendText(entry))
             self.callAccept(node)
 
         if type(node) is assignSubtree:
@@ -44,17 +50,13 @@ class CodeGenerationVisitor(Visitor):
             # print("right", right, rightData)
 
             if rightData: # x = 2
-                comment = "% assigning " + str(leftData) + " = " + str(rightData)
-                print(self.moonAppendText(comment))
-
-                rightAdd = self.moonAddi(tempReg, "r0", rightData)
+                comment = "		% assigning " + str(leftData) + " = " + str(rightData)
+                rightAdd = self.moonAddi(tempReg, "r0", rightData, comment)
                 print(rightAdd)
             else: # x = t1
-                comment = "% initializing " + str(leftData) + " = " + str(right)
-                print(self.moonAppendText(comment))
-
+                comment = "		% assigning " + str(leftData) + " = " + str(right)
                 rightOff = self.getOffset(node, right)
-                rightLoad = self.moonLW(tempReg, rightOff)
+                rightLoad = self.moonLW(tempReg, rightOff, comment)
                 print(rightLoad)
 
             moonSW = self.moonSW(leftOff, tempReg)
@@ -70,6 +72,25 @@ class CodeGenerationVisitor(Visitor):
         if "OpSubtree" in node.__class__.__name__:
             self.callAccept(node)
 
+            leftReg = self.registerStack.pop()
+            leftData = node.children[0].data
+            if leftData:
+                leftOff = self.getOffset(node, leftData)
+            else: # not a var or a int prob func call
+                leftOff = self.getOffset(node, node.counter.pop())
+            leftValue = self.getValue(leftData)
+            # print("Left", leftData, leftOff, leftReg, leftData)
+
+            rightReg = self.registerStack.pop()
+            rightData = node.children[2].data
+            if rightData:
+                rightOff = self.getOffset(node, rightData)
+            else: # not a var or a int prob func call
+                rightOff = self.getOffset(node, node.counter.pop())
+            rightValue = self.getValue(rightData)
+            # print("right", rightData, rightOff, rightReg)
+
+
             tempReg = self.registerStack.pop()
             tempVar = node.counter.pop()
             tempOff = self.getOffset(node, tempVar)
@@ -78,43 +99,19 @@ class CodeGenerationVisitor(Visitor):
             operation = self.signConvert(sign)
             # print("\n", operation, tempReg, tempOff)
 
-            leftReg = self.registerStack.pop()
-            leftData = node.children[0].data
-            if leftData:
-                leftOff = self.getOffset(node, leftData)
-            else: # not a var or a int prob func call
-                leftOff = self.getOffset(node, node.counter.pop())
-            # print("Left", leftData, leftOff, leftReg)
+            comment = "		% " + str(tempVar) + " = " + str(leftData) + " " + sign + " " + str(rightData)
+            if leftValue: # 67 + x
+                left = self.moonAddi(leftReg, "r0", leftValue, comment)
+            else: # x + x
+                left = self.moonLW(leftReg, leftOff, comment)
 
-            rightReg = self.registerStack.pop()
-            rightData = node.children[2].data
-            if rightData:
-                rightOff = self.getOffset(node, rightData)
-            else: # not a var or a int prob func call
-                rightOff = self.getOffset(node, node.counter.pop())
-            # print("right", rightData, rightOff, rightReg)
-
-            # print("\n")
-
-            leftValue = self.getValue(leftData)
-            rightValue = self.getValue(rightData)
-
-            if leftValue:
-                left = self.moonAddi(leftReg, "r0", leftValue)
-            else:
-                left = self.moonLW(leftReg, leftOff)
-
-            if rightValue:
+            if rightValue: # x + 67
                 right = self.moonAddi(rightReg, "r0", rightValue)
-            else:
+            else: # x + x
                 right =  self.moonLW(rightReg, rightOff)
 
             calculate = self.moonCalculate(operation, tempReg, leftReg, rightReg)
             store = self.moonSW(tempOff, tempReg)
-
-            comment = "% " + tempVar + " = " + leftData + " " + sign + " " +rightData
-            self.moonAppendText(comment)
-            print(comment)
 
             print(left)
             print(right)
@@ -137,11 +134,8 @@ class CodeGenerationVisitor(Visitor):
 
             print(load)
 
-            comment = "% incrementing stack frame and starting printing"
-            print(comment)
-            self.moonAppendText(comment)
-
-            pushStackFrame = self.moonAddi("r14", "r14", self.anchestorFuncScope(node))
+            comment = "		% incrementing stack frame and starting printing"
+            pushStackFrame = self.moonAddi("r14", "r14", self.anchestorFuncScope(node), comment)
             print(pushStackFrame)
 
 
@@ -150,13 +144,59 @@ class CodeGenerationVisitor(Visitor):
                     "sw -12(r14),r1 \n" \
                     "jl r15, intstr \n" \
                     "sw -8(r14),r13 \n" \
-                    "jl r15, putstr \n" \
-                    "subi r14,r14,-24 \n"
-
+                    "jl r15, putstr "
             self.moonCode.append(printLib)
-
             print(printLib)
 
+            comment = "		% decremeting stack frame and starting printing"
+            pushStackFrame = self.moonSubi("r14", "r14", self.anchestorFuncScope(node), comment)
+            print(pushStackFrame, "\n")
+
+            self.registerStack.append(tempReg)
+
+
+        if type(node) is funCallSubtree:
+            self.callAccept(node)
+
+            tempReg = self.registerStack.pop()
+            functionName = node.children[0].data
+
+            params = self.getParams(node, functionName)
+            if params == None:
+                return
+            for child in node.children[1].children:
+                param = params.pop()
+
+                comment = "		% pass " + str(child.data) + " into " + str(param[1])
+                load = self.moonLW(tempReg, self.getOffset(node, child.data), comment)
+                store = self.moonSW(param[-1], tempReg)
+                print(load)
+                print(store)
+
+            print("\n")
+
+            comment = "		% increment stack frame"
+            incr = self.moonAddi("r14", "r14", self.anchestorFuncScope(node)+4, comment)
+            print(incr)
+
+            jump = self.moonJL(functionName)
+            print(jump)
+
+            comment = "		% decrement stack frame"
+            decr = self.moonSubi("r14", "r14", self.anchestorFuncScope(node)+4, comment)
+            tempVar = node.counter.pop()
+
+            comment = "		% " + tempVar + " = " + functionName
+            load = self.moonLW(tempReg, self.anchestorFuncScope(node), comment)
+            store = self.moonSW(self.getOffset(node,tempVar), tempReg)
+
+            print(decr)
+            print(load)
+            print(store)
+
+            node.data = tempVar
+            node.parent.data = node.data
+            self.registerStack.append(tempReg)
 
 
         if type(node) is factorSubtree: self.callAccept(node)
@@ -164,8 +204,6 @@ class CodeGenerationVisitor(Visitor):
         if type(node) is implDefSubtree: self.callAccept(node)
 
         if type(node) is structDecSubtree: self.callAccept(node)
-
-
 
         if type(node) is memberDeclSubtree: self.callAccept(node)
 
@@ -194,8 +232,6 @@ class CodeGenerationVisitor(Visitor):
 
         if type(node) is fparmListSubtree: self.callAccept(node)
 
-        if type(node) is funCallSubtree: self.callAccept(node)
-
         if type(node) is funcBodySubtree: self.callAccept(node)
 
         if type(node) is funcDefListSubtree: self.callAccept(node)
@@ -222,7 +258,28 @@ class CodeGenerationVisitor(Visitor):
 
         # if type(node) is relOpSubtree: self.callAccept(node)
 
-        if type(node) is returnSubtree: self.callAccept(node)
+        if type(node) is returnSubtree:
+            self.callAccept(node)
+
+            tempReg = self.registerStack.pop()
+            var = node.children[0].data
+            comment = "		% return " + var
+            load = self.moonLW(tempReg, self.getOffset(node,var), comment)
+            store = self.moonSW("-4", tempReg)
+
+            print(load)
+            print(store)
+
+            comment = "		% jump to calling function "
+            load = self.moonLW("r15", "-8", comment)
+            jump = self.moonJR()
+
+            print(load)
+            print(jump)
+            print("\n")
+
+            self.registerStack.append(tempReg)
+
 
         if type(node) is signNode: self.callAccept(node)
 
@@ -274,26 +331,30 @@ class CodeGenerationVisitor(Visitor):
 
     def anchestorFuncScope(self, node):
         varTable = self.anchestorVars(node)
-        return varTable.rows[-1][-1] + -4
+        return varTable.rows[-1][-1] -4
 
-    def moonLW(self, reg, offset):
-        code = "lw" + " " + reg + ", " + offset + "(r14)"
+    def moonLW(self, reg, offset, comment=""):
+        code = "lw" + " " + reg + ", " + str(offset) + "(r14)" + comment
         self.moonCode.append(code)
         return code
 
-    def moonCalculate(self, operation, tempReg, leftReg, rightReg):
-        code = operation + " " + tempReg + ", " + leftReg + ", " + rightReg
+    def moonCalculate(self, operation, tempReg, leftReg, rightReg, comment=""):
+        code = operation + " " + tempReg + ", " + leftReg + ", " + rightReg + comment
         self.moonCode.append(code)
         return code
 
-
-    def moonSW(self, tempOff, tempReg):
-        code = "sw " + tempOff + "(r14), " + tempReg
+    def moonSW(self, tempOff, tempReg, comment=""):
+        code = "sw " + str(tempOff) + "(r14), " + tempReg + comment
         self.moonCode.append(code)
         return code
 
-    def moonAddi(self, reg1, reg2, value):
-        code = "addi " + reg1 + ", " + reg2 + ", " + str(value)
+    def moonAddi(self, reg1, reg2, value, comment=""):
+        code = "addi " + reg1 + ", " + reg2 + ", " + str(value) + comment
+        self.moonCode.append(code)
+        return code
+
+    def moonSubi(self, reg1, reg2, value, comment=""):
+        code = "subi " + reg1 + ", " + reg2 + ", " + str(value) + comment
         self.moonCode.append(code)
         return code
 
@@ -301,6 +362,17 @@ class CodeGenerationVisitor(Visitor):
         code = string
         self.moonCode.append(code)
         return code
+
+    def moonJL(self, funcName, comment=""):
+        code = "jl r15, " + funcName + comment
+        self.moonCode.append(code)
+        return code
+
+    def moonJR(self, comment=""):
+        code = "jr r15 "+ comment
+        self.moonCode.append(code)
+        return code
+
 
     def getValue(self, data):
         try:
@@ -310,6 +382,26 @@ class CodeGenerationVisitor(Visitor):
                 return float(data)
             except:
                 return None
+
+    def getVars(self, node, functionName, className=None):
+        if className:
+            func = self.getMultiTable(node, funcPar=functionName, classPar=className)
+        else: #free function
+            func = self.getMultiTable(node, funcPar=functionName)
+            if func == None:
+                return
+        return func.rows[0][4].rows
+
+    def getParams(self, node, functionName, className=None):
+        listOfParms = list()
+        vars = self.getVars(node, functionName, className=className)
+        if vars == None:
+            return
+        for var in vars:
+            if var[0] == "param":
+                listOfParms.append(var)
+        listOfParms.reverse()
+        return listOfParms
 
 
 
