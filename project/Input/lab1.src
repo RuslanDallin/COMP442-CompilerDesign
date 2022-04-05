@@ -5,6 +5,6 @@ func main() -> void
     let z: integer;
     x = 2;
     y = 34;
-    z = x + y * x;
+    z = x + 67;
     write(z);
 }

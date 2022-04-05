@@ -12,22 +12,14 @@ class CodeGenerationVisitor(Visitor):
 
         if type(node) is progSubtree:
             print(node.symTable)
-            entry = "entry"
-            stackIni = "addi r14, r0, topaddr"
-            self.moonCode.append(entry)
-            self.moonCode.append(stackIni)
+            entry = "entry \naddi r14, r0, topaddr"
+            print(self.moonAppendText(entry))
 
-            print(entry)
-            print(stackIni)
             print("\n")
             self.callAccept(node)
 
-            halt = "hlt"
-            buf = "buf res 20"
-            self.moonCode.append(halt)
-            self.moonCode.append(buf)
-            print(halt)
-            print(buf)
+            halt = "hlt \nbuf res 20"
+            print(self.moonAppendText(halt))
 
         if type(node) is funcDefSubtree:
             node.counter.pop()
@@ -52,17 +44,20 @@ class CodeGenerationVisitor(Visitor):
             # print("right", right, rightData)
 
             if rightData: # x = 2
+                comment = "% assigning " + str(leftData) + " = " + str(rightData)
+                print(self.moonAppendText(comment))
+
                 rightAdd = self.moonAddi(tempReg, "r0", rightData)
-                self.moonCode.append(rightAdd)
                 print(rightAdd)
             else: # x = t1
+                comment = "% initializing " + str(leftData) + " = " + str(right)
+                print(self.moonAppendText(comment))
+
                 rightOff = self.getOffset(node, right)
                 rightLoad = self.moonLW(tempReg, rightOff)
-                self.moonCode.append(rightLoad)
                 print(rightLoad)
 
             moonSW = self.moonSW(leftOff, tempReg)
-            self.moonCode.append(moonSW)
             print(moonSW)
 
             self.registerStack.append(tempReg)
@@ -87,7 +82,7 @@ class CodeGenerationVisitor(Visitor):
             leftData = node.children[0].data
             if leftData:
                 leftOff = self.getOffset(node, leftData)
-            else:
+            else: # not a var or a int prob func call
                 leftOff = self.getOffset(node, node.counter.pop())
             # print("Left", leftData, leftOff, leftReg)
 
@@ -95,27 +90,36 @@ class CodeGenerationVisitor(Visitor):
             rightData = node.children[2].data
             if rightData:
                 rightOff = self.getOffset(node, rightData)
-            else:
+            else: # not a var or a int prob func call
                 rightOff = self.getOffset(node, node.counter.pop())
             # print("right", rightData, rightOff, rightReg)
 
             # print("\n")
 
-            leftLoad =  self.moonLW(leftReg, leftOff)
-            rightLoad =  self.moonLW(rightReg, rightOff)
+            leftValue = self.getValue(leftData)
+            rightValue = self.getValue(rightData)
+
+            if leftValue:
+                left = self.moonAddi(leftReg, "r0", leftValue)
+            else:
+                left = self.moonLW(leftReg, leftOff)
+
+            if rightValue:
+                right = self.moonAddi(rightReg, "r0", rightValue)
+            else:
+                right =  self.moonLW(rightReg, rightOff)
+
             calculate = self.moonCalculate(operation, tempReg, leftReg, rightReg)
             store = self.moonSW(tempOff, tempReg)
 
+            comment = "% " + tempVar + " = " + leftData + " " + sign + " " +rightData
+            self.moonAppendText(comment)
+            print(comment)
 
-            print(leftLoad)
-            print(rightLoad)
+            print(left)
+            print(right)
             print(calculate)
             print(store)
-
-            self.moonCode.append(leftLoad)
-            self.moonCode.append(rightLoad)
-            self.moonCode.append(calculate)
-            self.moonCode.append(store)
 
             self.registerStack.append(tempReg)
             self.registerStack.append(leftReg)
@@ -133,11 +137,13 @@ class CodeGenerationVisitor(Visitor):
 
             print(load)
 
+            comment = "% incrementing stack frame and starting printing"
+            print(comment)
+            self.moonAppendText(comment)
+
             pushStackFrame = self.moonAddi("r14", "r14", self.anchestorFuncScope(node))
-            self.moonCode.append(pushStackFrame)
             print(pushStackFrame)
 
-            print("\n")
 
             printLib = "sw -8(r14),r1 \n" \
                     "addi r1,r0, buf \n" \
@@ -271,16 +277,30 @@ class CodeGenerationVisitor(Visitor):
         return varTable.rows[-1][-1] + -4
 
     def moonLW(self, reg, offset):
-        return "lw" + " " + reg + ", " + offset + "(r14)"
+        code = "lw" + " " + reg + ", " + offset + "(r14)"
+        self.moonCode.append(code)
+        return code
 
     def moonCalculate(self, operation, tempReg, leftReg, rightReg):
-        return operation + " " + tempReg + ", " + leftReg + ", " + rightReg
+        code = operation + " " + tempReg + ", " + leftReg + ", " + rightReg
+        self.moonCode.append(code)
+        return code
+
 
     def moonSW(self, tempOff, tempReg):
-        return "sw " + tempOff + "(r14), " + tempReg
+        code = "sw " + tempOff + "(r14), " + tempReg
+        self.moonCode.append(code)
+        return code
 
     def moonAddi(self, reg1, reg2, value):
-        return "addi " + reg1 + ", " + reg2 + ", " + str(value)
+        code = "addi " + reg1 + ", " + reg2 + ", " + str(value)
+        self.moonCode.append(code)
+        return code
+
+    def moonAppendText(self, string):
+        code = string
+        self.moonCode.append(code)
+        return code
 
     def getValue(self, data):
         try:
@@ -290,6 +310,8 @@ class CodeGenerationVisitor(Visitor):
                 return float(data)
             except:
                 return None
+
+
 
 
 
