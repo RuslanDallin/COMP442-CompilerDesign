@@ -43,7 +43,6 @@ class ComputeMemSizeVisitor(Visitor):
             if child.name == "num": child.type = "integer"
             node.data = child.data
             if child.name == "var":
-                node.data = child.children[0].data
                 varTable = self.anchestorVars(node)
                 for varEntry in varTable.rows:
                     if node.data == varEntry[1]:
@@ -147,6 +146,12 @@ class ComputeMemSizeVisitor(Visitor):
         if type(node) is varSubtree:
             self.callAccept(node)
             node.data = node.children[0].data
+
+            indiceList = node.children[1].children
+            if len(indiceList) > 0:
+                for indice in indiceList:
+                    node.data += "," + indice.data
+
 
         if type(node) is visibilityNode: self.callAccept(node)
 

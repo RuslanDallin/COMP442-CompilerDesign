@@ -1,3 +1,5 @@
+import numpy
+
 from Visitor import *
 
 moonCode = list()
@@ -45,8 +47,6 @@ class CodeGenerationVisitor(Visitor):
             leftData = node.children[0].data
             leftOff = self.getOffset(node, leftData)
             print("Left", leftData, leftOff, tempReg)
-
-
 
             rightData = node.children[1].data
             rightValue = self.getValue(rightData)
@@ -120,6 +120,7 @@ class CodeGenerationVisitor(Visitor):
             else: # write (x)
                 comment = "		% loading " + expr
                 load = self.moonLW(tempReg, expOffset, comment)
+            print(expr,exprValue, expOffset)
 
             try:
                 scopeOff = self.anchestorFuncScope(node)
@@ -412,8 +413,19 @@ class CodeGenerationVisitor(Visitor):
 
     def getOffset(self, node, varName):
         varTable = self.anchestorVars(node)
+        varName, *dims = varName.split(",")
+
         for entry in varTable.rows:
             if entry[1] == varName:
+                if len(dims) > 1:
+                    varType, *varDims = entry[2].split(",")
+                    arrayOff = entry[6] - -entry[5] + -4
+                    if varType == "integer":
+                        relativeOff = arrayOff
+                        for i in range(len(dims)):
+                            relativeOff += int(dims[i]) * -4 * (int(varDims[i]) -1)
+                            return relativeOff
+
                 return str(entry[-1])
         else:
             return "None"

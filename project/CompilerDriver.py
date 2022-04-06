@@ -106,7 +106,8 @@ def visitorDriver():
             src = open(directoryName + "/" + SourceFileName + ".src", 'r')  # reading
             tableOutput = open("Output/" + SourceFileName + ".outsymboltables", 'w')  # symTable
             errosOutput = open("Output/" + SourceFileName + ".outsemanticerrors", 'w')  # symTable
-            moonOuput = open("Moon/" + SourceFileName + ".m", 'w')  # symTable
+            moonOuput = open("Output/" + SourceFileName + ".moon", 'w')
+            program = open("Moon/program.m", 'w')
             print("\n\n********* %s *********" % (SourceFileName))
             lex = Lex(src)
             parseCheck, deriviations, errors, ast = parse(lex)
@@ -143,7 +144,9 @@ def visitorDriver():
             for line in moonCode:
                 print(line)
                 moonOuput.write(str(line))
+                program.write(str(line))
                 moonOuput.write("\n")
+                program.write("\n")
 
 
     # ---------------------------------------------------------------------
