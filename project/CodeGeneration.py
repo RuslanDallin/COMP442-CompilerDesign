@@ -5,7 +5,6 @@ moonCode = list()
 class CodeGenerationVisitor(Visitor):
     def __init__(self):
         self.registerStack = list()
-        # moonCode = list()
         self.ifElseCounter = 0
         for r in range (12, 0, -1):
             self.registerStack.append("r" + str(r))
@@ -46,17 +45,16 @@ class CodeGenerationVisitor(Visitor):
             leftOff = self.getOffset(node, leftData)
             # print("Left", leftData, leftOff, tempReg)
 
-            right = node.children[1].data
-            rightData = self.getValue(right)
+            rightData = node.children[1].data
+            rightValue = self.getValue(rightData)
             # print("right", right, rightData)
 
-            if rightData: # x = 2
+            if rightValue != None: # x = 2
                 comment = "		% assigning " + str(leftData) + " = " + str(rightData)
-                rightAdd = self.moonAddi(tempReg, "r0", rightData, comment)
+                addi = self.moonAddi(tempReg, "r0", rightValue, comment)
             else: # x = t1
-                comment = "		% assigning " + str(leftData) + " = " + str(right)
-                rightOff = self.getOffset(node, right)
-                rightLoad = self.moonLW(tempReg, rightOff, comment)
+                comment = "		% assigning " + str(leftData) + " = " + str(rightData)
+                load =  self.moonLW(tempReg, self.getOffset(node, rightData), comment)
 
             moonSW = self.moonSW(leftOff, tempReg)
             self.registerStack.append(tempReg)
@@ -88,12 +86,12 @@ class CodeGenerationVisitor(Visitor):
             # print("\n", operation, tempReg, tempOff)
 
             comment = "		% " + str(tempVar) + " = " + str(leftData) + " " + sign + " " + str(rightData)
-            if leftValue: # 67 + x
+            if leftValue != None: # 67 + x
                 left = self.moonAddi(leftReg, "r0", leftValue, comment)
             else: # x + x
                 left = self.moonLW(leftReg, leftOff, comment)
 
-            if rightValue: # x + 67
+            if rightValue != None: # x + 67
                 right = self.moonAddi(rightReg, "r0", rightValue)
             else: # x + x
                 right =  self.moonLW(rightReg, rightOff)
@@ -113,7 +111,7 @@ class CodeGenerationVisitor(Visitor):
             expr = node.children[0].data
             exprValue = self.getValue(expr)
             expOffset = self.getOffset(node, expr)
-            if exprValue: # write (7)
+            if exprValue != None: # write (7)
                 comment = "		% loading " + str(exprValue)
                 addi = self.moonAddi(tempReg, "r0", exprValue, comment)
             else: # write (x)
@@ -209,6 +207,47 @@ class CodeGenerationVisitor(Visitor):
                 else: # a number
                     node.data = "-" + node.children[1].data
 
+        if type(node) is ifThenElseSubtree:
+            # self.callAccept(node)
+
+            tempReg = self.registerStack.pop()
+            self.ifElseCounter += 1
+            exprVar = node.children[0]
+            for child in exprVar.children:
+                child.accept(self)
+            expr = exprVar.children[0].data
+
+            exprValue = self.getValue(expr)
+            expOffset = self.getOffset(node, expr)
+            if exprValue != None: # write (7)
+                comment = "		% loading " + str(exprValue)
+                addi = self.moonAddi(tempReg, "r0", exprValue, comment)
+            else: # write (x)
+                comment = "		% loading " + expr
+                load = self.moonLW(tempReg, expOffset, comment)
+
+
+            elseFlag = "else" + str(self.ifElseCounter)
+            endIfFlag = "endIf" + str(self.ifElseCounter)
+            expr = self.moonBZ(tempReg, elseFlag) # Branching here
+            self.registerStack.append(tempReg)
+            self.moonAppendText("\n")
+
+            tempReg = self.registerStack.pop()
+            ifTree = node.children[1]
+            for child in ifTree.children:
+                child.accept(self)
+            jump = moonCode.append("j " + endIfFlag)
+            self.registerStack.append(tempReg)
+
+            tempReg = self.registerStack.pop()
+            elseTree = node.children[2]
+            elseLabel = moonCode.append(elseFlag + " nop")
+            for child in elseTree.children:
+                child.accept(self)
+            endIf = moonCode.append(endIfFlag + " nop")
+            self.registerStack.append(tempReg)
+
         if type(node) is implDefSubtree: self.callAccept(node)
 
         if type(node) is structDecSubtree: self.callAccept(node)
@@ -243,39 +282,6 @@ class CodeGenerationVisitor(Visitor):
         if type(node) is funcBodySubtree: self.callAccept(node)
 
         if type(node) is funcDefListSubtree: self.callAccept(node)
-
-        if type(node) is ifThenElseSubtree:
-            self.callAccept(node)
-            #
-            # tempReg = self.registerStack.pop()
-            # self.ifElseCounter += 1
-            # exprVar = node.children[0].children[0].data
-            #
-            # expr = self.moonBZ(tempReg, "else" + str(self.ifElseCounter))
-            #
-            # ifTree = node.children[1]
-            # for child in ifTree.children:
-            #     child.accept(self)
-            # jump = moonCode.append("j endIf" + str(self.ifElseCounter))
-            #
-            # elseTree = node.children[2]
-            # elseLabel = moonCode.append("elseBlock" + str(self.ifElseCounter) + " nop")
-            # for child in elseTree.children:
-            #     child.accept(self)
-            # endIf = moonCode.append("endIf" + str(self.ifElseCounter) + " nop")
-            #
-            # print(expr)
-            # print(jump)
-            # print(elseLabel)
-            # print(endIf)
-
-            self.registerStack.append(tempReg)
-
-
-
-
-
-            print("HERE",node.children[0].children[0].data)
 
         if type(node) is implDefListSubtree: self.callAccept(node)
 
@@ -394,8 +400,8 @@ class CodeGenerationVisitor(Visitor):
         moonCode.append(code)
         return code
 
-
     def getValue(self, data):
+        if data == "0": return 0
         try:
             return int(data)
         except:
@@ -423,6 +429,8 @@ class CodeGenerationVisitor(Visitor):
                 listOfParms.append(var)
         listOfParms.reverse()
         return listOfParms
+
+
 
 
 

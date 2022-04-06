@@ -73,30 +73,30 @@ sw -12(r14), r1
 
 
 lw r1, -4(r14)		% pass a into p1
-sw -44(r14), r1
+sw -40(r14), r1
 lw r1, -8(r14)		% pass b into p2
-sw -48(r14), r1
+sw -44(r14), r1
 lw r1, -12(r14)		% pass c into p3
-sw -52(r14), r1
+sw -48(r14), r1
 
 
-addi r14, r14, -32		% increment stack frame
+addi r14, r14, -28		% increment stack frame
 jl r15, f
-subi r14, r14, -32		% decrement stack frame
-lw r1, -32(r14)		% t1 = f
+subi r14, r14, -28		% decrement stack frame
+lw r1, -28(r14)		% t1 = f
 sw -16(r14), r1
 
 
 lw r1, -4(r14)		% pass a into p1
-sw -44(r14), r1
+sw -40(r14), r1
 lw r1, -12(r14)		% pass c into p3
-sw -48(r14), r1
+sw -44(r14), r1
 
 
-addi r14, r14, -32		% increment stack frame
+addi r14, r14, -28		% increment stack frame
 jl r15, temp
-subi r14, r14, -32		% decrement stack frame
-lw r1, -32(r14)		% t2 = temp
+subi r14, r14, -28		% decrement stack frame
+lw r1, -28(r14)		% t2 = temp
 sw -20(r14), r1
 
 
@@ -110,21 +110,20 @@ lw r1, -24(r14)		% assigning a = t3
 sw -4(r14), r1
 
 
-addi r1, r0, 4		% t4 = 4 * -7
-addi r2, r0, -7
-mul r3, r1, r2
-sw -28(r14), r3
+lw r1, -4(r14)		% neg a
+muli r1, r1, -1
+sw -4(r14), r1
 
 
-lw r1, -28(r14)		% loading t4
-addi r14, r14, -32		% incrementing stack frame and starting printing
+lw r1, -4(r14)		% loading a
+addi r14, r14, -28		% incrementing stack frame and starting printing
 sw -8(r14),r1 
 addi r1,r0, buf 
 sw -12(r14),r1 
 jl r15, intstr 
 sw -8(r14),r13 
 jl r15, putstr 
-subi r14, r14, -32		% decremeting stack frame and starting printing
+subi r14, r14, -28		% decremeting stack frame and starting printing
 
 
 hlt 

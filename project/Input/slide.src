@@ -14,8 +14,6 @@ func temp(p1: integer, p3: integer) -> int
     return (tempa);
 }
 
-
-
 func main() -> void
 {
     let a: integer;
@@ -25,5 +23,5 @@ func main() -> void
     b = 2;
     c = 3;
     a = f(a,b,c) * temp(a,c);
-    write(4 * - 7);
+    write(- a);
 }

@@ -27,7 +27,7 @@ class ComputeMemSizeVisitor(Visitor):
 
         if type(node) is progSubtree:
             self.callAccept(node)
-            print(self.getAllVarTables(node))
+            self.getAllVarTables(node)
 
 
 
