@@ -1,11 +1,11 @@
 from Visitor import *
 
-
+moonCode = list()
 
 class CodeGenerationVisitor(Visitor):
     def __init__(self):
         self.registerStack = list()
-        self.moonCode = list()
+        # moonCode = list()
         self.ifElseCounter = 0
         for r in range (12, 0, -1):
             self.registerStack.append("r" + str(r))
@@ -13,12 +13,10 @@ class CodeGenerationVisitor(Visitor):
     def visit(self, node):
 
         if type(node) is progSubtree:
-            print(node.symTable)
-            print("\n")
             self.callAccept(node)
 
             halt = "hlt \nbuf res 20"
-            print(self.moonAppendText(halt))
+            self.moonAppendText(halt)
 
         if type(node) is funcDefSubtree:
             node.counter.pop()
@@ -29,11 +27,15 @@ class CodeGenerationVisitor(Visitor):
 
             main = self.getMain(node)
             if node.symRecord.get_string() == main.get_string():
-                entry = "entry \naddi r14, r0, topaddr \n"
+                entry = "% start of main\n" \
+                    + "entry \naddi r14, r0, topaddr \n"
             else:
-                entry = str(node.symRecord.rows[0][1]) + " sw -8(r14), r15"
+                entry = "% start of " + str(node.symRecord.rows[0][1]) + "\n" \
+                        + str(node.symRecord.rows[0][1]) + " sw -8(r14), r15"
 
-            print(self.moonAppendText(entry))
+            self.moonAppendText(entry)
+            self.moonAppendText("\n")
+
             self.callAccept(node)
 
         if type(node) is assignSubtree:
@@ -51,22 +53,15 @@ class CodeGenerationVisitor(Visitor):
             if rightData: # x = 2
                 comment = "		% assigning " + str(leftData) + " = " + str(rightData)
                 rightAdd = self.moonAddi(tempReg, "r0", rightData, comment)
-                print(rightAdd)
             else: # x = t1
                 comment = "		% assigning " + str(leftData) + " = " + str(right)
                 rightOff = self.getOffset(node, right)
                 rightLoad = self.moonLW(tempReg, rightOff, comment)
-                print(rightLoad)
 
             moonSW = self.moonSW(leftOff, tempReg)
-            print(moonSW)
-
             self.registerStack.append(tempReg)
+            self.moonAppendText("\n")
 
-            print("\n")
-
-            # print("leftA", node.children[0].data)
-            # print("rightA", node.children[1].data)
 
         if "OpSubtree" in node.__class__.__name__:
             self.callAccept(node)
@@ -106,16 +101,10 @@ class CodeGenerationVisitor(Visitor):
             calculate = self.moonCalculate(operation, tempReg, leftReg, rightReg)
             store = self.moonSW(tempOff, tempReg)
 
-            print(left)
-            print(right)
-            print(calculate)
-            print(store)
-
             self.registerStack.append(tempReg)
             self.registerStack.append(rightReg)
             self.registerStack.append(leftReg)
-
-            print("\n")
+            self.moonAppendText("\n")
 
         if type(node) is writeSubtree:
             self.callAccept(node)
@@ -127,16 +116,13 @@ class CodeGenerationVisitor(Visitor):
             if exprValue: # write (7)
                 comment = "		% loading " + str(exprValue)
                 addi = self.moonAddi(tempReg, "r0", exprValue, comment)
-                print(addi)
             else: # write (x)
                 comment = "		% loading " + expr
                 load = self.moonLW(tempReg, expOffset, comment)
-                print(load)
 
 
             comment = "		% incrementing stack frame and starting printing"
             pushStackFrame = self.moonAddi("r14", "r14", self.anchestorFuncScope(node), comment)
-            print(pushStackFrame)
 
             printLib = "sw -8(r14),r1 \n" \
                        "addi r1,r0, buf \n" \
@@ -144,14 +130,12 @@ class CodeGenerationVisitor(Visitor):
                        "jl r15, intstr \n" \
                        "sw -8(r14),r13 \n" \
                        "jl r15, putstr "
-            self.moonCode.append(printLib)
-            print(printLib)
+            moonCode.append(printLib)
 
             comment = "		% decremeting stack frame and starting printing"
             pushStackFrame = self.moonSubi("r14", "r14", self.anchestorFuncScope(node), comment)
-            print(pushStackFrame, "\n")
-
             self.registerStack.append(tempReg)
+            self.moonAppendText("\n")
 
 
         if type(node) is funCallSubtree:
@@ -170,17 +154,12 @@ class CodeGenerationVisitor(Visitor):
                 comment = "		% pass " + str(child.data) + " into " + str(param[1])
                 load = self.moonLW(tempReg, self.getOffset(node, child.data), comment)
                 store = self.moonSW(parmNewoffset, tempReg)
-                print(load)
-                print(store)
-
-            print("\n")
+            self.moonAppendText("\n")
 
             comment = "		% increment stack frame"
             incr = self.moonAddi("r14", "r14", self.anchestorFuncScope(node), comment)
-            print(incr)
 
             jump = self.moonJL(functionName)
-            print(jump)
 
             comment = "		% decrement stack frame"
             decr = self.moonSubi("r14", "r14", self.anchestorFuncScope(node), comment)
@@ -190,13 +169,10 @@ class CodeGenerationVisitor(Visitor):
             load = self.moonLW(tempReg, self.anchestorFuncScope(node), comment)
             store = self.moonSW(self.getOffset(node,tempVar), tempReg)
 
-            print(decr)
-            print(load)
-            print(store)
-
             node.data = tempVar
             node.parent.data = node.data
             self.registerStack.append(tempReg)
+            self.moonAppendText("\n")
 
         if type(node) is returnSubtree:
             self.callAccept(node)
@@ -207,31 +183,17 @@ class CodeGenerationVisitor(Visitor):
             load = self.moonLW(tempReg, self.getOffset(node,var), comment)
             store = self.moonSW("0", tempReg)
 
-            print(load)
-            print(store)
 
             comment = "		% jump to calling function "
             load = self.moonLW("r15", "-8", comment)
             jump = self.moonJR()
 
-            print(load)
-            print(jump)
-            print("\n")
-
             self.registerStack.append(tempReg)
+            self.moonAppendText("\n")
 
 
         if type(node) is factorSubtree:
             self.callAccept(node)
-
-            # tempReg = self.registerStack.pop()
-            # varData = node.children[0].data
-            # varOff = self.getOffset(node, varData)
-            # varValue = self.getValue(varData)
-            # # print("[factor], varData:",varData, " varOff:",varOff, " tempReg:",tempReg, " varValue:", varValue)
-            # self.registerStack.append(tempReg)
-
-
 
             if len(node.children) > 1:
                 if node.children[1].children[0].name == "var": # negated
@@ -242,32 +204,10 @@ class CodeGenerationVisitor(Visitor):
                     muli = "muli " + tempReg + ", " + tempReg + ", -1"
                     self.moonAppendText(muli)
                     store = self.moonSW(self.getOffset(node, var), tempReg)
-
-                    print(load)
-                    print(muli)
-                    print(store)
-                    print("\n")
-
                     self.registerStack.append(tempReg)
+                    self.moonAppendText("\n")
                 else: # a number
-                    # tempReg = self.registerStack.pop()
-                    # num = node.children[1].data
-                    # addi = self.moonAddi(tempReg, "r0", num)
-                    # comment = "		% neg " + num
-                    # muli = "muli " + tempReg + ", " + tempReg + ", -1" + comment
-                    # self.moonAppendText(muli)
-                    # store = self.moonSW(self.getOffset(node, var), tempReg)
-                    #
-                    # print(addi)
-                    # print(muli)
-                    # print(store)
-                    # print("\n")
-                    #
-                    # self.registerStack.append(tempReg)
                     node.data = "-" + node.children[1].data
-
-
-
 
         if type(node) is implDefSubtree: self.callAccept(node)
 
@@ -316,13 +256,13 @@ class CodeGenerationVisitor(Visitor):
             # ifTree = node.children[1]
             # for child in ifTree.children:
             #     child.accept(self)
-            # jump = self.moonCode.append("j endIf" + str(self.ifElseCounter))
+            # jump = moonCode.append("j endIf" + str(self.ifElseCounter))
             #
             # elseTree = node.children[2]
-            # elseLabel = self.moonCode.append("elseBlock" + str(self.ifElseCounter) + " nop")
+            # elseLabel = moonCode.append("elseBlock" + str(self.ifElseCounter) + " nop")
             # for child in elseTree.children:
             #     child.accept(self)
-            # endIf = self.moonCode.append("endIf" + str(self.ifElseCounter) + " nop")
+            # endIf = moonCode.append("endIf" + str(self.ifElseCounter) + " nop")
             #
             # print(expr)
             # print(jump)
@@ -411,47 +351,47 @@ class CodeGenerationVisitor(Visitor):
 
     def moonLW(self, reg, offset, comment=""):
         code = "lw" + " " + reg + ", " + str(offset) + "(r14)" + comment
-        self.moonCode.append(code)
+        moonCode.append(code)
         return code
 
     def moonCalculate(self, operation, tempReg, leftReg, rightReg, comment=""):
         code = operation + " " + tempReg + ", " + leftReg + ", " + rightReg + comment
-        self.moonCode.append(code)
+        moonCode.append(code)
         return code
 
     def moonSW(self, tempOff, tempReg, comment=""):
         code = "sw " + str(tempOff) + "(r14), " + tempReg + comment
-        self.moonCode.append(code)
+        moonCode.append(code)
         return code
 
     def moonAddi(self, reg1, reg2, value, comment=""):
         code = "addi " + reg1 + ", " + reg2 + ", " + str(value) + comment
-        self.moonCode.append(code)
+        moonCode.append(code)
         return code
 
     def moonSubi(self, reg1, reg2, value, comment=""):
         code = "subi " + reg1 + ", " + reg2 + ", " + str(value) + comment
-        self.moonCode.append(code)
+        moonCode.append(code)
         return code
 
     def moonAppendText(self, string):
         code = string
-        self.moonCode.append(code)
+        moonCode.append(code)
         return code
 
     def moonJL(self, funcName, comment=""):
         code = "jl r15, " + funcName + comment
-        self.moonCode.append(code)
+        moonCode.append(code)
         return code
 
     def moonJR(self, comment=""):
         code = "jr r15 "+ comment
-        self.moonCode.append(code)
+        moonCode.append(code)
         return code
 
     def moonBZ(self, tempReg, label, comment=""):
         code = "bz " + tempReg + " , " + label + comment
-        self.moonCode.append(code)
+        moonCode.append(code)
         return code
 
 
