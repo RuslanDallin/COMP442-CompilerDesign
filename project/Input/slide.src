@@ -25,5 +25,5 @@ func main() -> void
     b = 2;
     c = 3;
     a = f(a,b,c) * temp(a,c);
-    write(7);
+    write(4 * - 7);
 }

@@ -41,10 +41,7 @@ class CodeGenerationVisitor(Visitor):
             tempReg = self.registerStack.pop()
 
             leftData = node.children[0].data
-            if leftData:
-                leftOff = self.getOffset(node, leftData)
-            else:
-                leftOff = self.getOffset(node, node.counter.pop())
+            leftOff = self.getOffset(node, leftData)
             # print("Left", leftData, leftOff, tempReg)
 
             right = node.children[1].data
@@ -76,21 +73,15 @@ class CodeGenerationVisitor(Visitor):
 
             leftReg = self.registerStack.pop()
             leftData = node.children[0].data
-            if leftData:
-                leftOff = self.getOffset(node, leftData)
-            else: # not a var or a int prob func call
-                leftOff = self.getOffset(node, node.counter.pop())
+            leftOff = self.getOffset(node, leftData)
             leftValue = self.getValue(leftData)
-            # print("Left", leftData, leftOff, leftReg, leftData)
+            # print("Left", leftData, leftOff, leftReg, leftValue)
 
             rightReg = self.registerStack.pop()
             rightData = node.children[2].data
-            if rightData:
-                rightOff = self.getOffset(node, rightData)
-            else: # not a var or a int prob func call
-                rightOff = self.getOffset(node, node.counter.pop())
+            rightOff = self.getOffset(node, rightData)
             rightValue = self.getValue(rightData)
-            # print("right", rightData, rightOff, rightReg)
+            # print("right", rightData, rightOff, rightReg, rightValue)
 
 
             tempReg = self.registerStack.pop()
@@ -129,44 +120,34 @@ class CodeGenerationVisitor(Visitor):
         if type(node) is writeSubtree:
             self.callAccept(node)
 
-            right = node.children[0].data
-            rightData = self.getValue(right)
-
-            # print("right", right, rightData)
-
-            if rightData:  # write 2
-                comment = "		% wrting " + str(rightData)
-                rightAdd = self.moonAddi(rightData, "r0", rightData, comment)
-                print(rightAdd)
-            else:  # write x
-                comment = "		% wrting " + str(right)
-                rightOff = self.getOffset(node, right)
-                rightLoad = self.moonLW(rightData, rightOff, comment)
-                print(rightLoad)
-
-            expr = node.children[0].data
-            expOffset = self.getOffset(node,expr)
             tempReg = self.registerStack.pop()
-            load = self.moonLW(tempReg, expOffset)
-            self.moonCode.append(load)
+            expr = node.children[0].data
+            exprValue = self.getValue(expr)
+            expOffset = self.getOffset(node, expr)
+            if exprValue: # write (7)
+                comment = "		% loading " + str(exprValue)
+                addi = self.moonAddi(tempReg, "r0", exprValue, comment)
+                print(addi)
+            else: # write (x)
+                comment = "		% loading " + expr
+                load = self.moonLW(tempReg, expOffset, comment)
+                print(load)
 
-            print(load)
 
-            comment = "		% printing subroutine start"
+            comment = "		% incrementing stack frame and starting printing"
             pushStackFrame = self.moonAddi("r14", "r14", self.anchestorFuncScope(node), comment)
             print(pushStackFrame)
 
-
             printLib = "sw -8(r14),r1 \n" \
-                    "addi r1,r0, buf \n" \
-                    "sw -12(r14),r1 \n" \
-                    "jl r15, intstr \n" \
-                    "sw -8(r14),r13 \n" \
-                    "jl r15, putstr "
+                       "addi r1,r0, buf \n" \
+                       "sw -12(r14),r1 \n" \
+                       "jl r15, intstr \n" \
+                       "sw -8(r14),r13 \n" \
+                       "jl r15, putstr "
             self.moonCode.append(printLib)
             print(printLib)
 
-            comment = "		% printing subroutine end"
+            comment = "		% decremeting stack frame and starting printing"
             pushStackFrame = self.moonSubi("r14", "r14", self.anchestorFuncScope(node), comment)
             print(pushStackFrame, "\n")
 
@@ -243,6 +224,15 @@ class CodeGenerationVisitor(Visitor):
         if type(node) is factorSubtree:
             self.callAccept(node)
 
+            # tempReg = self.registerStack.pop()
+            # varData = node.children[0].data
+            # varOff = self.getOffset(node, varData)
+            # varValue = self.getValue(varData)
+            # # print("[factor], varData:",varData, " varOff:",varOff, " tempReg:",tempReg, " varValue:", varValue)
+            # self.registerStack.append(tempReg)
+
+
+
             if len(node.children) > 1:
                 if node.children[1].children[0].name == "var": # negated
                     tempReg = self.registerStack.pop()
@@ -259,8 +249,22 @@ class CodeGenerationVisitor(Visitor):
                     print("\n")
 
                     self.registerStack.append(tempReg)
-                else:
-                    print("HERE")
+                else: # a number
+                    # tempReg = self.registerStack.pop()
+                    # num = node.children[1].data
+                    # addi = self.moonAddi(tempReg, "r0", num)
+                    # comment = "		% neg " + num
+                    # muli = "muli " + tempReg + ", " + tempReg + ", -1" + comment
+                    # self.moonAppendText(muli)
+                    # store = self.moonSW(self.getOffset(node, var), tempReg)
+                    #
+                    # print(addi)
+                    # print(muli)
+                    # print(store)
+                    # print("\n")
+                    #
+                    # self.registerStack.append(tempReg)
+                    node.data = "-" + node.children[1].data
 
 
 
