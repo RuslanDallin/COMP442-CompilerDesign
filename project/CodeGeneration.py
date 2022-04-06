@@ -6,6 +6,7 @@ class CodeGenerationVisitor(Visitor):
     def __init__(self):
         self.registerStack = list()
         self.ifElseCounter = 0
+        self.whileCounter = 0
         for r in range (12, 0, -1):
             self.registerStack.append("r" + str(r))
 
@@ -118,20 +119,21 @@ class CodeGenerationVisitor(Visitor):
                 comment = "		% loading " + expr
                 load = self.moonLW(tempReg, expOffset, comment)
 
-
-            comment = "		% incrementing stack frame and starting printing"
-            pushStackFrame = self.moonAddi("r14", "r14", self.anchestorFuncScope(node), comment)
-
+            try:
+                scopeOff = self.anchestorFuncScope(node)
+            except:
+                scopeOff = -4
+            comment = "		% writing subroutine: incrementing stack frame and starting"
+            pushStackFrame = self.moonAddi("r14", "r14", scopeOff, comment)
             printLib = "sw -8(r14),r1 \n" \
                        "addi r1,r0, buf \n" \
                        "sw -12(r14),r1 \n" \
                        "jl r15, intstr \n" \
                        "sw -8(r14),r13 \n" \
                        "jl r15, putstr "
-            moonCode.append(printLib)
-
-            comment = "		% decremeting stack frame and starting printing"
-            pushStackFrame = self.moonSubi("r14", "r14", self.anchestorFuncScope(node), comment)
+            self.moonAppendText(printLib)
+            comment = "		% writing subroutine: decremeting stack frame and starting"
+            pushStackFrame = self.moonSubi("r14", "r14", scopeOff, comment)
             self.registerStack.append(tempReg)
             self.moonAppendText("\n")
 
@@ -208,7 +210,6 @@ class CodeGenerationVisitor(Visitor):
                     node.data = "-" + node.children[1].data
 
         if type(node) is ifThenElseSubtree:
-            # self.callAccept(node)
 
             tempReg = self.registerStack.pop()
             self.ifElseCounter += 1
@@ -233,20 +234,19 @@ class CodeGenerationVisitor(Visitor):
             self.registerStack.append(tempReg)
             self.moonAppendText("\n")
 
-            tempReg = self.registerStack.pop()
+            # if block
             ifTree = node.children[1]
             for child in ifTree.children:
                 child.accept(self)
             jump = moonCode.append("j " + endIfFlag)
-            self.registerStack.append(tempReg)
 
-            tempReg = self.registerStack.pop()
+            # else block
             elseTree = node.children[2]
             elseLabel = moonCode.append(elseFlag + " nop")
             for child in elseTree.children:
                 child.accept(self)
+            # end else block
             endIf = moonCode.append(endIfFlag + " nop")
-            self.registerStack.append(tempReg)
 
         if type(node) is implDefSubtree: self.callAccept(node)
 
@@ -295,7 +295,36 @@ class CodeGenerationVisitor(Visitor):
 
         if type(node) is numNode: self.callAccept(node)
 
-        if type(node) is readSubtree: self.callAccept(node)
+        if type(node) is readSubtree:
+            self.callAccept(node)
+
+            tempReg = self.registerStack.pop()
+
+            varData = node.children[0].data
+            varOff = self.getOffset(node, varData)
+            # print("Left", leftData, leftOff, tempReg)
+
+            try:
+                scopeOff = self.anchestorFuncScope(node)
+            except:
+                scopeOff = -4
+            comment = "		% reading subroutine: incrementing stack frame and starting"
+            pushStackFrame = self.moonAddi("r14", "r14", scopeOff, comment)
+            printLib = "addi r1,r0, buf \n" \
+                       "sw -8(r14),r1 \n" \
+                       "jl r15, getstr \n" \
+                       "jl r15, strint"
+            self.moonAppendText(printLib)
+            comment = "		% reading subroutine: decremeting stack frame and starting printing"
+            pushStackFrame = self.moonSubi("r14", "r14", scopeOff, comment)
+
+            comment = "		% storing input into " + str(varData)
+            moonSW = self.moonSW(varOff, "r13", comment)
+
+            self.registerStack.append(tempReg)
+            self.moonAppendText("\n")
+
+
 
         if type(node) is relExprSubtree: self.callAccept(node)
 
@@ -315,9 +344,41 @@ class CodeGenerationVisitor(Visitor):
 
         if type(node) is visibilityNode: self.callAccept(node)
 
-        if type(node) is whileSubtree: self.callAccept(node)
+        if type(node) is whileSubtree:
+            # self.callAccept(node)
 
+            self.whileCounter += 1
+            endWhile = "endWhile" + str(self.whileCounter)
+            goWhile = "goWhile" + str(self.whileCounter)
+            jump = moonCode.append(goWhile + " nop")
 
+            self.ifElseCounter += 1
+            exprVar = node.children[0]
+            for child in exprVar.children:
+                child.accept(self)
+            expr = exprVar.children[0].data
+
+            tempReg = self.registerStack.pop()
+            exprValue = self.getValue(expr)
+            expOffset = self.getOffset(node, expr)
+            if exprValue != None:  # write (7)
+                comment = "		% loading " + str(exprValue)
+                addi = self.moonAddi(tempReg, "r0", exprValue, comment)
+            else:  # write (x)
+                comment = "		% loading " + expr
+                load = self.moonLW(tempReg, expOffset, comment)
+            expr = self.moonBZ(tempReg, endWhile)  # Branching here
+            self.registerStack.append(tempReg)
+            self.moonAppendText("\n")
+
+            # runs while true
+            block = node.children[1]
+            for child in block.children:
+                child.accept(self)
+            jump = moonCode.append("j " + goWhile)
+
+            # exit starts here
+            elseLabel = moonCode.append(endWhile + " nop")
 
 
     def callAccept(self, node):

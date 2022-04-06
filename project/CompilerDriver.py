@@ -106,7 +106,7 @@ def visitorDriver():
             src = open(directoryName + "/" + SourceFileName + ".src", 'r')  # reading
             tableOutput = open("Output/" + SourceFileName + ".outsymboltables", 'w')  # symTable
             errosOutput = open("Output/" + SourceFileName + ".outsemanticerrors", 'w')  # symTable
-            moonOuput = open("Output/" + SourceFileName + ".moon", 'w')  # symTable
+            moonOuput = open("Moon/" + SourceFileName + ".m", 'w')  # symTable
             print("\n\n********* %s *********" % (SourceFileName))
             lex = Lex(src)
             parseCheck, deriviations, errors, ast = parse(lex)
