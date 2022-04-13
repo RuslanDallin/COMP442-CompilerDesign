@@ -46,7 +46,7 @@ class CodeGenerationVisitor(Visitor):
 
             leftData = node.children[0].data
             leftOff = self.getOffset(node, leftData)
-            print("Left", leftData, leftOff, tempReg)
+            # print("Left", leftData, leftOff, tempReg)
 
             rightData = node.children[1].data
             rightValue = self.getValue(rightData)
@@ -114,18 +114,21 @@ class CodeGenerationVisitor(Visitor):
             expr = node.children[0].data
             exprValue = self.getValue(expr)
             expOffset = self.getOffset(node, expr)
+
             if exprValue != None: # write (7)
                 comment = "		% loading " + str(exprValue)
                 addi = self.moonAddi(tempReg, "r0", exprValue, comment)
             else: # write (x)
                 comment = "		% loading " + expr
                 load = self.moonLW(tempReg, expOffset, comment)
-            print(expr,exprValue, expOffset)
+            # print(expr,exprValue, expOffset)
 
+            #get the end stack of the current function
             try:
                 scopeOff = self.anchestorFuncScope(node)
             except:
                 scopeOff = -4
+
             comment = "		% writing subroutine: incrementing stack frame and starting"
             pushStackFrame = self.moonAddi("r14", "r14", scopeOff, comment)
             printLib = "sw -8(r14),r1 \n" \
@@ -154,8 +157,14 @@ class CodeGenerationVisitor(Visitor):
                 param = params.pop()
                 parmNewoffset = param[-1] + self.anchestorFuncScope(node)
 
+                paramValue = self.getValue(child.data)
+
                 comment = "		% pass " + str(child.data) + " into " + str(param[1])
-                load = self.moonLW(tempReg, self.getOffset(node, child.data), comment)
+                if paramValue != None:  # (7)
+                    addi = self.moonAddi(tempReg, "r0", paramValue, comment)
+                else:  # (x)
+                    load = self.moonLW(tempReg, self.getOffset(node, child.data), comment)
+
                 store = self.moonSW(parmNewoffset, tempReg)
             self.moonAppendText("\n")
 
@@ -166,7 +175,8 @@ class CodeGenerationVisitor(Visitor):
             comment = "		% increment stack frame"
             incr = self.moonAddi("r14", "r14", scopeOff, comment)
 
-            jump = self.moonJL(functionName)
+            comment = "		% Jumping to function " + functionName
+            jump = self.moonJL(functionName, comment)
 
             comment = "		% decrement stack frame"
             decr = self.moonSubi("r14", "r14", scopeOff, comment)
@@ -385,7 +395,12 @@ class CodeGenerationVisitor(Visitor):
 
         if type(node) is varSubtree: self.callAccept(node)
 
+
         if type(node) is visibilityNode: self.callAccept(node)
+
+        # print("======================================")
+        # for line in moonCode:
+        #     print(line)
 
 
 
@@ -417,7 +432,7 @@ class CodeGenerationVisitor(Visitor):
 
         for entry in varTable.rows:
             if entry[1] == varName:
-                if len(dims) > 1:
+                if len(dims) > 0:
                     varType, *varDims = entry[2].split(",")
                     arrayOff = entry[6] - -entry[5] + -4
                     if varType == "integer":

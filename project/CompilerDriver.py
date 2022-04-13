@@ -129,11 +129,13 @@ def visitorDriver():
             computeMemSize = ComputeMemSizeVisitor()
             ast.accept(computeMemSize, ast.symTable)
 
+            print(ast.symTable)
+            tableOutput.write(str(ast.symTable))
+
             CodeGeneration = CodeGenerationVisitor()
             ast.accept(CodeGeneration, ast.symTable)
 
-            print(ast.symTable)
-            tableOutput.write(str(ast.symTable))
+
 
 
             for error in ErrorList:

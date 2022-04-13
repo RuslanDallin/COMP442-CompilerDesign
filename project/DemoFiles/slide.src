@@ -21,7 +21,6 @@ func main() -> void
     let c: integer;
     a = 1;
     b = 2;
-    c = 3;
-    a = f(a,b,c) * temp(a,c);
+    a = f(a,b,3) * temp(a,3);
     write(- a);
 }

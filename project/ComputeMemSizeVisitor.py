@@ -11,9 +11,13 @@ class ComputeMemSizeVisitor(Visitor):
             leftChild = node.children[0]
             rightChild = node.children[2]
 
+            print("=>", node.name)
+            print(leftChild.type, rightChild.type)
+            print(leftChild.data, rightChild.data)
             if leftChild.type != rightChild.type:
                 print("=>", node.name)
                 print(leftChild.type, rightChild.type)
+                print(leftChild.data, rightChild.data)
                 error = "invalid to have operands of arithmetic operators to be of different types " + str(self.fetchLocation(node))
                 ErrorList.append(error)
                 node.type = "integer"
@@ -42,6 +46,7 @@ class ComputeMemSizeVisitor(Visitor):
             if child.name == "float": child.type = "float"
             if child.name == "num": child.type = "integer"
             node.data = child.data
+
             if child.name == "var":
                 varTable = self.anchestorVars(node)
                 for varEntry in varTable.rows:
@@ -55,16 +60,6 @@ class ComputeMemSizeVisitor(Visitor):
                         for entry in dataTable:
                             if node.data == entry[1]:
                                 child.type = entry[2]
-
-            if child.name == "funCall":
-                funcId = child.children[0].data
-                child.type = self.getFuncReturnType(node, funcId)
-                if child.type == "int": child.type = "integer"
-
-                tempVar = self.addTempVar(node, child.type, self.fetchLocation(node))
-                self.addVar(node, tempVar)
-                node.counter.append(node.counter[-1] + 1)
-
             node.type = child.type
 
 
@@ -105,7 +100,16 @@ class ComputeMemSizeVisitor(Visitor):
 
         if type(node) is fparmListSubtree: self.callAccept(node)
 
-        if type(node) is funCallSubtree: self.callAccept(node)
+        if type(node) is funCallSubtree:
+            self.callAccept(node)
+
+            funcId = node.children[0].data
+            node.type = self.getFuncReturnType(node, funcId)
+            if node.type == "int": node.type = "integer"
+
+            tempVar = self.addTempVar(node, node.type, self.fetchLocation(node))
+            self.addVar(node, tempVar)
+            node.counter.append(node.counter[-1] + 1)
 
         if type(node) is funcBodySubtree: self.callAccept(node)
 
@@ -150,7 +154,9 @@ class ComputeMemSizeVisitor(Visitor):
             indiceList = node.children[1].children
             if len(indiceList) > 0:
                 for indice in indiceList:
-                    node.data += "," + indice.data
+                    if indice.data:
+                        node.data += "," + indice.data
+
 
 
         if type(node) is visibilityNode: self.callAccept(node)
